@@ -37,46 +37,6 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Operatoren – was wird von mir erwartet?',
-      karten: [
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *nennen* steht?',
-          hinten: 'Fakten knapp aufzählen, ohne Erklärung.',
-          hinweis: 'Niveau I – Wissen wiedergeben' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *beschreiben* steht?',
-          hinten: 'geordnet in Fachsprache wiedergeben',
-          hinweis: 'Niveau I – Wissen wiedergeben' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *identifizieren* steht?',
-          hinten: 'Informationen im Fall erkennen, benennen',
-          hinweis: 'Niveau I – Wissen wiedergeben' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *erklären* steht?',
-          hinten: 'Ursache → Wirkung begründet herleiten',
-          hinweis: 'Niveau II – Wissen anwenden' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *erläutern* steht?',
-          hinten: 'mit Beispielen veranschaulichen',
-          hinweis: 'Niveau II – Wissen anwenden' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *begründen* steht?',
-          hinten: 'mit Argumenten stützen („…, weil …“)',
-          hinweis: 'Niveau II – Wissen anwenden' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *ableiten* steht?',
-          hinten: 'aus Informationen Schlüsse ziehen',
-          hinweis: 'Niveau II – Wissen anwenden' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *vergleichen* steht?',
-          hinten: 'Gemeinsamkeiten und Unterschiede zeigen',
-          hinweis: 'Niveau II – Wissen anwenden' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *zuordnen* steht?',
-          hinten: 'Inhalte passenden Oberbegriffen zuordnen',
-          hinweis: 'Niveau II – Wissen anwenden' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *beurteilen* steht?',
-          hinten: 'prüfen, ob etwas fachlich angemessen ist',
-          hinweis: 'Niveau III – Beurteilen' },
-        { vorne: 'Was wird von mir erwartet, wenn in der Klausur der Operator *bewerten* steht?',
-          hinten: 'an Normwerten messen (Wert ↔ Grenzwert)',
-          hinweis: 'Niveau III – Beurteilen' }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
       ab: 'Mehr als nur hohe Werte – Leben mit Diabetes mellitus',
       karten: [
         { nr: 1,

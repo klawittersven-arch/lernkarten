@@ -6,8 +6,8 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 
 | Kartensatz | Adresse (QR-Code) |
 |---|---|
-| KB I – Diabetes mellitus (Klausur 09.11.2026), 96 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
-| KB II – Beratung (Klausur 09.11.2026), 95 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
+| KB I – Diabetes mellitus (Klausur 09.11.2026), 85 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
+| KB II – Beratung (Klausur 09.11.2026), 79 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/
 

@@ -11,10 +11,8 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 
 // Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
 const SAETZE = [
-  { ordner: 'kb1-diabetes', themen: 13, karten: 96, hinweis: false,
-    operatoren: ['nennen', 'beschreiben', 'identifizieren', 'erklären', 'erläutern', 'begründen', 'ableiten', 'vergleichen', 'zuordnen', 'beurteilen', 'bewerten'] },
-  { ordner: 'kb2-beratung', themen: 9, karten: 95, hinweis: true,
-    operatoren: ['nennen', 'beschreiben', 'identifizieren', 'erklären', 'erläutern', 'begründen', 'ableiten', 'darstellen', 'vergleichen', 'zuordnen', 'formulieren', 'beurteilen'] }
+  { ordner: 'kb1-diabetes', themen: 12, karten: 85, hinweis: false },
+  { ordner: 'kb2-beratung', themen: 8, karten: 79, hinweis: true }
 ];
 
 function kartenLaden(ordner) {
@@ -55,8 +53,9 @@ function kartenLaden(ordner) {
     // „umrechnen“ (KB I) ist kein Operator der Prüfung und steht auch in der Ich-kann-Liste nicht kursiv
     const ohneOperator = alle.filter((k) => !/\*[a-zäöü]+\*/.test(k.vorne) && !/ umrechnen\.$/.test(k.vorne));
     H.pruefe(ohneOperator.length === 0, 'jede Vorderseite nennt einen *kursiven* Operator', ohneOperator.map((k) => k.vorne));
-    const opKarten = D.themen[0].karten.slice(0, S.operatoren.length).map((k) => (k.vorne.match(/Operator \*([a-zäöü]+)\* steht/) || [])[1]);
-    H.pruefe(JSON.stringify(opKarten) === JSON.stringify(S.operatoren), `${S.operatoren.length} Operatoren-Karten in der Reihenfolge der Tabelle`, opKarten);
+    // Karten zu den Operatoren selbst sind auf Wunsch entfernt (stehen auf der Ich-kann-Liste)
+    const opKarten = alle.filter((k) => /Was wird von mir erwartet|zum Operator/.test(k.vorne)).concat(D.themen.filter((t) => /Operatoren/.test(t.titel || '')));
+    H.pruefe(opKarten.length === 0, 'keine eigenen Karten zu den Operatoren', opKarten.map((k) => k.vorne || k.titel));
     H.pruefe(alle.every((k) => k.afb === undefined || /^(I|II|III)( \+ (I|II|III))?$/.test(k.afb)), 'AFB-Angaben haben die Form „I“, „II“, „I + II“ …');
     const benutzt = [...new Set([...fs.readFileSync(path.join(APP, 'lernkarten.js'), 'utf8').matchAll(/\bT\.(\w+)/g)].map((m) => m[1]))];
     const fehlen = benutzt.filter((k) => typeof D.texte[k] !== 'string');
@@ -99,8 +98,8 @@ function kartenLaden(ordner) {
     H.beobachten(p, protokoll, 'bedienung');
     p.on('dialog', (d) => d.accept());
     await p.goto(url);
-    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 96 Karten lernen', 'Start: „Alle 96 Karten lernen“');
-    H.pruefe(await p.locator('.thema').count() === 13, 'Start: 13 Themen zur Auswahl');
+    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 85 Karten lernen', 'Start: „Alle 85 Karten lernen“');
+    H.pruefe(await p.locator('.thema').count() === 12, 'Start: 12 Themen zur Auswahl');
 
     await p.click('#keine-themen');
     H.pruefe(await p.locator('#knopf-start').isDisabled(), '„Keine“: Start-Knopf gesperrt');
@@ -194,12 +193,12 @@ function kartenLaden(ordner) {
       reihenfolge.push(await p.locator('#vorne-text').innerText());
       await p.keyboard.press('ArrowLeft'); await H.warte(300);
     }
-    const ersteSechs = D.themen[0].karten.slice(0, 6).map((k) => k.vorne.replace(/\*/g, ''));
+    const ersteSechs = D.themen.flatMap((t) => t.karten).slice(0, 6).map((k) => k.vorne.replace(/\*/g, ''));
     H.pruefe(JSON.stringify(reihenfolge) !== JSON.stringify(ersteSechs), 'gemischt: andere Reihenfolge als in der Liste');
 
     await p.click('#knopf-schliessen');
     await p.click('#zuruecksetzen');
-    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 96 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
+    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 85 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
     const cookies = await ctx.cookies();
     H.pruefe(cookies.length === 0, 'keine Cookies');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'lernkarten-start.png') });
@@ -217,8 +216,7 @@ function kartenLaden(ordner) {
     await p.goto(basis + 'kb2-beratung/');
     H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB II: Hinweis „anderer Fall“ auf der Startseite');
     await p.click('#knopf-start');
-    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 95', 'KB II: Runde mit 95 Karten');
-    for (let i = 0; i < 16; i++) await p.click('#knopf-gewusst');
+    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 79', 'KB II: Runde mit 79 Karten');
     H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'AB „Die Wittener Werkzeuge“ · Nr. 1 · AFB II', 'Kopfzeile mit AB, Nummer und AFB', await p.locator('#vorne-kopf').innerText());
     await p.click('#knopf-schliessen');
     const titel = await p.locator('.thema-titel').allInnerTexts();
