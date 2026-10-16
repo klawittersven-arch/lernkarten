@@ -1,72 +1,98 @@
-/* Lernkarten KB I – Diabetes mellitus (docs/kb1-diabetes/): Inhalte, Bedienung, Speicher,
- * Layout, Offline, Datenschutz – dazu die Übersichtsseite docs/index.html. */
+/* Lernkarten: Inhalte aller Kartensätze, Übersichtsseite, Bedienung (am Beispiel KB I),
+ * Layout aller Karten auf großem und kleinem Handy, Offline, Datenschutz. */
 'use strict';
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const H = require('./hilfen');
 
-const ORDNER = path.join(H.DOCS, 'kb1-diabetes');
 const APP = path.join(H.DOCS, 'app');
 const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 
-function kartenLaden() {
+// Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
+const SAETZE = [
+  { ordner: 'kb1-diabetes', themen: 13, karten: 96, hinweis: false,
+    operatoren: ['nennen', 'beschreiben', 'identifizieren', 'erklären', 'erläutern', 'begründen', 'ableiten', 'vergleichen', 'zuordnen', 'beurteilen', 'bewerten'] },
+  { ordner: 'kb2-beratung', themen: 9, karten: 95, hinweis: true,
+    operatoren: ['nennen', 'beschreiben', 'identifizieren', 'erklären', 'erläutern', 'begründen', 'ableiten', 'darstellen', 'vergleichen', 'zuordnen', 'formulieren', 'beurteilen'] }
+];
+
+function kartenLaden(ordner) {
   const box = {};
-  vm.runInNewContext(fs.readFileSync(path.join(ORDNER, 'karten.js'), 'utf8') + '\nthis.D = LERNKARTEN;', box);
+  vm.runInNewContext(fs.readFileSync(path.join(H.DOCS, ordner, 'karten.js'), 'utf8') + '\nthis.D = LERNKARTEN;', box);
   return box.D;
 }
 
 (async () => {
   /* ---------- 1. Inhalte ---------- */
-  console.log('\n== Inhalte in karten.js');
-  const D = kartenLaden();
-  const alle = [];
-  D.themen.forEach((t) => t.karten.forEach((k) => alle.push(Object.assign({ thema: t.ab || t.titel }, k))));
-  H.pruefe(D.themen.length === 13, `13 Themen (Operatoren + 12 Abschnitte der Ich-kann-Liste)`, D.themen.length);
-  H.pruefe(alle.length === 96, `96 Karten`, alle.length);
-  H.pruefe(D.themen.every((t) => (t.ab || t.titel) && t.karten.length > 0), 'jedes Thema hat einen Titel und Karten');
-  const fehlerhaft = alle.filter((k) => {
-    const hinten = [].concat(k.hinten);
-    return typeof k.vorne !== 'string' || !k.vorne.trim() || !hinten.length || hinten.some((h) => typeof h !== 'string' || !h.trim());
-  });
-  H.pruefe(fehlerhaft.length === 0, 'jede Karte hat Vorder- und Rückseite', fehlerhaft.map((k) => k.vorne));
-  const schluessel = alle.map((k) => k.vorne + '|' + (k.fall || ''));
-  const doppelt = schluessel.filter((s, i) => schluessel.indexOf(s) !== i);
-  H.pruefe(doppelt.length === 0, 'keine zwei Karten mit gleicher Vorderseite', doppelt);
-  const texte = alle.flatMap((k) => [k.vorne, k.fall || '', k.hinweis || ''].concat(k.hinten));
-  const sterne = texte.filter((t) => {
-    const ohneFett = t.replace(/\*\*(.+?)\*\*/g, '$1');
-    return (t.match(/\*\*/g) || []).length % 2 || (ohneFett.match(/\*/g) || []).length % 2;
-  });
-  H.pruefe(sterne.length === 0, '**fett** und *kursiv* immer paarweise', sterne);
-  // „umrechnen“ ist kein Operator der Prüfung und steht auch in der Ich-kann-Liste nicht kursiv
-  const ohneOperator = alle.filter((k) => !/\*[a-zäöü]+\*/.test(k.vorne) && !/ umrechnen\.$/.test(k.vorne));
-  H.pruefe(ohneOperator.length === 0, 'jede Vorderseite nennt einen *kursiven* Operator', ohneOperator.map((k) => k.vorne));
-  const operatoren = ['nennen', 'beschreiben', 'identifizieren', 'erklären', 'erläutern', 'begründen', 'ableiten', 'vergleichen', 'zuordnen', 'beurteilen', 'bewerten'];
-  const opKarten = D.themen[0].karten.map((k) => (k.vorne.match(/\*([a-zäöü]+)\*/) || [])[1]);
-  H.pruefe(JSON.stringify(opKarten) === JSON.stringify(operatoren), 'Operatoren-Karten in der Reihenfolge der Tabelle', opKarten);
-  for (const k of D.texte ? Object.keys(D.texte) : []) if (typeof D.texte[k] !== 'string') H.pruefe(false, `Text ${k} ist kein Text`);
+  const vorhanden = fs.readdirSync(H.DOCS).filter((d) => fs.existsSync(path.join(H.DOCS, d, 'karten.js'))).sort();
+  console.log('\n== Kartensätze in docs/');
+  H.pruefe(JSON.stringify(vorhanden) === JSON.stringify(SAETZE.map((s) => s.ordner).sort()), `Kartensätze: ${vorhanden.join(', ')}`, vorhanden);
+  const swKb1 = fs.readFileSync(path.join(H.DOCS, 'kb1-diabetes', 'sw.js'), 'utf8');
 
-  /* ---------- 2. Bedienung im Browser ---------- */
+  for (const S of SAETZE) {
+    console.log(`\n== Inhalte ${S.ordner}/karten.js`);
+    const D = S.daten = kartenLaden(S.ordner);
+    const alle = [];
+    D.themen.forEach((t) => t.karten.forEach((k) => alle.push(k)));
+    H.pruefe(D.themen.length === S.themen, `${S.themen} Themen`, D.themen.length);
+    H.pruefe(alle.length === S.karten, `${S.karten} Karten`, alle.length);
+    H.pruefe(D.themen.every((t) => (t.ab || t.titel) && t.karten.length > 0), 'jedes Thema hat einen Titel und Karten');
+    const fehlerhaft = alle.filter((k) => {
+      const hinten = [].concat(k.hinten);
+      return typeof k.vorne !== 'string' || !k.vorne.trim() || !hinten.length || hinten.some((h) => typeof h !== 'string' || !h.trim());
+    });
+    H.pruefe(fehlerhaft.length === 0, 'jede Karte hat Vorder- und Rückseite', fehlerhaft.map((k) => k.vorne));
+    const schluessel = alle.map((k) => k.vorne + '|' + (k.fall || ''));
+    const doppelt = schluessel.filter((s, i) => schluessel.indexOf(s) !== i);
+    H.pruefe(doppelt.length === 0, 'keine zwei Karten mit gleicher Vorder- und Fallseite', doppelt);
+    const texte = alle.flatMap((k) => [k.vorne, k.fall || '', k.hinweis || ''].concat(k.hinten)).concat([D.hinweis || '']);
+    const sterne = texte.filter((t) => {
+      const ohneFett = t.replace(/\*\*(.+?)\*\*/g, '$1');
+      return (t.match(/\*\*/g) || []).length % 2 || (ohneFett.match(/\*/g) || []).length % 2;
+    });
+    H.pruefe(sterne.length === 0, '**fett** und *kursiv* immer paarweise', sterne);
+    // „umrechnen“ (KB I) ist kein Operator der Prüfung und steht auch in der Ich-kann-Liste nicht kursiv
+    const ohneOperator = alle.filter((k) => !/\*[a-zäöü]+\*/.test(k.vorne) && !/ umrechnen\.$/.test(k.vorne));
+    H.pruefe(ohneOperator.length === 0, 'jede Vorderseite nennt einen *kursiven* Operator', ohneOperator.map((k) => k.vorne));
+    const opKarten = D.themen[0].karten.slice(0, S.operatoren.length).map((k) => (k.vorne.match(/Operator \*([a-zäöü]+)\* steht/) || [])[1]);
+    H.pruefe(JSON.stringify(opKarten) === JSON.stringify(S.operatoren), `${S.operatoren.length} Operatoren-Karten in der Reihenfolge der Tabelle`, opKarten);
+    H.pruefe(alle.every((k) => k.afb === undefined || /^(I|II|III)( \+ (I|II|III))?$/.test(k.afb)), 'AFB-Angaben haben die Form „I“, „II“, „I + II“ …');
+    const benutzt = [...new Set([...fs.readFileSync(path.join(APP, 'lernkarten.js'), 'utf8').matchAll(/\bT\.(\w+)/g)].map((m) => m[1]))];
+    const fehlen = benutzt.filter((k) => typeof D.texte[k] !== 'string');
+    H.pruefe(fehlen.length === 0, `alle ${benutzt.length} Beschriftungen der Oberfläche vorhanden`, fehlen);
+    const html = fs.readFileSync(path.join(H.DOCS, S.ordner, 'index.html'), 'utf8');
+    const manifest = JSON.parse(fs.readFileSync(path.join(H.DOCS, S.ordner, 'manifest.json'), 'utf8'));
+    H.pruefe(html.includes('<script src="karten.js">') && html.includes('<script src="../app/lernkarten.js">') && html.includes(D.titel),
+      'index.html lädt karten.js und die gemeinsame App, Titel stimmt');
+    H.pruefe(manifest.name.includes(D.titel) && manifest.icons.every((i) => fs.existsSync(path.join(H.DOCS, S.ordner, i.src))), 'manifest.json: Titel und Symbole stimmen');
+    H.pruefe(fs.readFileSync(path.join(H.DOCS, S.ordner, 'sw.js'), 'utf8') === swKb1, 'sw.js ist in allen Kartensätzen gleich');
+  }
+  const namen = SAETZE.map((s) => s.daten.speicherName);
+  H.pruefe(new Set(namen).size === namen.length, 'jeder Kartensatz hat einen eigenen speicherName', namen);
+
+  /* ---------- 2. Übersichtsseite ---------- */
   const { server, basis } = await H.serverStarten();
   const browser = await H.chromium.launch();
   const protokoll = { konsole: [], extern: [] };
-  const url = basis + 'kb1-diabetes/';
 
   console.log('\n== Übersicht aller Kartensätze');
   {
     const ctx = await browser.newContext(H.MOBIL);
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'uebersicht');
-    await p.goto(basis);
-    H.pruefe((await p.locator('h1').innerText()) === 'Lernkarten', 'Übersichtsseite lädt');
-    await p.click('a.satz[href="kb1-diabetes/"]');
-    await p.waitForSelector('#knopf-start');
-    H.pruefe(p.url() === url && (await p.locator('#titel').innerText()) === D.titel, 'Link führt zu den Lernkarten KB I');
+    for (const S of SAETZE) {
+      await p.goto(basis);
+      await p.click(`a.satz[href="${S.ordner}/"]`);
+      await p.waitForSelector('#knopf-start');
+      H.pruefe(p.url() === basis + S.ordner + '/' && (await p.locator('#titel').innerText()) === S.daten.titel, `Link führt zu „${S.daten.titel}“`);
+    }
     await ctx.close();
   }
 
-  console.log('\n== Bedienung (Handy 390 × 844)');
+  console.log('\n== Bedienung am Beispiel KB I (Handy 390 × 844)');
+  const url = basis + 'kb1-diabetes/';
+  const D = SAETZE[0].daten;
   {
     const ctx = await browser.newContext(H.MOBIL);
     const p = await ctx.newPage();
@@ -180,76 +206,106 @@ function kartenLaden() {
     await ctx.close();
   }
 
-  /* ---------- 3. Alle Karten: Layout auf großen und kleinen Handys ---------- */
-  for (const [breite, hoehe, schema] of [[390, 844, 'light'], [320, 568, 'dark']]) {
-    console.log(`\n== Alle 96 Karten bei ${breite} × ${hoehe} (${schema === 'dark' ? 'dunkles' : 'helles'} Design)`);
-    const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { viewport: { width: breite, height: hoehe }, reducedMotion: 'reduce', colorScheme: schema }));
+  /* ---------- 3. Besonderheiten KB II ---------- */
+  console.log('\n== Besonderheiten KB II (AFB, Hinweis auf der Startseite, kurzer Thementitel)');
+  {
+    const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
     const p = await ctx.newPage();
-    H.beobachten(p, protokoll, 'layout-' + breite);
-    await p.goto(url);
+    H.beobachten(p, protokoll, 'kb2');
+    await p.goto(basis + 'kb1-diabetes/');
+    H.pruefe(await p.locator('#start-hinweis').isHidden(), 'KB I: kein Hinweiskasten auf der Startseite');
+    await p.goto(basis + 'kb2-beratung/');
+    H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB II: Hinweis „anderer Fall“ auf der Startseite');
     await p.click('#knopf-start');
-    const lang = [], quer = [], knopfHoch = [];
-    let gezeigt = 0;
-    for (let i = 0; i < 96; i++) {
-      for (const seite of ['vorne', 'hinten']) {
-        if (seite === 'hinten') await p.click('#karte');
-        const m = await p.evaluate(() => {
-          const karte = document.getElementById('karte').getBoundingClientRect();
-          const leiste = document.querySelector('.lern-leiste').getBoundingClientRect();
-          const knopf = document.getElementById('knopf-nochnicht').getBoundingClientRect();
-          return {
-            text: document.getElementById('vorne-text').innerText.slice(0, 60),
-            hoehe: karte.height, platz: leiste.top - karte.top,
-            quer: document.documentElement.scrollWidth > window.innerWidth,
-            knopf: knopf.height
-          };
-        });
-        if (m.hoehe > m.platz + 1) lang.push(`${seite}: ${m.text}… (${Math.round(m.hoehe)} px bei ${Math.round(m.platz)} px Platz)`);
-        if (m.quer) quer.push(m.text);
-        if (m.knopf > 60) knopfHoch.push(m.knopf);
-      }
-      if (i === 47) await p.screenshot({ path: path.join(ERGEBNISSE, `lernkarten-${breite}-rueckseite.png`) });
-      await p.click('#knopf-gewusst');
-      gezeigt++;
-    }
-    H.pruefe(gezeigt === 96 && await p.locator('#ansicht-ergebnis').isVisible(), 'alle 96 Karten durchgeblättert, danach Ergebnis');
-    H.pruefe(quer.length === 0, 'nie seitlich verschiebbar (kein horizontales Scrollen)', quer);
-    H.pruefe(knopfHoch.length === 0, '„Noch nicht“/„Gewusst“ einzeilig', knopfHoch.slice(0, 3));
-    if (breite >= 390) H.pruefe(lang.length === 0, 'jede Karte passt ohne Scrollen auf den Bildschirm', lang);
-    else console.log(`  (Info) ${lang.length} Kartenseiten sind auf dem kleinen Bildschirm länger und lassen sich scrollen` + (lang.length ? ':\n    ' + lang.join('\n    ') : ''));
-    H.pruefe(await p.locator('#ergebnis-titel').innerText() === 'Alles gewusst – stark!', 'Ergebnis bei allen gewusst: „Alles gewusst – stark!“');
+    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 95', 'KB II: Runde mit 95 Karten');
+    for (let i = 0; i < 16; i++) await p.click('#knopf-gewusst');
+    H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'AB „Die Wittener Werkzeuge“ · Nr. 1 · AFB II', 'Kopfzeile mit AB, Nummer und AFB', await p.locator('#vorne-kopf').innerText());
+    await p.click('#knopf-schliessen');
+    const titel = await p.locator('.thema-titel').allInnerTexts();
+    H.pruefe(titel.includes('ABs zum Beratungsprozess (6 Phasen, Beratung planen)'), 'langer Abschnitt mit drei ABs erscheint unter seinem kurzen Titel');
+    await p.screenshot({ path: path.join(ERGEBNISSE, 'kb2-start.png') });
     await ctx.close();
   }
 
-  /* ---------- 4. Offline ---------- */
-  console.log('\n== Offline nach dem ersten Laden');
+  /* ---------- 4. Alle Karten: Layout auf großen und kleinen Handys ---------- */
+  for (const S of SAETZE) {
+    for (const [breite, hoehe, schema] of [[390, 844, 'light'], [320, 568, 'dark']]) {
+      console.log(`\n== ${S.ordner}: alle ${S.karten} Karten bei ${breite} × ${hoehe} (${schema === 'dark' ? 'dunkles' : 'helles'} Design)`);
+      const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { viewport: { width: breite, height: hoehe }, reducedMotion: 'reduce', colorScheme: schema }));
+      const p = await ctx.newPage();
+      H.beobachten(p, protokoll, `layout-${S.ordner}-${breite}`);
+      await p.goto(basis + S.ordner + '/');
+      await p.click('#knopf-start');
+      const lang = [], quer = [], knopfHoch = [];
+      let gezeigt = 0;
+      for (let i = 0; i < S.karten; i++) {
+        for (const seite of ['vorne', 'hinten']) {
+          if (seite === 'hinten') await p.click('#karte');
+          const m = await p.evaluate(() => {
+            const karte = document.getElementById('karte').getBoundingClientRect();
+            const leiste = document.querySelector('.lern-leiste').getBoundingClientRect();
+            const knopf = document.getElementById('knopf-nochnicht').getBoundingClientRect();
+            return {
+              text: document.getElementById('vorne-text').innerText.slice(0, 60),
+              hoehe: karte.height, platz: leiste.top - karte.top,
+              quer: document.documentElement.scrollWidth > window.innerWidth,
+              knopf: knopf.height
+            };
+          });
+          if (m.hoehe > m.platz + 1) lang.push(`${seite}: ${m.text}… (${Math.round(m.hoehe)} px bei ${Math.round(m.platz)} px Platz)`);
+          if (m.quer) quer.push(m.text);
+          if (m.knopf > 60) knopfHoch.push(m.knopf);
+        }
+        if (i === 47) await p.screenshot({ path: path.join(ERGEBNISSE, `${S.ordner}-${breite}-rueckseite.png`) });
+        await p.click('#knopf-gewusst');
+        gezeigt++;
+      }
+      H.pruefe(gezeigt === S.karten && await p.locator('#ansicht-ergebnis').isVisible(), `alle ${S.karten} Karten durchgeblättert, danach Ergebnis`);
+      H.pruefe(quer.length === 0, 'nie seitlich verschiebbar (kein horizontales Scrollen)', quer);
+      H.pruefe(knopfHoch.length === 0, '„Noch nicht“/„Gewusst“ einzeilig', knopfHoch.slice(0, 3));
+      if (breite >= 390) H.pruefe(lang.length === 0, 'jede Karte passt ohne Scrollen auf den Bildschirm', lang);
+      else console.log(`  (Info) ${lang.length} Kartenseiten sind auf dem kleinen Bildschirm länger und lassen sich scrollen` + (lang.length ? ':\n    ' + lang.join('\n    ') : ''));
+      H.pruefe(await p.locator('#ergebnis-titel').innerText() === 'Alles gewusst – stark!', 'Ergebnis bei allen gewusst: „Alles gewusst – stark!“');
+      await ctx.close();
+    }
+  }
+
+  /* ---------- 5. Offline ---------- */
+  console.log('\n== Offline nach dem ersten Laden (beide Kartensätze auf demselben Handy)');
   {
     const ctx = await browser.newContext(H.MOBIL);
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'offline');
-    await p.goto(url);
-    await p.evaluate(() => navigator.serviceWorker.ready);
-    await p.reload();
-    const gesteuert = await p.evaluate(() => !!navigator.serviceWorker.controller && navigator.serviceWorker.controller.scriptURL);
-    const caches = await p.evaluate(async () => (await caches.keys()).join(','));
-    H.pruefe(gesteuert && gesteuert.endsWith('/lernkarten/kb1-diabetes/sw.js') && /^lernkarten-\/lernkarten\/kb1-diabetes\/-v\d+$/.test(caches),
-      `eigener Service Worker des Kartensatzes aktiv, Cache „${caches}“`);
+    for (const S of SAETZE) {
+      await p.goto(basis + S.ordner + '/');
+      await p.evaluate(() => navigator.serviceWorker.ready);
+      await p.reload();
+      const sw = await p.evaluate(() => !!navigator.serviceWorker.controller && navigator.serviceWorker.controller.scriptURL);
+      H.pruefe(sw && sw.endsWith(`/lernkarten/${S.ordner}/sw.js`), `${S.ordner}: eigener Service Worker aktiv`);
+    }
+    const caches = (await p.evaluate(async () => (await caches.keys()))).sort();
+    H.pruefe(JSON.stringify(caches) === JSON.stringify(SAETZE.map((s) => `lernkarten-/lernkarten/${s.ordner}/-v1`).sort()), `getrennte Offline-Speicher: ${caches.join(', ')}`);
     await ctx.setOffline(true);
-    await p.goto(url);
-    await p.click('#knopf-start');
-    await p.click('#karte');
-    await p.click('#knopf-gewusst');
-    await H.warte(400);
-    H.pruefe(await p.locator('#zaehler').innerText() === '2 / 96', 'Offline: Karten lassen sich lernen');
+    for (const S of SAETZE) {
+      await p.goto(basis + S.ordner + '/');
+      await p.click('#knopf-start');
+      await p.click('#karte');
+      await p.click('#knopf-gewusst');
+      await H.warte(400);
+      H.pruefe(await p.locator('#zaehler').innerText() === `2 / ${S.karten}`, `${S.ordner}: offline lernbar`);
+    }
     await ctx.close();
   }
 
-  /* ---------- 5. Datenschutz und Dateigrößen ---------- */
+  /* ---------- 6. Datenschutz und Dateigrößen ---------- */
   console.log('\n== Datenschutz');
   H.pruefe(protokoll.extern.length === 0, 'keine Anfrage an fremde Adressen', protokoll.extern);
   H.pruefe(protokoll.konsole.length === 0, 'keine Fehler in der Konsole', protokoll.konsole);
-  const groesse = [ORDNER, APP].reduce((s, o) => s + fs.readdirSync(o).reduce((t, d) => t + fs.statSync(path.join(o, d)).size, 0), 0);
-  H.pruefe(groesse < 150 * 1024, `alle Dateien zusammen ${Math.round(groesse / 1024)} KB (< 150 KB)`);
+  const groesse = (o) => fs.readdirSync(o).reduce((t, d) => t + fs.statSync(path.join(o, d)).size, 0);
+  for (const S of SAETZE) {
+    const kb = Math.round((groesse(APP) + groesse(path.join(H.DOCS, S.ordner))) / 1024);
+    H.pruefe(kb < 150, `${S.ordner}: alle Dateien zusammen ${kb} KB (< 150 KB)`);
+  }
 
   await browser.close();
   server.close();

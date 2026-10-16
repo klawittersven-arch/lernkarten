@@ -7,6 +7,7 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 | Kartensatz | Adresse (QR-Code) |
 |---|---|
 | KB I – Diabetes mellitus (Klausur 09.11.2026), 96 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
+| KB II – Beratung (Klausur 09.11.2026), 95 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/
 
@@ -22,7 +23,8 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 
 ## Karten ändern
 
-Alle Texte eines Kartensatzes stehen in **`docs/kb1-diabetes/karten.js`**.
+Alle Texte eines Kartensatzes stehen in **`docs/<kartensatz>/karten.js`**, also
+`docs/kb1-diabetes/karten.js` bzw. `docs/kb2-beratung/karten.js`.
 Auf GitHub die Datei öffnen, auf den Stift („Edit this file“) klicken, ändern, unten „Commit changes“.
 Nach 1–2 Minuten ist die Änderung online.
 
@@ -31,10 +33,15 @@ Nach 1–2 Minuten ist die Änderung online.
 - `**fett**` und `*kursiv*` funktionieren wie in der Ich-kann-Liste.
 - Eine Karte hat `vorne` (Kompetenz), optional `fall` (Kasten mit Fall oder Aussage),
   `hinten` (ein Text oder eine Liste von Stichpunkten) und optional `hinweis` (Kasten unten).
+  `nr` (Nummer in der Ich-kann-Liste) und `afb` (z. B. `'I + II'`) erscheinen oben auf der Karte.
   Die genaue Anleitung steht oben in der Datei.
+- Ganz oben in `karten.js` steht optional `hinweis: '…'` – ein Kasten auf der Startseite
+  (bei KB II: „In der Klausur kommt ein anderer Fall …“).
+- Ein Thema heißt wie sein Arbeitsblatt (`ab: '…'`, bei mehreren ABs eine Liste `['…', '…']`).
+  Ist das zu lang, setzt `titel: '…'` einen kürzeren Namen für die Liste und die Karten.
 - Neue Karte: eine vorhandene Karte samt `{ … },` kopieren und darunter einfügen.
 
-**Offen:** Für den Abschnitt „Langzeitschäden und diabetisches Fußsyndrom“ steht in der
+**Offen (KB I):** Für den Abschnitt „Langzeitschäden und diabetisches Fußsyndrom“ steht in der
 Ich-kann-Liste noch ein Platzhalter für den AB-Titel. Sobald er feststeht, in `karten.js`
 `titel: '…'` durch `ab: 'Titel des Arbeitsblatts'` ersetzen.
 
@@ -53,17 +60,19 @@ Ich-kann-Liste noch ein Platzhalter für den AB-Titel. Sobald er feststeht, in `
    In `index.html` und `manifest.json` den Titel anpassen.
 3. In `docs/index.html` eine Zeile für den neuen Kartensatz ergänzen.
 4. QR-Code erzeugen (siehe unten).
+5. Für die automatischen Tests in `tests/lernkarten.test.js` oben bei `SAETZE` eine Zeile ergänzen.
 
 Programmlogik und Gestaltung (`docs/app/`) gelten für alle Kartensätze gemeinsam.
 
 ## QR-Code
 
-`qr/qr_kb1-diabetes.png` zeigt auf die Adresse von KB I – Diabetes mellitus. Neu erzeugen und
-gleich unten in die Ich-kann-Liste setzen:
+`qr/qr_kb1-diabetes.png` und `qr/qr_kb2-beratung.png` zeigen auf die Adressen der Kartensätze.
+Neu erzeugen und gleich unten in die Ich-kann-Liste setzen:
 
 ```
 pip install segno python-docx zxing-cpp pillow
 python werkzeuge/qr_erzeugen.py kb1-diabetes 00_KB1_Ich_kann_Liste_Diabetes_v12.docx
+python werkzeuge/qr_erzeugen.py kb2-beratung KB2_Ich_kann_Liste.docx
 ```
 
 Ergebnis: `…_mit_QR.docx` neben der Originaldatei, das Original bleibt unverändert. Die Ich-kann-Listen
@@ -79,11 +88,12 @@ docs/                       ← alles, was GitHub Pages veröffentlicht
   kb1-diabetes/             ← Kartensatz KB I – Diabetes mellitus
     karten.js               ← ALLE Kartentexte
     index.html, manifest.json, sw.js (Offline-Speicher)
+  kb2-beratung/             ← Kartensatz KB II – Beratung (gleicher Aufbau)
 qr/                         ← QR-Codes (PNG)
 werkzeuge/qr_erzeugen.py    ← erzeugt QR-Codes und setzt sie in die Ich-kann-Liste
 tests/                      ← automatische Tests (siehe tests/README.md)
 ```
 
-Nach größeren Änderungen an `docs/app/` in `docs/kb1-diabetes/sw.js` die Zeile `var VERSION = 'v1';`
+Nach größeren Änderungen an `docs/app/` in jedem `docs/<kartensatz>/sw.js` die Zeile `var VERSION = 'v1';`
 auf `'v2'` usw. erhöhen, dann erneuern alle Handys ihren Offline-Speicher. Textänderungen in
 `karten.js` kommen auch ohne das an, sobald ein Handy Netz hat.

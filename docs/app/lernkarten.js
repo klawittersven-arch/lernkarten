@@ -20,6 +20,8 @@
       <div class="balken" aria-hidden="true"><span class="balken-fuellung" id="gesamt-balken"></span></div>
     </section>
 
+    <p class="hinweis start-hinweis" id="start-hinweis" hidden></p>
+
     <label class="schalter">
       <input type="checkbox" id="mischen">
       <span class="schalter-bahn" aria-hidden="true"></span>
@@ -184,11 +186,12 @@
 
   D.themen.forEach(function (t) {
     var ab = t.ab ? [].concat(t.ab) : null;
-    var name = ab ? ab.join(' / ') : t.titel;
+    // titel (falls angegeben) ersetzt die AB-Titel in der Liste und auf den Karten
+    var name = t.titel || ab.join(' / ');
     var thema = {
       id: 't' + kennung(name),
       name: name,
-      kopf: ab ? 'AB „' + ab.join('“ / „') + '“' : t.titel,
+      kopf: t.titel || 'AB „' + ab.join('“ / „') + '“',
       karten: []
     };
     t.karten.forEach(function (k) {
@@ -293,6 +296,10 @@
     $('marke-rechts').textContent = T.gewusst;
     $('knopf-uebersicht').textContent = T.beenden;
     document.title = 'Lernkarten ' + D.titel;
+    if (D.hinweis) {
+      $('start-hinweis').innerHTML = formatieren(D.hinweis);
+      $('start-hinweis').hidden = false;
+    }
   }
 
   function themenAufbauen() {
@@ -425,7 +432,7 @@
     markenSetzen(0);
     umgedreht = false;
 
-    $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '');
+    $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '') + (k.afb ? ' · AFB ' + k.afb : '');
     $('vorne-text').innerHTML = formatieren(k.vorne);
     var fall = $('vorne-fall');
     fall.hidden = !k.fall;

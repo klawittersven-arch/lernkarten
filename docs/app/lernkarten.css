@@ -114,6 +114,7 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
   margin-bottom: 20px;
 }
 .gesamt-text { margin: 0 0 8px; font-weight: 700; }
+.hinweis.start-hinweis { margin: -4px 0 18px; font-size: 16px; }
 
 .themen-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .themen-kopf h2 { margin: 0 0 6px; font-size: 18px; }

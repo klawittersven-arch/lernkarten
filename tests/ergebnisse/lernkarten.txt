@@ -1,19 +1,43 @@
 
-== Inhalte in karten.js
-  ✓ 13 Themen (Operatoren + 12 Abschnitte der Ich-kann-Liste)
+== Kartensätze in docs/
+  ✓ Kartensätze: kb1-diabetes, kb2-beratung
+
+== Inhalte kb1-diabetes/karten.js
+  ✓ 13 Themen
   ✓ 96 Karten
   ✓ jedes Thema hat einen Titel und Karten
   ✓ jede Karte hat Vorder- und Rückseite
-  ✓ keine zwei Karten mit gleicher Vorderseite
+  ✓ keine zwei Karten mit gleicher Vorder- und Fallseite
   ✓ **fett** und *kursiv* immer paarweise
   ✓ jede Vorderseite nennt einen *kursiven* Operator
-  ✓ Operatoren-Karten in der Reihenfolge der Tabelle
+  ✓ 11 Operatoren-Karten in der Reihenfolge der Tabelle
+  ✓ AFB-Angaben haben die Form „I“, „II“, „I + II“ …
+  ✓ alle 29 Beschriftungen der Oberfläche vorhanden
+  ✓ index.html lädt karten.js und die gemeinsame App, Titel stimmt
+  ✓ manifest.json: Titel und Symbole stimmen
+  ✓ sw.js ist in allen Kartensätzen gleich
+
+== Inhalte kb2-beratung/karten.js
+  ✓ 9 Themen
+  ✓ 95 Karten
+  ✓ jedes Thema hat einen Titel und Karten
+  ✓ jede Karte hat Vorder- und Rückseite
+  ✓ keine zwei Karten mit gleicher Vorder- und Fallseite
+  ✓ **fett** und *kursiv* immer paarweise
+  ✓ jede Vorderseite nennt einen *kursiven* Operator
+  ✓ 12 Operatoren-Karten in der Reihenfolge der Tabelle
+  ✓ AFB-Angaben haben die Form „I“, „II“, „I + II“ …
+  ✓ alle 29 Beschriftungen der Oberfläche vorhanden
+  ✓ index.html lädt karten.js und die gemeinsame App, Titel stimmt
+  ✓ manifest.json: Titel und Symbole stimmen
+  ✓ sw.js ist in allen Kartensätzen gleich
+  ✓ jeder Kartensatz hat einen eigenen speicherName
 
 == Übersicht aller Kartensätze
-  ✓ Übersichtsseite lädt
-  ✓ Link führt zu den Lernkarten KB I
+  ✓ Link führt zu „KB I – Diabetes mellitus“
+  ✓ Link führt zu „KB II – Beratung“
 
-== Bedienung (Handy 390 × 844)
+== Bedienung am Beispiel KB I (Handy 390 × 844)
   ✓ Start: „Alle 96 Karten lernen“
   ✓ Start: 13 Themen zur Auswahl
   ✓ „Keine“: Start-Knopf gesperrt
@@ -48,14 +72,21 @@
   ✓ „Lernstand löschen“ setzt alles zurück
   ✓ keine Cookies
 
-== Alle 96 Karten bei 390 × 844 (helles Design)
+== Besonderheiten KB II (AFB, Hinweis auf der Startseite, kurzer Thementitel)
+  ✓ KB I: kein Hinweiskasten auf der Startseite
+  ✓ KB II: Hinweis „anderer Fall“ auf der Startseite
+  ✓ KB II: Runde mit 95 Karten
+  ✓ Kopfzeile mit AB, Nummer und AFB
+  ✓ langer Abschnitt mit drei ABs erscheint unter seinem kurzen Titel
+
+== kb1-diabetes: alle 96 Karten bei 390 × 844 (helles Design)
   ✓ alle 96 Karten durchgeblättert, danach Ergebnis
   ✓ nie seitlich verschiebbar (kein horizontales Scrollen)
   ✓ „Noch nicht“/„Gewusst“ einzeilig
   ✓ jede Karte passt ohne Scrollen auf den Bildschirm
   ✓ Ergebnis bei allen gewusst: „Alles gewusst – stark!“
 
-== Alle 96 Karten bei 320 × 568 (dunkles Design)
+== kb1-diabetes: alle 96 Karten bei 320 × 568 (dunkles Design)
   ✓ alle 96 Karten durchgeblättert, danach Ergebnis
   ✓ nie seitlich verschiebbar (kein horizontales Scrollen)
   ✓ „Noch nicht“/„Gewusst“ einzeilig
@@ -78,13 +109,83 @@
     hinten: Ich kann eine Blutzuckermessung beurteilen:… (446 px bei 433 px Platz)
   ✓ Ergebnis bei allen gewusst: „Alles gewusst – stark!“
 
-== Offline nach dem ersten Laden
-  ✓ eigener Service Worker des Kartensatzes aktiv, Cache „lernkarten-/lernkarten/kb1-diabetes/-v1“
-  ✓ Offline: Karten lassen sich lernen
+== kb2-beratung: alle 95 Karten bei 390 × 844 (helles Design)
+  ✓ alle 95 Karten durchgeblättert, danach Ergebnis
+  ✓ nie seitlich verschiebbar (kein horizontales Scrollen)
+  ✓ „Noch nicht“/„Gewusst“ einzeilig
+  ✓ jede Karte passt ohne Scrollen auf den Bildschirm
+  ✓ Ergebnis bei allen gewusst: „Alles gewusst – stark!“
+
+== kb2-beratung: alle 95 Karten bei 320 × 568 (dunkles Design)
+  ✓ alle 95 Karten durchgeblättert, danach Ergebnis
+  ✓ nie seitlich verschiebbar (kein horizontales Scrollen)
+  ✓ „Noch nicht“/„Gewusst“ einzeilig
+  (Info) 52 Kartenseiten sind auf dem kleinen Bildschirm länger und lassen sich scrollen:
+    vorne: Wie gehe ich beim Operator vergleichen vor?… (437 px bei 414 px Platz)
+    hinten: Wie gehe ich beim Operator vergleichen vor?… (437 px bei 414 px Platz)
+    vorne: Musterlösung zum Operator vergleichen: Wie lautet eine volls… (476 px bei 414 px Platz)
+    hinten: Musterlösung zum Operator vergleichen: Wie lautet eine volls… (476 px bei 414 px Platz)
+    vorne: Ich kann in einer Gesprächssituation identifizieren, welcher… (525 px bei 414 px Platz)
+    hinten: Ich kann in einer Gesprächssituation identifizieren, welcher… (525 px bei 445 px Platz)
+    vorne: Ich kann eine Pflegesituation einer der vier Formen der Pati… (561 px bei 433 px Platz)
+    hinten: Ich kann eine Pflegesituation einer der vier Formen der Pati… (561 px bei 481 px Platz)
+    vorne: Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schnei… (476 px bei 465 px Platz)
+    hinten: Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schnei… (476 px bei 465 px Platz)
+    vorne: Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schnei… (476 px bei 465 px Platz)
+    hinten: Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schnei… (476 px bei 465 px Platz)
+    vorne: Ich kann im Verhalten einer Pflegefachperson eine gesprächsh… (457 px bei 433 px Platz)
+    hinten: Ich kann im Verhalten einer Pflegefachperson eine gesprächsh… (457 px bei 433 px Platz)
+    vorne: Ich kann in der Aussage einer Pflegefachperson gesprächshemm… (509 px bei 433 px Platz)
+    hinten: Ich kann in der Aussage einer Pflegefachperson gesprächshemm… (509 px bei 433 px Platz)
+    vorne: Ich kann die drei Beratungsansätze vergleichen: Leitfrage, F… (440 px bei 433 px Platz)
+    hinten: Ich kann die drei Beratungsansätze vergleichen: Leitfrage, F… (440 px bei 433 px Platz)
+    vorne: Ich kann beurteilen, welcher Beratungsansatz in dieser Situa… (498 px bei 433 px Platz)
+    hinten: Ich kann beurteilen, welcher Beratungsansatz in dieser Situa… (498 px bei 433 px Platz)
+    vorne: Ich kann für diese Situation einen passenden Gesprächseinsti… (498 px bei 433 px Platz)
+    hinten: Ich kann für diese Situation einen passenden Gesprächseinsti… (498 px bei 433 px Platz)
+    vorne: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (546 px bei 433 px Platz)
+    hinten: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (546 px bei 466 px Platz)
+    vorne: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (467 px bei 466 px Platz)
+    hinten: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (467 px bei 466 px Platz)
+    vorne: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (519 px bei 466 px Platz)
+    hinten: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (519 px bei 466 px Platz)
+    vorne: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (546 px bei 466 px Platz)
+    hinten: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (546 px bei 466 px Platz)
+    vorne: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (467 px bei 466 px Platz)
+    hinten: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (467 px bei 466 px Platz)
+    vorne: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (546 px bei 466 px Platz)
+    hinten: Ich kann ein Beratungsgespräch fallbezogen darstellen und er… (546 px bei 466 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (483 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (483 px bei 433 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (457 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (457 px bei 433 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (483 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (483 px bei 433 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    vorne: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    hinten: Ich kann eine Verhaltensweise einer Pflegefachperson einem B… (509 px bei 433 px Platz)
+    vorne: Ich kann die Aussage einer Pflegefachperson im Hinblick auf … (616 px bei 433 px Platz)
+    hinten: Ich kann die Aussage einer Pflegefachperson im Hinblick auf … (616 px bei 488 px Platz)
+    vorne: Ich kann die Aussage einer Pflegefachperson im Hinblick auf … (616 px bei 488 px Platz)
+    hinten: Ich kann die Aussage einer Pflegefachperson im Hinblick auf … (616 px bei 488 px Platz)
+  ✓ Ergebnis bei allen gewusst: „Alles gewusst – stark!“
+
+== Offline nach dem ersten Laden (beide Kartensätze auf demselben Handy)
+  ✓ kb1-diabetes: eigener Service Worker aktiv
+  ✓ kb2-beratung: eigener Service Worker aktiv
+  ✓ getrennte Offline-Speicher: lernkarten-/lernkarten/kb1-diabetes/-v1, lernkarten-/lernkarten/kb2-beratung/-v1
+  ✓ kb1-diabetes: offline lernbar
+  ✓ kb2-beratung: offline lernbar
 
 == Datenschutz
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole
-  ✓ alle Dateien zusammen 96 KB (< 150 KB)
+  ✓ kb1-diabetes: alle Dateien zusammen 96 KB (< 150 KB)
+  ✓ kb2-beratung: alle Dateien zusammen 99 KB (< 150 KB)
 
-57 von 57 Prüfungen bestanden.
+95 von 95 Prüfungen bestanden.
