@@ -9,7 +9,8 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 | KB I – Diabetes mellitus (Klausur 09.11.2026), 85 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
 | KB II – Beratung (Klausur 09.11.2026), 79 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
 
-Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/
+Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/ ·
+Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 
 ## So funktioniert es für die SuS
 
@@ -18,8 +19,63 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 - Am Ende einer Runde: „x Karten wiederholen“ – so lange, bis alles sitzt.
 - Auf der Startseite: Arbeitsblätter einzeln an- und abwählen, „Karten mischen“, Lernstand pro
   Arbeitsblatt. Eine angefangene Runde lässt sich später fortsetzen.
-- **Datenschutz:** keine Anmeldung, keine Cookies, keine fremden Server oder Schriften. Der
-  Lernstand liegt nur im Browser des Handys. Nach dem ersten Aufruf funktioniert alles auch offline.
+- **Belohnung:** Wer alle Karten eines Satzes 3-mal durchgegangen ist, schaltet eine Runde des
+  Spiels „Diabetes Run!“ frei – siehe unten.
+- **Datenschutz:** keine Anmeldung, keine Cookies, keine fremden Schriften. Der Lernstand liegt nur
+  im Browser des Handys. Nach dem ersten Aufruf funktioniert alles auch offline. Nur wer nach einer
+  Spielrunde seinen Namen einträgt, sendet Name und Punkte an die Highscore-Liste (Ihre Google-Tabelle).
+
+## Spielrunden „Diabetes Run!“ und Highscore-Listen
+
+- **Freischalten:** Jede Karte, die umgedreht und dann bewertet wurde, zählt – egal ob „gewusst“
+  oder „noch nicht“ (Fleiß zählt, nicht Auswendiglernen). Ein Durchgang ist vollständig, wenn jede
+  Karte des Satzes einmal gezählt wurde – in beliebig vielen Runden, gemischt oder nach Themen.
+  Nach 3 Durchgängen gibt es eine Spielrunde, nach 6 die nächste usw. KB I und KB II zählen getrennt.
+  Der Kasten „🎮 Diabetes Run!“ auf der Startseite zeigt den Fortschritt.
+- **Spielen:** Jede freie Runde lässt sich genau einmal spielen. Danach tragen sich die SuS mit
+  Vorname und erstem Buchstaben des Nachnamens ein („Mia S.“).
+- **Highscore:** eine Liste je Kartensatz, je Name zählt die beste Runde. Erreichbar über den
+  unauffälligen Link „🏆 Highscore-Liste“ ganz unten auf jeder Startseite.
+- Ohne Internet erspielte Punkte werden auf dem Handy aufbewahrt und beim nächsten Öffnen der
+  Lernkarten oder der Highscore-Liste nachgetragen.
+
+### Highscore-Liste einrichten (einmalig, ca. 10 Minuten)
+
+1. In Google Drive: **Neu → Google Tabellen → Leere Tabelle**, Name z. B. „Lernkarten Highscore“.
+2. In der Tabelle: **Erweiterungen → Apps Script**.
+3. Den vorhandenen Text (`function myFunction() …`) komplett löschen und den gesamten Inhalt von
+   `werkzeuge/highscore-apps-script.gs` einfügen. In der Zeile `var RESET_SCHLUESSEL = '…'` einen
+   eigenen geheimen Schlüssel eintragen (mindestens 12 Buchstaben/Ziffern). **Speichern** (Diskette).
+4. Oben rechts **Bereitstellen → Neue Bereitstellung**. Beim Zahnrad neben „Typ auswählen“ **Web-App**
+   wählen. *Ausführen als:* **Ich**, *Zugriff:* **Jeder** → **Bereitstellen**.
+5. **Zugriff autorisieren** → Ihr Google-Konto → Hinweis „Google hat diese App nicht überprüft“ →
+   **Erweitert** → **Zu „…“ wechseln (unsicher)** → **Zulassen**. (Die Warnung erscheint bei jedem
+   selbst geschriebenen Skript; es greift nur auf diese eine Tabelle zu.)
+6. Die **Web-App-URL** kopieren (endet auf `/exec`).
+7. In `docs/app/einstellungen.js` die Adresse bei `highscoreAdresse: ''` zwischen die Hochkommas
+   setzen → „Commit changes“. Nach 1–2 Minuten ist die Liste aktiv.
+
+Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentlich.
+
+### Highscore-Liste betreuen
+
+- **Zurücksetzen** (nur mit Ihrem Schlüssel), je Liste ein eigener Link:
+  `https://klawittersven-arch.github.io/lernkarten/highscore/?liste=kb1-diabetes&zuruecksetzen=SCHLÜSSEL`
+  bzw. `…?liste=kb2-beratung&zuruecksetzen=SCHLÜSSEL`. Die Seite fragt noch einmal nach und entfernt
+  den Schlüssel sofort aus der Adresszeile.
+- **Einzelne Einträge löschen:** in der Google-Tabelle die Zeile löschen. Jedes Kartenset hat ein
+  eigenes Tabellenblatt (`kb1-diabetes`, `kb2-beratung`), jede Zeile ist eine gespielte Runde.
+  Versehentlich zurückgesetzt? *Datei → Versionsverlauf* in der Tabelle.
+- **Gespeichert** werden nur Zeitpunkt, Name („Mia S.“), Punkte und zwei Zufallskennungen
+  (Gerät, Runde – gegen doppelte Einträge und Massen-Einträge).
+- **Skript geändert?** *Bereitstellen → Bereitstellungen verwalten → Stift → Version: Neue Version →
+  Bereitstellen* – die Adresse bleibt gleich.
+- **Einstellungen** in `docs/app/einstellungen.js`: Durchgänge pro Spielrunde (`durchgaengeProSpiel`),
+  Spiel aus-/einschalten (`spielAn`), Namensfilter (`sperrwoerter`), alle Texte rund ums Spiel und
+  die „Wusstest du?“-Sätze.
+- **Grenzen:** Alles läuft auf dem Handy. Technisch versierte SuS könnten Freischaltung oder Punkte
+  manipulieren; das Skript lehnt unplausible Werte ab (z. B. mehr als 20 000 Punkte, mehr als
+  15 Einträge pro Stunde und Gerät), unpassende Einträge löschen Sie in der Tabelle.
 
 ## Karten ändern
 
@@ -84,13 +140,17 @@ selbst liegen bewusst nicht in diesem Repository, denn es ist öffentlich.
 docs/                       ← alles, was GitHub Pages veröffentlicht
   index.html                ← Übersicht aller Kartensätze
   app/                      ← gemeinsame Programmlogik und Gestaltung
-    lernkarten.js, lernkarten.css, icon-192.png, icon-512.png
+    einstellungen.js        ← Spielrunden und Highscore: Einstellungen und Texte
+    lernkarten.js, lernkarten.css, highscore.js, icon-192.png, icon-512.png
+  spiel/                    ← „Diabetes Run!“ (spiel/?satz=kb1-diabetes)
+  highscore/                ← Highscore-Listen (highscore/?liste=kb1-diabetes)
   kb1-diabetes/             ← Kartensatz KB I – Diabetes mellitus
     karten.js               ← ALLE Kartentexte
     index.html, manifest.json, sw.js (Offline-Speicher)
   kb2-beratung/             ← Kartensatz KB II – Beratung (gleicher Aufbau)
 qr/                         ← QR-Codes (PNG)
 werkzeuge/qr_erzeugen.py    ← erzeugt QR-Codes und setzt sie in die Ich-kann-Liste
+werkzeuge/highscore-apps-script.gs ← Skript für die Google-Tabelle (Highscore)
 tests/                      ← automatische Tests (siehe tests/README.md)
 ```
 

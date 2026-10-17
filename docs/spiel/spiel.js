@@ -1,0 +1,908 @@
+/* „Diabetes Run!“ – eine Spielrunde als Belohnung für fleißiges Lernen mit den Lernkarten.
+ * Je Freischaltung genau eine Runde, danach Eintrag in die Highscore-Liste des Kartensatzes.
+ * Aufruf: spiel/?satz=kb1-diabetes · Einstellungen und Texte: ../app/einstellungen.js
+ * Das Spiel selbst läuft vollständig auf dem Gerät. */
+(function () {
+  'use strict';
+
+  var LK = window.LK;
+  var T = LK.T;
+  var E = LK.E;
+  var TEST = window.__SPIEL_TEST || {};
+
+  function el(tag, klasse, text) {
+    var e = document.createElement(tag);
+    if (klasse) e.className = klasse;
+    if (text !== undefined && text !== null) e.textContent = text;
+    return e;
+  }
+
+  var SATZ = '';
+  try { SATZ = new URLSearchParams(location.search).get('satz') || ''; } catch (e) { /* alter Browser */ }
+  var L = LK.liste(SATZ);
+
+  function sitzungLesen(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+  function sitzungSchreiben(k, w) { try { sessionStorage.setItem(k, w); } catch (e) { /* egal */ } }
+
+  var BEST = 'lernkarten:' + SATZ + ':spiel-best';
+  function persoenlicheBest() {
+    try { var n = JSON.parse(localStorage.getItem(BEST)); return typeof n === 'number' ? n : 0; } catch (e) { return 0; }
+  }
+  function bestSetzen(p) { try { localStorage.setItem(BEST, JSON.stringify(p)); } catch (e) { /* egal */ } }
+
+  /* =====================================================================
+     Bildschirme (außerhalb des Laufs)
+     ===================================================================== */
+  var body = document.body;
+  var panel = document.getElementById('panel');
+  var steuerung = document.getElementById('steuerung');
+  var pauseHinweis = document.getElementById('pause-hinweis');
+  var knopfDucken = document.getElementById('knopf-ducken');
+  var knopfSpringen = document.getElementById('knopf-springen');
+  knopfDucken.textContent = T.knopfDucken;
+  knopfSpringen.textContent = T.knopfSpringen;
+  pauseHinweis.textContent = T.pausiert;
+  document.title = T.titel;
+
+  var bildschirm = '';
+
+  function panelLeeren() {
+    panel.textContent = '';
+    var innen = el('div', 'panel-innen');
+    panel.appendChild(innen);
+    panel.scrollTop = 0;
+    return innen;
+  }
+
+  function knopf(text, klasse, fn) {
+    var b = el('button', 'knopf' + (klasse ? ' ' + klasse : ''), text);
+    b.type = 'button';
+    b.addEventListener('click', fn);
+    return b;
+  }
+
+  function linkKnopf(text, href, klasse) {
+    var a = el('a', 'knopf' + (klasse ? ' ' + klasse : ''), text);
+    a.href = href;
+    return a;
+  }
+
+  function kleineLinks(p) {
+    var links = el('div', 'links');
+    var h = el('a', 'klein-link', T.highscoreAnsehen);
+    h.href = '../highscore/?liste=' + encodeURIComponent(SATZ);
+    h.id = 'link-highscore';
+    var z = el('a', 'klein-link', T.zuDenLernkarten);
+    z.href = '../' + L.ordner + '/';
+    z.id = 'link-lernkarten';
+    links.appendChild(h);
+    links.appendChild(z);
+    p.appendChild(links);
+  }
+
+  function menueModus(name) {
+    bildschirm = name;
+    body.classList.remove('lauf');
+    body.classList.add('menue');
+    steuerung.hidden = true;
+    pauseHinweis.hidden = true;
+    groesseAnpassen();
+  }
+
+  // Es gibt nur eine Spielfigur: die Krankenschwester
+  var FIGUR = 'schwester';
+
+  function kopfZeile(p) {
+    var kopf = el('div', 'start-kopf');
+    var logo = el('img', 'schullogo');
+    logo.src = 'logo-kbs.png';
+    logo.alt = T.logoAlt;
+    kopf.appendChild(logo);
+    kopf.appendChild(el('h1', null, T.titel));
+    p.appendChild(kopf);
+  }
+
+  function zeigeUnbekannt() {
+    menueModus('gesperrt');
+    var p = panelLeeren();
+    kopfZeile(p);
+    p.appendChild(el('p', null, T.unbekannt));
+    p.appendChild(linkKnopf(T.zurUebersicht, '../'));
+    szeneZeichnen();
+  }
+
+  function zeigeGesperrt() {
+    menueModus('gesperrt');
+    var p = panelLeeren();
+    kopfZeile(p);
+    p.appendChild(el('h2', null, T.gesperrtTitel));
+    p.appendChild(el('p', null, LK.ersetzen(T.gesperrt, { satz: L.titel, n: E.durchgaengeProSpiel || 3 })));
+    p.appendChild(linkKnopf(T.zuDenLernkarten, '../' + L.ordner + '/'));
+    var h = el('a', 'klein-link', T.highscoreAnsehen);
+    h.href = '../highscore/?liste=' + encodeURIComponent(SATZ);
+    p.appendChild(h);
+    szeneZeichnen();
+  }
+
+  function freiText(n) {
+    return LK.ersetzen(n === 1 ? T.freiEine : T.freiMehr, { x: n, satz: L.kurz });
+  }
+
+  function zeigeStart() {
+    var frei = LK.Runden.frei(SATZ);
+    if (frei <= 0) { zeigeGesperrt(); return; }
+    menueModus('start');
+    var p = panelLeeren();
+    kopfZeile(p);
+    p.appendChild(el('p', null, T.spielidee));
+    var f = el('p', 'frei', freiText(frei));
+    f.id = 'frei';
+    p.appendChild(f);
+    if (persoenlicheBest() > 0) p.appendChild(el('p', null, LK.ersetzen(T.bestleistung, { x: persoenlicheBest() })));
+    var los = knopf(T.los, '', laufStarten);
+    los.id = 'knopf-los';
+    p.appendChild(los);
+    p.appendChild(el('p', 'steuer-info', T.losHinweis + ' ' + T.steuerungHandy + ' ' + T.steuerungTastatur));
+    kleineLinks(p);
+    figurenBauen();
+    szeneZeichnen();
+  }
+
+  var endeZeit = 0;
+  function zeigeEnde(punkte, neu) {
+    menueModus('ende');
+    endeZeit = performance.now();
+    var p = panelLeeren();
+    p.appendChild(el('h2', null, T.gameOver));
+    var g = el('p', 'gross', LK.ersetzen(T.punkte, { x: punkte }));
+    g.id = 'ergebnis-punkte';
+    p.appendChild(g);
+    if (neu) p.appendChild(el('p', 'neu-best', T.neueBestleistung));
+    p.appendChild(el('p', null, LK.ersetzen(T.bestleistung, { x: persoenlicheBest() })));
+    eintragenBereich(p, punkte);
+    var frei = LK.Runden.frei(SATZ);
+    if (frei > 0) {
+      var nochmal = knopf(LK.ersetzen(T.nochmal, { x: frei }), 'knopf-zweit', laufStarten);
+      nochmal.id = 'knopf-nochmal';
+      p.appendChild(nochmal);
+    }
+    var liste = (E.wusstestDu && E.wusstestDu[SATZ]) || [];
+    if (liste.length) {
+      var w = el('div', 'wusstest');
+      w.appendChild(el('strong', null, T.wusstestDuUeberschrift));
+      w.appendChild(el('span', null, liste[Math.floor(Math.random() * liste.length)]));
+      p.appendChild(w);
+    }
+    kleineLinks(p);
+  }
+
+  /* ---------- Eintragen in die Highscore-Liste ---------- */
+  function eintragenBereich(p, punkte) {
+    var box = el('section', 'eintragen');
+    box.id = 'eintragen';
+    box.appendChild(el('h3', null, T.eintragenTitel));
+    var form = el('form');
+    form.setAttribute('novalidate', '');
+    var zeile = el('div', 'name-zeile');
+    var gespeichert = LK.nameLesen() || {};
+
+    function feldBauen(id, beschriftung, laenge, wert) {
+      var huelle = el('div', 'feld-huelle');
+      var label = el('label', null, beschriftung);
+      label.setAttribute('for', id);
+      var feld = el('input', 'feld');
+      feld.id = id;
+      feld.type = 'text';
+      feld.maxLength = laenge;
+      feld.value = wert || '';
+      feld.setAttribute('spellcheck', 'false');
+      feld.autocomplete = 'off';
+      huelle.appendChild(label);
+      huelle.appendChild(feld);
+      zeile.appendChild(huelle);
+      return feld;
+    }
+    var vorname = feldBauen('vorname', T.vorname, 20, gespeichert.vorname);
+    vorname.setAttribute('autocapitalize', 'words');
+    var initial = feldBauen('initial', T.initial, 1, gespeichert.initial);
+    initial.setAttribute('autocapitalize', 'characters');
+    initial.parentNode.classList.add('feld-initial');
+    form.appendChild(zeile);
+    var fehler = el('p', 'fehler');
+    fehler.setAttribute('role', 'alert');
+    form.appendChild(fehler);
+    form.appendChild(el('p', 'klein', T.nameHinweis));
+    var senden = knopf(T.eintragen, '', function () {});
+    senden.type = 'submit';
+    senden.id = 'knopf-eintragen';
+    form.appendChild(senden);
+    var nicht = el('button', 'klein-link', T.nichtEintragen);
+    nicht.type = 'button';
+    nicht.id = 'knopf-nicht-eintragen';
+    form.appendChild(nicht);
+    box.appendChild(form);
+    p.appendChild(box);
+
+    function meldung(text, art) {
+      var m = el('p', 'meldung' + (art ? ' ' + art : ''), text);
+      m.id = 'eintrag-meldung';
+      m.setAttribute('role', 'status');
+      return m;
+    }
+
+    nicht.addEventListener('click', function () {
+      box.replaceChild(meldung(T.nichtEingetragen, ''), form);
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var fehlerArt = LK.namePruefen(vorname.value, initial.value);
+      if (fehlerArt) {
+        fehler.textContent = fehlerArt === 'initial' ? T.fehlerInitial : (fehlerArt === 'wort' ? T.fehlerWort : T.fehlerVorname);
+        (fehlerArt === 'initial' ? initial : vorname).focus();
+        return;
+      }
+      LK.nameSpeichern(vorname.value, initial.value);
+      var name = LK.anzeigeName(vorname.value, initial.value);
+      var warte = meldung(T.wirdEingetragen, '');
+      box.replaceChild(warte, form);
+      LK.eintragen(SATZ, name, punkte).then(function (r) {
+        var text, art = 'gut';
+        if (r && r.ok) text = r.platz ? LK.ersetzen(T.eingetragen, { x: r.platz, satz: L.kurz }) : T.eingetragenOhnePlatz;
+        else if (r && r.ausstehend) { text = r.nichtEingerichtet ? T.nichtEingerichtet : T.ausstehend; art = 'warten'; }
+        else { text = T.abgelehnt + (r && r.fehler ? ' (' + r.fehler + ')' : ''); art = 'warten'; }
+        box.replaceChild(meldung(text, art), warte);
+      });
+    });
+  }
+
+  /* =====================================================================
+     Spiel: Konstanten, Grafiken, Objekte
+     ===================================================================== */
+  var B = 320, H = 180;          // interne Auflösung
+  var BODEN = 160;               // Fußlinie
+  var SPIELER_X = 36;
+  var DT = 1 / 120;              // feste Zeitschrittweite der Physik
+  var SCHWERKRAFT = 1500;
+  var SPRUNG_V = 430;
+  var DOPPELSPRUNG_V = 380;
+  var V_START = 150, V_MAX = 900;
+
+  /* Schwierigkeit: Die ersten 30 Sekunden sind gemütlich (fast alle schaffen sie).
+     Danach steigen Tempo, Dichte und Gemeinheit rasant, sodass ein Lauf praktisch
+     nie länger als 2 Minuten dauert. */
+  var LEICHT_BIS = 30;          // Sekunden
+  var SCHLUSS_AB = 100;         // ab hier ist jeder Lauf nach wenigen Hindernissen zu Ende
+  function tempoBei(t) {
+    if (t < LEICHT_BIS) return V_START + 2 * t;                       // 150 → 210 px/s
+    return Math.min(V_MAX, V_START + 2 * LEICHT_BIS + 9 * (t - LEICHT_BIS)); // +9 px/s pro Sekunde
+  }
+  // 0 = leicht, 1 = volle Härte (erreicht nach 90 Sekunden)
+  function haerte() {
+    return sp.zeit < LEICHT_BIS ? 0 : Math.min(1, (sp.zeit - LEICHT_BIS) / 60);
+  }
+
+  var leinwand = document.getElementById('leinwand');
+  var rahmen = document.getElementById('rahmen');
+  var ctx = leinwand.getContext('2d', { alpha: false });
+  ctx.imageSmoothingEnabled = false;
+
+  var bilder = {};
+  var figurBilder = { lauf1: null, lauf2: null, lauf3: null, sprung: null, ducken: null };
+  var LAUF_FOLGE = ['lauf1', 'lauf2', 'lauf3', 'lauf2'];
+  var laufBilder = [null, null, null, null];
+
+  function figurenBauen() {
+    if (figurBilder.lauf1) return;
+    Object.keys(figurBilder).forEach(function (pose) { figurBilder[pose] = PIXEL.figur(FIGUR, pose, 1); });
+    for (var i = 0; i < 4; i++) laufBilder[i] = figurBilder[LAUF_FOLGE[i]];
+  }
+
+  function grafikenBauen() {
+    Object.keys(PIXEL.GRAFIK).forEach(function (n) { bilder[n] = PIXEL.rasterZeichnen(PIXEL.GRAFIK[n], 1); });
+    bilder.ziffern = PIXEL.ziffernblatt('#16262A');
+    bilder.schwarm1 = schwarmBauen(bilder.wespe1, bilder.wespe2);
+    bilder.schwarm2 = schwarmBauen(bilder.wespe2, bilder.wespe1);
+    bilder.schwarm = bilder.schwarm1;
+    bilder.hintergrund = hintergrundBauen();
+    bilder.strasse = strasseBauen();
+  }
+
+  // Wespenschwarm: senkrechte Säule von Kopfhöhe bis über die höchste Sprunghöhe
+  // (auch mit Doppelsprung) – man kann nicht darüberspringen, nur darunter ducken.
+  function schwarmBauen(a, b) {
+    var hoehe = BODEN - 19 - 8;          // von 8 px unter dem oberen Rand bis Kopfhöhe
+    var c = PIXEL.leinwand(16, hoehe);
+    var g = c.getContext('2d');
+    for (var y = hoehe - 7, i = 0; y >= 0; y -= 11, i++) {
+      g.drawImage(i % 2 ? b : a, i % 2 ? 4 : 0, y);
+    }
+    return c;
+  }
+
+  // Hintergrund (Himmel, Hügel mit Weinbergen, Dörfer) einmal vorzeichnen.
+  // 640 px breit und nach 320 px wiederholend, damit er nur verschoben wird.
+  function hintergrundBauen() {
+    var bb = 640, hh = 150;
+    var c = PIXEL.leinwand(bb, hh);
+    var g = c.getContext('2d');
+    var bild = g.createImageData(bb, hh);
+    var d = bild.data;
+    function rgb(hex) { return [parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)]; }
+    var HIMMEL = rgb('#CFE5EC'), FERN = rgb('#A5C59A'), NAH = rgb('#7FA86A'), REIHE = rgb('#5F8A4E'),
+      WIESE = rgb('#8DBA62'), WAND = rgb('#F2EEE6'), DACH = rgb('#B5523B');
+    function setzen(x, y, f) {
+      var i = (y * bb + x) * 4;
+      d[i] = f[0]; d[i + 1] = f[1]; d[i + 2] = f[2]; d[i + 3] = 255;
+    }
+    var P = 2 * Math.PI / 320;
+    for (var x = 0; x < bb; x++) {
+      var fern = Math.round(78 + 10 * Math.sin(x * P) + 6 * Math.sin(x * P * 3 + 1));
+      var nah = Math.round(104 + 12 * Math.sin(x * P * 2 + 2) + 5 * Math.sin(x * P * 5));
+      for (var y = 0; y < hh; y++) {
+        var f = HIMMEL;
+        if (y >= 138) f = WIESE;
+        else if (y >= nah) f = ((y - nah + Math.floor((x % 320) / 3)) % 5 === 0 && y > nah + 1) ? REIHE : NAH;
+        else if (y >= fern) f = FERN;
+        setzen(x, y, f);
+      }
+    }
+    // kleine Dörfer an den Hängen (wiederholen sich alle 320 px)
+    var haeuser = [[40, 0], [52, 1], [61, 0], [150, 1], [258, 0], [268, 1]];
+    for (var k = 0; k < 2; k++) {
+      haeuser.forEach(function (hs) {
+        var hx = hs[0] + k * 320;
+        var basis = Math.round(78 + 10 * Math.sin(hx * P) + 6 * Math.sin(hx * P * 3 + 1)) + 3;
+        for (var yy = 0; yy < 5; yy++) for (var xx = 0; xx < 7; xx++) setzen(hx + xx, basis - yy, WAND);
+        for (var yr = 0; yr < 3; yr++) for (var xr = yr; xr < 7 - yr; xr++) setzen(hx + xr, basis - 5 - yr, DACH);
+        if (hs[1]) for (var yt = 0; yt < 6; yt++) { setzen(hx + 3, basis - 8 - yt, WAND); }
+      });
+    }
+    g.putImageData(bild, 0, 0);
+    return c;
+  }
+
+  // Straße mit Mittelstreifen (40 px Muster), 360 px breit zum Verschieben
+  function strasseBauen() {
+    var c = PIXEL.leinwand(360, 30);
+    var g = c.getContext('2d');
+    g.fillStyle = '#6E7377'; g.fillRect(0, 0, 360, 30);
+    g.fillStyle = '#A8ADB0'; g.fillRect(0, 0, 360, 2);
+    g.fillStyle = '#5C6064'; g.fillRect(0, 28, 360, 2);
+    g.fillStyle = '#F4F4F4';
+    for (var x = 0; x < 360; x += 40) g.fillRect(x, 16, 18, 2);
+    return c;
+  }
+
+  // Objekt-Vorrat: höchstens 6 Objekte, werden wiederverwendet
+  var MAX_OBJEKTE = 8;
+  var objekte = [];
+  for (var oi = 0; oi < MAX_OBJEKTE; oi++) {
+    objekte.push({ aktiv: false, art: '', x: 0, y: 0, b: 0, h: 0, rand: 0 });
+  }
+
+  var ARTEN = [
+    // name, Wahrscheinlichkeit, in der Luft?
+    { name: 'kuchen', anteil: 0.24, luft: false, rand: 1 },
+    { name: 'weinkiste', anteil: 0.2, luft: false, rand: 1 },
+    { name: 'rollator', anteil: 0.18, luft: false, rand: 2 },
+    { name: 'pflegewagen', anteil: 0.14, luft: false, rand: 1 },
+    { name: 'schwarm', anteil: 0.24, luft: true, rand: 1 }
+  ];
+
+  /* ---------- Spielzustand (keine neuen Objekte während des Laufs) ---------- */
+  var sp = {
+    y: 0, vy: 0, amBoden: true, duckt: false,
+    sprungGedrueckt: false, sprungPuffer: 0, spruenge: 0,
+    v: V_START, zeit: 0, strecke: 0, naechstes: 0, anzahl: 0, aus: false
+  };
+  var eingabe = { springen: false, ducken: false, springenNeu: false };
+
+  function laufZuruecksetzen() {
+    sp.y = BODEN; sp.vy = 0; sp.amBoden = true; sp.duckt = false;
+    sp.sprungPuffer = 0; sp.spruenge = 0; sp.v = V_START; sp.zeit = 0; sp.strecke = 0;
+    sp.naechstes = 260; sp.anzahl = 0; sp.aus = false;
+    eingabe.springen = false; eingabe.ducken = false; eingabe.springenNeu = false;
+    for (var i = 0; i < MAX_OBJEKTE; i++) objekte[i].aktiv = false;
+  }
+
+  function freiesObjekt() {
+    for (var i = 0; i < MAX_OBJEKTE; i++) if (!objekte[i].aktiv) return objekte[i];
+    return null;
+  }
+
+  function objektSetzen(o, artName, x, luft, randPx) {
+    var bild = bilder[artName];
+    o.aktiv = true;
+    o.art = artName;
+    o.b = bild.width;
+    o.h = bild.height;
+    o.rand = randPx;
+    o.x = x;
+    // Flugobjekte enden unten 19 px über dem Boden: im Stehen getroffen, geduckt frei
+    o.y = luft ? BODEN - 19 - o.h : BODEN - o.h;
+  }
+
+  // Schlagloch in der Straße: nur mit einem Sprung zu überwinden
+  function lochSetzen(o, x, breite) {
+    o.aktiv = true;
+    o.art = 'loch';
+    o.b = breite;
+    o.h = 24;
+    o.rand = 0;
+    o.x = x;
+    o.y = BODEN - 4;
+  }
+
+  // KBS-Lkw: lang und hoch. Ein einfacher Sprung reicht bei keinem Tempo,
+  // ein Doppelsprung am höchsten Punkt schon (Länge wächst mit dem Tempo).
+  function lkwSetzen(o, x) {
+    o.aktiv = true;
+    o.art = 'lkw';
+    o.b = Math.max(72, Math.round(sp.v * 0.5));
+    o.h = 42;
+    o.rand = 2;
+    o.x = x;
+    o.y = BODEN - 42;
+  }
+
+  function hindernisErzeugen() {
+    var o = freiesObjekt();
+    if (!o) return;
+    var h = haerte();
+    var x = B + 4;
+    sp.anzahl++;
+
+    // Schlussphase: Bodenhindernis mit Wespenschwarm direkt dahinter – im Sprung
+    // trifft man den Schwarm, geduckt das Hindernis. So endet jeder Lauf vor 2 Minuten.
+    if (sp.zeit >= SCHLUSS_AB) {
+      objektSetzen(o, 'weinkiste', x, false, 1);
+      var w = freiesObjekt();
+      if (w) {
+        objektSetzen(w, 'schwarm', o.x + o.b + sp.v * 0.1, true, 1);
+        o = w;
+      }
+    } else if (sp.zeit >= LEICHT_BIS && Math.random() < 0.14) {
+      lkwSetzen(o, x);
+    } else if (sp.zeit >= LEICHT_BIS && Math.random() < 0.15 + 0.25 * h) {
+      lochSetzen(o, x, Math.round(26 + Math.random() * (14 + 46 * h)));
+    } else {
+      var r = Math.random();
+      var art = ARTEN[0];
+      var summe = 0;
+      // Die ersten drei Hindernisse sind immer am Boden (zum Eingewöhnen)
+      r *= sp.anzahl <= 3 ? 0.76 : 1;
+      for (var i = 0; i < ARTEN.length; i++) {
+        summe += ARTEN[i].anteil;
+        if (r < summe) { art = ARTEN[i]; break; }
+      }
+      objektSetzen(o, art.name, x, art.luft, art.rand);
+
+      // Ab 30 Sekunden: gemeine Kombinationen (Hindernis + Wespe oder Loch direkt dahinter)
+      if (!art.luft && sp.zeit >= LEICHT_BIS && Math.random() < 0.15 + 0.35 * h) {
+        var k = freiesObjekt();
+        if (k) {
+          var nah = o.x + o.b + sp.v * (0.42 - 0.12 * h);
+          if (Math.random() < 0.5) objektSetzen(k, 'schwarm', nah + sp.v * 0.08, true, 1);
+          else lochSetzen(k, nah, Math.round(24 + Math.random() * 20));
+          o = k;
+        }
+      }
+    }
+
+    // Abstand zum nächsten Hindernis: wird nach 30 Sekunden immer knapper
+    var abstand = Math.max(110, sp.v * (0.85 - 0.4 * h)) + Math.random() * sp.v * (0.9 - 0.65 * h);
+    sp.naechstes = (o.x - B - 4) + abstand + o.b;
+  }
+
+  function trifft(o) {
+    var x1, x2, y1, y2;
+    if (sp.duckt && sp.amBoden) {
+      x1 = SPIELER_X + 2; x2 = SPIELER_X + 14; y1 = sp.y - 13; y2 = sp.y - 1;
+    } else {
+      x1 = SPIELER_X + 4; x2 = SPIELER_X + 12; y1 = sp.y - 22; y2 = sp.y - 1;
+    }
+    return x1 < o.x + o.b - o.rand && x2 > o.x + o.rand && y1 < o.y + o.h - o.rand && y2 > o.y + o.rand;
+  }
+
+  // Ein Physik-Schritt mit fester Länge DT
+  function schritt() {
+    sp.zeit += DT;
+    sp.v = tempoBei(sp.zeit);
+    var weg = sp.v * DT;
+    sp.strecke += weg;
+
+    // Springen: am Boden normal, in der Luft einmal Doppelsprung.
+    // Kurz vor der Landung gedrückt → Sprung direkt nach der Landung.
+    if (eingabe.springenNeu) {
+      eingabe.springenNeu = false;
+      if (!sp.amBoden && sp.spruenge < 2 && !(sp.vy > 0 && sp.y > BODEN - 8)) {
+        sp.vy = -DOPPELSPRUNG_V; sp.spruenge = 2;
+      } else {
+        sp.sprungPuffer = 0.12;
+      }
+    }
+    if (sp.sprungPuffer > 0) {
+      if (sp.amBoden) {
+        sp.vy = -SPRUNG_V; sp.amBoden = false; sp.sprungPuffer = 0; sp.spruenge = 1;
+      } else {
+        sp.sprungPuffer -= DT;
+      }
+    }
+    if (!sp.amBoden) {
+      sp.vy += SCHWERKRAFT * (eingabe.ducken ? 2.5 : 1) * DT;
+      sp.y += sp.vy * DT;
+      if (sp.y >= BODEN) { sp.y = BODEN; sp.vy = 0; sp.amBoden = true; sp.spruenge = 0; }
+    }
+    sp.duckt = eingabe.ducken;
+
+    // Objekte bewegen
+    for (var i = 0; i < MAX_OBJEKTE; i++) {
+      var o = objekte[i];
+      if (!o.aktiv) continue;
+      o.x -= weg;
+      if (o.x + o.b < -2) { o.aktiv = false; continue; }
+      if (o.art === 'loch') {
+        // Füße vollständig über dem Loch und am Boden → hineingefallen
+        if (sp.amBoden && SPIELER_X + 5 > o.x + 1 && SPIELER_X + 11 < o.x + o.b - 1 && !TEST.unverwundbar) {
+          sp.aus = true;
+          sp.y = BODEN + 8;
+        }
+      } else if (trifft(o)) {
+        if (!TEST.unverwundbar) sp.aus = true;
+      }
+    }
+
+    sp.naechstes -= weg;
+    if (sp.naechstes <= 0) hindernisErzeugen();
+  }
+
+  function punkte() { return Math.floor(sp.strecke / 8); }
+
+  /* ---------- Zeichnen (nur Kopieren vorgezeichneter Bilder) ---------- */
+  var sparmodus = false;
+
+  function zahlZeichnen(zahl, rechts, y) {
+    var x = rechts;
+    do {
+      var z = zahl % 10;
+      x -= 8;
+      ctx.drawImage(bilder.ziffern, z * 4, 0, 3, 5, x, y, 6, 10);
+      zahl = Math.floor(zahl / 10);
+    } while (zahl > 0);
+  }
+
+  function lkwZeichnen(o) {
+    var lx = Math.round(o.x), oben = BODEN - 42, kasten = o.b - 20;
+    ctx.drawImage(bilder.lkwKabine, lx, oben);
+    ctx.fillStyle = '#2B2B2B';
+    ctx.fillRect(lx + 20, oben, kasten, 36);
+    ctx.fillStyle = '#F4F6F7';
+    ctx.fillRect(lx + 20, oben + 1, kasten - 1, 34);
+    ctx.fillStyle = '#3F6C72';
+    ctx.fillRect(lx + 20, oben + 28, kasten - 1, 4);
+    if (kasten >= 40) {
+      ctx.drawImage(bilder.lkwSchrift, 0, 0, 17, 7, lx + 20 + ((kasten - 34) >> 1), oben + 8, 34, 14);
+    }
+    ctx.drawImage(bilder.lkwRad, lx + 4, BODEN - 10);
+    ctx.drawImage(bilder.lkwRad, lx + o.b - 14, BODEN - 10);
+    if (o.b > 120) ctx.drawImage(bilder.lkwRad, lx + o.b - 26, BODEN - 10);
+  }
+
+  function zeichnen() {
+    var hgX = sparmodus ? 0 : Math.floor(sp.strecke * 0.25) % 320;
+    ctx.drawImage(bilder.hintergrund, hgX, 0, B, 150, 0, 0, B, 150);
+    ctx.drawImage(bilder.strasse, Math.floor(sp.strecke) % 40, 0, B, 30, 0, 150, B, 30);
+
+    var fluegel = !sparmodus && (Math.floor(sp.zeit * 12) & 1) === 1;
+    for (var i = 0; i < MAX_OBJEKTE; i++) {
+      var o = objekte[i];
+      if (!o.aktiv) continue;
+      if (o.art === 'loch') {
+        var lx = Math.round(o.x);
+        ctx.fillStyle = '#3A3F43';
+        ctx.fillRect(lx - 1, 155, o.b + 2, 1);
+        ctx.fillStyle = '#1C1F22';
+        ctx.fillRect(lx, 156, o.b, 24);
+        ctx.fillStyle = '#F2A30F';
+        ctx.fillRect(lx - 3, 150, 2, 6);
+        ctx.fillRect(lx + o.b + 1, 150, 2, 6);
+        continue;
+      }
+      if (o.art === 'lkw') { lkwZeichnen(o); continue; }
+      var bild = o.art === 'schwarm' ? (fluegel ? bilder.schwarm2 : bilder.schwarm1) : bilder[o.art];
+      ctx.drawImage(bild, Math.round(o.x), Math.round(o.y));
+    }
+
+    var fb;
+    if (!sp.amBoden) fb = figurBilder.sprung;
+    else if (sp.duckt) fb = figurBilder.ducken;
+    else fb = sparmodus ? figurBilder.lauf1 : laufBilder[Math.floor(sp.strecke / 12) & 3];
+    ctx.drawImage(fb, SPIELER_X, Math.round(sp.y) - 24);
+
+    // Punkte oben rechts
+    ctx.fillStyle = '#EAF2F4';
+    ctx.fillRect(B - 64, 4, 60, 14);
+    zahlZeichnen(punkte(), B - 6, 6);
+  }
+
+  // Ruhiges Standbild für die Menüs
+  function szeneZeichnen() {
+    if (!bilder.hintergrund) return;
+    figurenBauen();
+    var war = sp.aus;
+    if (bildschirm !== 'ende') {
+      laufZuruecksetzen();
+      sp.aus = war;
+    }
+    ctx.drawImage(bilder.hintergrund, 0, 0, B, 150, 0, 0, B, 150);
+    ctx.drawImage(bilder.strasse, 0, 0, B, 30, 0, 150, B, 30);
+    if (bildschirm === 'ende') { zeichnen(); return; }
+    ctx.drawImage(figurBilder.lauf2, SPIELER_X, BODEN - 24);
+    ctx.drawImage(bilder.kuchen, 150, BODEN - bilder.kuchen.height);
+    ctx.drawImage(bilder.schwarm1, 262, BODEN - 19 - bilder.schwarm1.height);
+  }
+
+  /* =====================================================================
+     Hauptschleife: feste Physik, höchstens 60 (Sparmodus 30) Bilder/s
+     ===================================================================== */
+  var laeuft = false;
+  var pausiert = false;
+  var letzteZeit = 0, akku = 0, naechstesBild = 0, intervall = 1000 / 60;
+  var messStart = 0, messBilder = 0, schlechteFenster = 0, messFenster = 0;
+  var diag = { fps: 0, bilder: 0, sparmodus: false, fpsVerlauf: [], schritte: 0,
+    abstaende: new Float32Array(1024), abstandNr: 0, letztesBild: 0 };
+
+  function schleife(jetzt) {
+    if (!laeuft) return;
+    requestAnimationFrame(schleife);
+    if (pausiert) return;
+    if (jetzt < naechstesBild - 2) return;
+    naechstesBild += intervall;
+    if (jetzt - naechstesBild > intervall) naechstesBild = jetzt + intervall;
+
+    var dt = (jetzt - letzteZeit) / 1000;
+    letzteZeit = jetzt;
+    if (dt > 0.25) dt = 0.25;
+    if (dt < 0) dt = 0;
+    akku += dt;
+    while (akku >= DT) {
+      schritt();
+      diag.schritte++;
+      akku -= DT;
+      if (sp.aus) break;
+    }
+    zeichnen();
+    diag.bilder++;
+    if (diag.letztesBild) diag.abstaende[diag.abstandNr++ & 1023] = jetzt - diag.letztesBild;
+    diag.letztesBild = jetzt;
+    messen(jetzt);
+    if (sp.aus) laufEnde();
+  }
+
+  // Bildrate messen; dauerhaft unter 40 Bildern/s → Sparmodus
+  function messen(jetzt) {
+    messBilder++;
+    var dauer = jetzt - messStart;
+    if (dauer < 2000) return;
+    var fps = messBilder * 1000 / dauer;
+    diag.fps = Math.round(fps * 10) / 10;
+    if (diag.fpsVerlauf.length < 600) diag.fpsVerlauf.push(diag.fps);
+    messFenster++;
+    if (!sparmodus && messFenster > 1) {
+      if (fps < 40) schlechteFenster++;
+      else schlechteFenster = 0;
+      if (schlechteFenster >= 3) sparmodusAn();
+    }
+    messStart = jetzt;
+    messBilder = 0;
+  }
+
+  function sparmodusAn() {
+    sparmodus = true;
+    diag.sparmodus = true;
+    intervall = 1000 / 30;
+    sitzungSchreiben('lernkarten-sparmodus', '1');
+  }
+  if (sitzungLesen('lernkarten-sparmodus') === '1' || TEST.sparmodus) sparmodusAn();
+
+  function laufStarten() {
+    if (bildschirm === 'lauf') return;
+    if (bildschirm === 'ende' && performance.now() - endeZeit < 600) return;
+    // Jede Runde verbraucht eine Freischaltung – gleich beim Start, damit Neuladen nichts bringt
+    if (LK.Runden.frei(SATZ) <= 0) { zeigeStart(); return; }
+    LK.Runden.verbrauchen(SATZ);
+    figurenBauen();
+    laufZuruecksetzen();
+    bildschirm = 'lauf';
+    body.classList.add('lauf');
+    body.classList.remove('menue');
+    steuerung.hidden = false;
+    pauseHinweis.hidden = true;
+    pausiert = false;
+    groesseAnpassen();
+    try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { /* egal */ }
+    var jetzt = performance.now();
+    letzteZeit = jetzt; naechstesBild = jetzt; akku = 0;
+    messStart = jetzt; messBilder = 0; messFenster = 0; schlechteFenster = 0;
+    diag.letztesBild = 0;
+    diag.laufStart = Date.now();
+    zeichnen();
+    if (!laeuft) { laeuft = true; requestAnimationFrame(schleife); }
+  }
+
+  function laufEnde() {
+    laeuft = false;
+    diag.laufEnde = Date.now();
+    var p = punkte();
+    var neu = p > persoenlicheBest();
+    if (neu) bestSetzen(p);
+    diag.letztePunkte = p;
+    eingabe.ducken = false;
+    eingabe.springen = false;
+    knopfDucken.classList.remove('aktiv');
+    knopfSpringen.classList.remove('aktiv');
+    zeigeEnde(p, neu);
+    zeichnen();
+  }
+
+  function pausieren() {
+    if (bildschirm !== 'lauf' || pausiert) return;
+    pausiert = true;
+    eingabe.ducken = false;
+    eingabe.springen = false;
+    pauseHinweis.hidden = false;
+  }
+
+  function fortsetzen() {
+    if (!pausiert) return;
+    pausiert = false;
+    pauseHinweis.hidden = true;
+    var jetzt = performance.now();
+    letzteZeit = jetzt; naechstesBild = jetzt; akku = 0; messStart = jetzt; messBilder = 0;
+    diag.letztesBild = 0;
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) pausieren();
+  });
+  window.addEventListener('pagehide', pausieren);
+  pauseHinweis.addEventListener('pointerdown', function (e) { e.preventDefault(); fortsetzen(); });
+  pauseHinweis.addEventListener('click', fortsetzen);
+
+  /* =====================================================================
+     Steuerung: Tastatur und Touch
+     ===================================================================== */
+  function springenDruecken() {
+    if (pausiert) { fortsetzen(); return; }
+    if (!eingabe.springen) eingabe.springenNeu = true;
+    eingabe.springen = true;
+    knopfSpringen.classList.add('aktiv');
+  }
+  function springenLoslassen() {
+    eingabe.springen = false;
+    knopfSpringen.classList.remove('aktiv');
+  }
+  function duckenDruecken() {
+    if (pausiert) { fortsetzen(); return; }
+    eingabe.ducken = true;
+    knopfDucken.classList.add('aktiv');
+  }
+  function duckenLoslassen() {
+    eingabe.ducken = false;
+    knopfDucken.classList.remove('aktiv');
+  }
+
+  function istEingabefeld(t) {
+    return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    var hoch = k === ' ' || k === 'Spacebar' || k === 'ArrowUp' || k === 'w' || k === 'W';
+    var runter = k === 'ArrowDown' || k === 's' || k === 'S';
+    if (bildschirm === 'lauf') {
+      if (hoch) { e.preventDefault(); if (!e.repeat) springenDruecken(); }
+      else if (runter) { e.preventDefault(); duckenDruecken(); }
+      else if (pausiert && k === 'Enter') { e.preventDefault(); fortsetzen(); }
+      return;
+    }
+    if (istEingabefeld(e.target)) return;
+    if (bildschirm === 'start' && (k === ' ' || k === 'ArrowUp') && !e.repeat) {
+      e.preventDefault();
+      laufStarten();
+    }
+  });
+  document.addEventListener('keyup', function (e) {
+    var k = e.key;
+    if (k === ' ' || k === 'Spacebar' || k === 'ArrowUp' || k === 'w' || k === 'W') springenLoslassen();
+    else if (k === 'ArrowDown' || k === 's' || k === 'S') duckenLoslassen();
+  });
+  window.addEventListener('blur', function () { springenLoslassen(); duckenLoslassen(); });
+
+  function touchKnopf(knopfEl, druecken, loslassen) {
+    knopfEl.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      try { knopfEl.setPointerCapture(e.pointerId); } catch (x) { /* egal */ }
+      druecken();
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) {
+      knopfEl.addEventListener(n, function () { loslassen(); });
+    });
+    // Klick per Tastatur (Enter) auf dem Knopf
+    knopfEl.addEventListener('click', function (e) { e.preventDefault(); });
+    knopfEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  }
+  touchKnopf(knopfSpringen, springenDruecken, springenLoslassen);
+  touchKnopf(knopfDucken, duckenDruecken, duckenLoslassen);
+
+  // Tippen auf das Spielfeld = springen
+  leinwand.addEventListener('pointerdown', function (e) {
+    if (bildschirm !== 'lauf') return;
+    e.preventDefault();
+    springenDruecken();
+  });
+  leinwand.addEventListener('pointerup', function () { if (bildschirm === 'lauf') springenLoslassen(); });
+  leinwand.addEventListener('pointercancel', springenLoslassen);
+
+  // Kein Zoomen, Scrollen oder Markieren während des Spiels
+  ['touchstart', 'touchmove'].forEach(function (n) {
+    document.addEventListener(n, function (e) {
+      if (bildschirm === 'lauf' && e.cancelable) e.preventDefault();
+    }, { passive: false });
+  });
+  document.addEventListener('dblclick', function (e) { if (bildschirm === 'lauf') e.preventDefault(); });
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+
+  /* =====================================================================
+     Größe: Spielfeld im Seitenverhältnis 16:9 einpassen (Hoch- und Querformat)
+     ===================================================================== */
+  function groesseAnpassen() {
+    var bw = window.innerWidth, bh = window.innerHeight;
+    var quer = bw > bh && bh < 600;
+    body.classList.toggle('quer', quer);
+    var w, h;
+    if (quer && bildschirm !== 'lauf') {
+      w = Math.min(bw * 0.5, (bh - 16) * 16 / 9);
+    } else if (quer) {
+      w = Math.min(bw, (bh - 84) * 16 / 9);
+    } else {
+      var maxH = bildschirm === 'lauf' ? bh - 140 : bh * 0.45;
+      w = Math.min(bw, 960, maxH * 16 / 9);
+    }
+    w = Math.max(160, Math.floor(w));
+    h = Math.floor(w * 9 / 16);
+    rahmen.style.width = w + 'px';
+    rahmen.style.height = h + 'px';
+  }
+  window.addEventListener('resize', groesseAnpassen);
+  window.addEventListener('orientationchange', function () { setTimeout(groesseAnpassen, 200); });
+
+  /* =====================================================================
+     Start
+     ===================================================================== */
+  grafikenBauen();
+  groesseAnpassen();
+  LK.ausstehendeSenden();
+
+  if (!L || !LK.spielAn(SATZ)) zeigeUnbekannt();
+  else zeigeStart();
+
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* ohne Offline-Speicher weiter */ });
+    });
+  }
+
+  // Schnittstelle für automatische Tests (liest nur aus)
+  window.PflegeSprint = {
+    diag: diag,
+    zustand: function () {
+      return {
+        bildschirm: bildschirm, naechstes: sp.naechstes, vy: sp.vy, anzahl: sp.anzahl, zeit: sp.zeit, strecke: sp.strecke, v: sp.v, punkte: punkte(),
+        y: sp.y, amBoden: sp.amBoden, duckt: sp.duckt, sparmodus: sparmodus, pausiert: pausiert
+      };
+    },
+    tempo: tempoBei
+  };
+})();

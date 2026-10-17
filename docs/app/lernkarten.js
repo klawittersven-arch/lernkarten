@@ -20,6 +20,18 @@
       <div class="balken" aria-hidden="true"><span class="balken-fuellung" id="gesamt-balken"></span></div>
     </section>
 
+    <section class="spiel-box" id="spiel-box" hidden>
+      <div class="spiel-kopf">
+        <span class="spiel-symbol" aria-hidden="true">🎮</span>
+        <h2 id="spiel-titel"></h2>
+        <span class="spiel-frei" id="spiel-frei"></span>
+      </div>
+      <a class="knopf haupt spiel-los" id="spiel-los" hidden></a>
+      <p class="spiel-text" id="spiel-text"></p>
+      <div class="balken" aria-hidden="true"><span class="balken-fuellung" id="spiel-balken"></span></div>
+      <p class="spiel-regel" id="spiel-regel"></p>
+    </section>
+
     <p class="hinweis start-hinweis" id="start-hinweis" hidden></p>
 
     <label class="schalter">
@@ -44,6 +56,7 @@
       <p id="bedienung"></p>
       <p id="datenschutz"></p>
       <button type="button" class="text-knopf leise" id="zuruecksetzen"></button>
+      <a class="text-knopf leise highscore-link" id="highscore-link" hidden></a>
     </footer>
   </main>
 
@@ -124,6 +137,10 @@
       <span class="balken-fuellung" id="ergebnis-gruen"></span><span class="balken-rest" id="ergebnis-orange"></span>
     </div>
     <p class="ergebnis-gesamt" id="ergebnis-gesamt"></p>
+    <div class="ergebnis-spiel" id="ergebnis-spiel" hidden>
+      <p id="ergebnis-spiel-text"></p>
+      <a class="knopf haupt spiel-los" id="ergebnis-spiel-los"></a>
+    </div>
     <div class="ergebnis-knoepfe">
       <button type="button" class="knopf haupt" id="knopf-wiederholen"></button>
       <button type="button" class="knopf zweit" id="knopf-alle"></button>
@@ -133,12 +150,20 @@
 </div>
 
 <p class="nur-vorlesen" id="ansage" aria-live="polite"></p>
+<p class="toast" id="toast" role="status" hidden></p>
 `;
   document.body.insertAdjacentHTML('afterbegin', VORLAGE);
 
   var D = window.LERNKARTEN;
   var T = D.texte;
   var SCHLUESSEL = 'lernkarten:' + (D.speicherName || 'standard');
+
+  // Spielrunden „Diabetes Run!“ (Einstellungen in einstellungen.js, Funktionen in highscore.js)
+  var LK = window.LK;
+  var SATZ = D.speicherName || 'standard';
+  var SPIEL = !!(LK && LK.spielAn(SATZ));
+  var ST = SPIEL ? LK.T : {};
+  var PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.durchgaengeProSpiel || 3)) : 3;
 
   /* ---------- Hilfen ---------- */
   function $(id) { return document.getElementById(id); }
@@ -213,7 +238,8 @@
     lager.removeItem('__probe__');
   } catch (e) { lager = null; }
 
-  var zustand = { stand: {}, abgewaehlt: [], mischen: false, runde: null };
+  // zaehler: wie oft jede Karte umgedreht und bewertet wurde (für die Spielrunden)
+  var zustand = { stand: {}, abgewaehlt: [], mischen: false, runde: null, zaehler: {} };
   try {
     var roh = lager && lager.getItem(SCHLUESSEL);
     var gelesen = roh ? JSON.parse(roh) : null;
@@ -221,6 +247,7 @@
       if (gelesen.stand && typeof gelesen.stand === 'object') zustand.stand = gelesen.stand;
       if (Array.isArray(gelesen.abgewaehlt)) zustand.abgewaehlt = gelesen.abgewaehlt;
       zustand.mischen = !!gelesen.mischen;
+      if (gelesen.zaehler && typeof gelesen.zaehler === 'object') zustand.zaehler = gelesen.zaehler;
       zustand.runde = rundePruefen(gelesen.runde);
     }
   } catch (e) { /* beschädigter Speicher → neu beginnen */ }
@@ -255,6 +282,62 @@
 
   function gewusst(ids) {
     return ids.filter(function (id) { return zustand.stand[id] === 'g'; }).length;
+  }
+
+  /* ---------- Spielrunden: Jede Karte, die umgedreht und bewertet wurde, zählt –
+     egal ob „gewusst“ oder „noch nicht“. Ein Durchgang ist vollständig, wenn jede
+     Karte des Satzes einmal gezählt wurde. ---------- */
+  function durchgaenge() {
+    var min = Infinity;
+    for (var i = 0; i < REIHENFOLGE.length; i++) min = Math.min(min, zustand.zaehler[REIHENFOLGE[i]] || 0);
+    return REIHENFOLGE.length ? min : 0;
+  }
+
+  // neu verdiente Spielrunden merken; true, wenn gerade eine dazugekommen ist
+  function spielrundenPruefen() {
+    if (!SPIEL) return false;
+    var verdient = Math.floor(durchgaenge() / PRO_SPIEL);
+    if (verdient > LK.Runden.verdient(SATZ)) {
+      LK.Runden.verdientSetzen(SATZ, verdient);
+      return true;
+    }
+    return false;
+  }
+
+  function spielLink() { return '../spiel/?satz=' + encodeURIComponent(SATZ); }
+
+  function freiText(frei) {
+    return frei === 1 ? ST.spielFreiEine : ersetzen(ST.spielFreiMehr, { x: frei });
+  }
+
+  function spielBoxAktualisieren() {
+    if (!SPIEL) return;
+    spielrundenPruefen();
+    var frei = LK.Runden.frei(SATZ);
+    var d = durchgaenge();
+    var seit = d % PRO_SPIEL;
+    var imDurchgang = REIHENFOLGE.filter(function (id) { return (zustand.zaehler[id] || 0) > d; }).length;
+    var gesamt = REIHENFOLGE.length;
+    $('spiel-box').hidden = false;
+    $('spiel-box').classList.toggle('ist-frei', frei > 0);
+    $('spiel-titel').textContent = ST.spielTitel;
+    $('spiel-frei').textContent = frei > 0 ? freiText(frei) : '';
+    var los = $('spiel-los');
+    los.hidden = frei <= 0;
+    los.href = spielLink();
+    los.textContent = ST.spielLos;
+    $('spiel-text').textContent = ersetzen(ST.spielFortschritt, { d: seit + 1, n: PRO_SPIEL, x: imDurchgang, y: gesamt });
+    $('spiel-balken').style.width = (gesamt ? 100 * (seit * gesamt + imDurchgang) / (PRO_SPIEL * gesamt) : 0) + '%';
+    $('spiel-regel').textContent = ersetzen(ST.spielRegel, { n: PRO_SPIEL });
+  }
+
+  var toastZeit = null;
+  function toastZeigen(text) {
+    var t = $('toast');
+    t.textContent = text;
+    t.hidden = false;
+    clearTimeout(toastZeit);
+    toastZeit = setTimeout(function () { t.hidden = true; }, 3500);
   }
 
   /* ---------- Ansichten ---------- */
@@ -299,6 +382,14 @@
     if (D.hinweis) {
       $('start-hinweis').innerHTML = formatieren(D.hinweis);
       $('start-hinweis').hidden = false;
+    }
+    if (SPIEL) {
+      var h = $('highscore-link');
+      h.textContent = ST.highscoreLink;
+      h.href = '../highscore/?liste=' + encodeURIComponent(SATZ);
+      h.hidden = false;
+      $('ergebnis-spiel-los').textContent = ST.spielLos;
+      $('ergebnis-spiel-los').href = spielLink();
     }
   }
 
@@ -351,6 +442,7 @@
     $('gesamt-text').textContent = ersetzen(T.gesamt, { x: g, y: alle.length });
     $('gesamt-balken').style.width = (100 * g / alle.length) + '%';
     $('mischen').checked = zustand.mischen;
+    spielBoxAktualisieren();
 
     var gewaehlt = gewaehlteKarten();
     var offen = gewaehlt.length - gewusst(gewaehlt);
@@ -406,6 +498,7 @@
     if (!liste.length) { zeigeStart(); return; }
     if (zustand.mischen) liste = mischen(liste);
     zustand.runde = { ids: liste, pos: 0, ergebnis: {}, verlauf: [] };
+    neuFreigeschaltet = false;
     speichern();
     lernenZeigen();
   }
@@ -417,6 +510,8 @@
   }
 
   var umgedreht = false;
+  var gesehen = false; // Rückseite der aktuellen Karte schon angeschaut? (nur dann zählt sie)
+  var neuFreigeschaltet = false;
   var sperre = false; // während der Wegflug-Animation keine weiteren Eingaben
 
   function karteZeigen(mitAnimation) {
@@ -431,6 +526,7 @@
     el.style.transform = '';
     markenSetzen(0);
     umgedreht = false;
+    gesehen = false;
 
     $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '') + (k.afb ? ' · AFB ' + k.afb : '');
     $('vorne-text').innerHTML = formatieren(k.vorne);
@@ -504,6 +600,7 @@
   function umdrehen() {
     if (sperre || aktuelleAnsicht !== 'lernen') return;
     umgedreht = !umgedreht;
+    if (umgedreht) gesehen = true;
     $('karte').classList.toggle('umgedreht', umgedreht);
     ansagen(seitenSichtbarkeit());
   }
@@ -512,11 +609,16 @@
     if (sperre || aktuelleAnsicht !== 'lernen' || !rundeLaeuft()) return;
     var r = zustand.runde;
     var id = r.ids[r.pos];
-    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null });
+    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: gesehen });
+    if (gesehen) zustand.zaehler[id] = (zustand.zaehler[id] || 0) + 1;
     zustand.stand[id] = wert;
     r.ergebnis[id] = wert;
     r.pos++;
     speichern();
+    if (spielrundenPruefen()) {
+      neuFreigeschaltet = true;
+      toastZeigen(ST.spielNeu);
+    }
 
     var weiter = function () {
       sperre = false;
@@ -539,6 +641,7 @@
     if (sperre || !r || !r.verlauf.length) return;
     var v = r.verlauf.pop();
     if (v.vorher) zustand.stand[v.id] = v.vorher; else delete zustand.stand[v.id];
+    if (v.gezaehlt && zustand.zaehler[v.id] > 0) zustand.zaehler[v.id]--;
     delete r.ergebnis[v.id];
     r.pos = r.ids.indexOf(v.id);
     speichern();
@@ -630,6 +733,9 @@
     a.textContent = T.nochmalAlle;
     a.className = 'knopf ' + (n === 0 ? 'haupt' : 'zweit');
     $('ergebnis-zurueck').disabled = !r.verlauf.length;
+    var frei = SPIEL ? LK.Runden.frei(SATZ) : 0;
+    $('ergebnis-spiel').hidden = frei <= 0;
+    if (frei > 0) $('ergebnis-spiel-text').textContent = neuFreigeschaltet ? ST.spielNeu : '🎮 ' + freiText(frei);
     zeige('ergebnis');
     $('ergebnis-titel').focus({ preventScroll: true });
   }
@@ -700,10 +806,20 @@
 
   zeigeStart();
 
-  /* ---------- Offline-Speicher ---------- */
+  // Zurück aus dem Spiel (Zurück-Taste, Wechsel der App): Spielstand neu anzeigen
+  window.addEventListener('pageshow', function (e) { if (e.persisted && aktuelleAnsicht === 'start') startAktualisieren(); });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && aktuelleAnsicht === 'start') startAktualisieren();
+  });
+
+  // Punkte, die offline erspielt wurden, jetzt in die Highscore-Liste nachtragen
+  if (SPIEL) LK.ausstehendeSenden();
+
+  /* ---------- Offline-Speicher (Lernkarten und – damit eine Spielrunde auch ohne Netz startet – das Spiel) ---------- */
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').catch(function () { /* ohne Offline-Speicher weiter */ });
+      if (SPIEL) navigator.serviceWorker.register('../spiel/sw.js', { scope: '../spiel/' }).catch(function () { /* egal */ });
     });
   }
 })();

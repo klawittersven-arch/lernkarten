@@ -282,7 +282,9 @@ function kartenLaden(ordner) {
       H.pruefe(sw && sw.endsWith(`/lernkarten/${S.ordner}/sw.js`), `${S.ordner}: eigener Service Worker aktiv`);
     }
     const caches = (await p.evaluate(async () => (await caches.keys()))).sort();
-    H.pruefe(JSON.stringify(caches) === JSON.stringify(SAETZE.map((s) => `lernkarten-/lernkarten/${s.ordner}/-v1`).sort()), `getrennte Offline-Speicher: ${caches.join(', ')}`);
+    const erwartet = SAETZE.map((s) => s.ordner).concat(['spiel']).sort();
+    const gefunden = caches.map((c) => (c.match(/^lernkarten-\/lernkarten\/([a-z0-9-]+)\/-v\d+$/) || [])[1]).sort();
+    H.pruefe(JSON.stringify(gefunden) === JSON.stringify(erwartet), `getrennte Offline-Speicher (Kartensätze und Spiel): ${caches.join(', ')}`);
     await ctx.setOffline(true);
     for (const S of SAETZE) {
       await p.goto(basis + S.ordner + '/');

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#25434B">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Highscore – Diabetes Run!</title>
+<link rel="icon" href="../app/icon-192.png">
+<link rel="stylesheet" href="../app/lernkarten.css">
+</head>
+<body>
+<header class="kopf">
+  <p class="kopf-klein" id="untertitel"></p>
+  <h1>🏆 <span id="titel"></span></h1>
+</header>
+<main class="start-inhalt uebersicht">
+  <div class="reiter" role="tablist" id="reiter"></div>
+  <section class="zuruecksetzen-box" id="zuruecksetzen" hidden>
+    <h2 id="zuruecksetzen-titel"></h2>
+    <p id="zuruecksetzen-text"></p>
+    <button type="button" class="knopf" id="zuruecksetzen-knopf"></button>
+    <p class="highscore-status" id="zuruecksetzen-status" role="status"></p>
+  </section>
+  <section class="highscore-karte" id="liste-bereich" role="tabpanel" aria-labelledby="liste-titel">
+    <h2 id="liste-titel"></h2>
+    <p class="highscore-status" id="liste-status" role="status"></p>
+    <ol class="highscore" id="liste"></ol>
+    <p class="highscore-hinweis" id="liste-hinweis"></p>
+  </section>
+  <p class="seiten-links">
+    <a id="link-lernkarten" href="../"></a>
+    <a id="link-uebersicht" href="../"></a>
+  </p>
+</main>
+<script src="../app/einstellungen.js"></script>
+<script src="../app/highscore.js"></script>
+<script src="highscore.js"></script>
+</body>
+</html>

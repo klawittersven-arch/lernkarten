@@ -7,7 +7,7 @@
  * Nach größeren Änderungen VERSION erhöhen – dann wird der Speicher erneuert. */
 'use strict';
 
-var VERSION = 'v1';
+var VERSION = 'v2';
 // eigener Speicher je Ordner, z. B. „lernkarten-/lernkarten/kb1-diabetes/-v1“
 var PRAEFIX = 'lernkarten-' + new URL('./', self.location).pathname + '-';
 var CACHE = PRAEFIX + VERSION;
@@ -18,6 +18,8 @@ var DATEIEN = [
   'index.html',
   'karten.js',
   'manifest.json',
+  '../app/einstellungen.js',
+  '../app/highscore.js',
   '../app/lernkarten.js',
   '../app/lernkarten.css',
   '../app/icon-192.png'

@@ -309,3 +309,71 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
 .satz:hover .thema-titel { text-decoration: underline; }
 .satz .thema-titel { font-size: 18px; }
 .satz .thema-stand { grid-column: auto; }
+
+/* ================= Spielrunden „Diabetes Run!“ ================= */
+.spiel-box {
+  background: var(--karte); border-radius: 14px; padding: 12px 16px 12px; box-shadow: var(--schatten);
+  margin: -6px 0 20px; border: 2px solid transparent;
+}
+.spiel-box.ist-frei { border-color: var(--gruen); }
+.spiel-kopf { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.spiel-symbol { font-size: 22px; line-height: 1; }
+.spiel-kopf h2 { margin: 0; font-size: 18px; flex: 1; }
+.spiel-frei:empty { display: none; }
+.spiel-frei {
+  padding: 3px 10px; border-radius: 999px; font-size: 14px; font-weight: 800;
+  background: var(--gruen); color: #fff;
+}
+.spiel-los { display: flex; width: 100%; margin: 6px 0 10px; text-decoration: none; }
+.spiel-text { margin: 0 0 6px; font-size: 15px; color: var(--leise); font-weight: 600; }
+.spiel-box .balken { height: 6px; }
+.spiel-box .balken-fuellung { background: var(--petrol); }
+.spiel-regel { margin: 8px 0 0; font-size: 13.5px; line-height: 1.35; color: var(--leise); }
+.fuss .highscore-link { display: inline-flex; align-items: center; margin-left: 10px; }
+
+.ergebnis-spiel { margin: 0 0 20px; padding: 12px 14px; border-radius: 14px; background: var(--gruen-hell); border: 2px solid var(--gruen); }
+.ergebnis-spiel p { margin: 0 0 8px; font-weight: 800; }
+.ergebnis-spiel .spiel-los { margin: 0; }
+
+.toast {
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%; z-index: 30;
+  transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px);
+  margin: 0; padding: 10px 16px; border-radius: 12px;
+  background: var(--gruen); color: #fff; font-weight: 800; box-shadow: var(--schatten);
+  animation: toast-ein .25s ease-out;
+}
+@keyframes toast-ein { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translateX(-50%); } }
+
+/* ================= Highscore-Seite ================= */
+.reiter { display: flex; gap: 8px; margin: 0 0 14px; }
+.reiter button {
+  flex: 1; min-height: 48px; padding: 6px 10px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--rand); background: var(--karte); color: var(--text); font-weight: 700; font-size: 17px;
+  touch-action: manipulation;
+}
+.reiter button[aria-selected="true"] { background: var(--petrol); color: #fff; border-color: var(--petrol); }
+.highscore-karte { background: var(--karte); border-radius: 14px; box-shadow: var(--schatten); padding: 14px 16px; margin: 0 0 16px; }
+.highscore-karte h2 { margin: 0 0 6px; font-size: 19px; }
+.highscore-status { margin: 6px 0; color: var(--leise); }
+.highscore-status:empty { display: none; }
+.highscore { list-style: none; margin: 0; padding: 0; }
+.highscore li {
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 8px;
+  padding: 9px 6px; border-top: 1px solid var(--rand); font-variant-numeric: tabular-nums;
+}
+.highscore li:first-child { border-top: 0; }
+.highscore .platz { font-weight: 800; text-align: center; }
+.highscore .name { overflow-wrap: anywhere; }
+.highscore .punkte { font-weight: 800; }
+.highscore li.eigener { background: var(--hellblau); border-radius: 10px; border-top-color: transparent; }
+.highscore li.eigener + li { border-top-color: transparent; }
+.highscore-hinweis { margin: 10px 0 0; font-size: 14px; color: var(--leise); }
+.zuruecksetzen-box {
+  margin: 0 0 16px; padding: 14px 16px; border-radius: 14px;
+  background: var(--bernstein-hell); border: 2px dashed var(--bernstein-rand); color: var(--bernstein);
+}
+.zuruecksetzen-box h2 { margin: 0 0 6px; font-size: 18px; }
+.zuruecksetzen-box p { margin: 0 0 10px; }
+.zuruecksetzen-box .knopf { width: 100%; background: var(--bernstein-rand); color: #fff; }
+.seiten-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 4px 0 0; font-size: 16px; }
+.seiten-links a { color: var(--akzent); font-weight: 600; }

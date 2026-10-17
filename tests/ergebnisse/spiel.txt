@@ -1,0 +1,78 @@
+
+== Google-Apps-Script (lokal mit nachgebauter Tabelle)
+  ✓ leere Liste, solange niemand gespielt hat
+  ✓ unzulässiger Listenname wird abgelehnt
+  ✓ Eintrag „Mia S.“ angenommen, Platz 1
+  ✓ Tabellenblatt „kb1-diabetes“ mit Kopfzeile, Kennungen mit Vorsilbe (nie als Zahl gedeutet)
+  ✓ derselbe Lauf zweimal gesendet: nur einmal eingetragen
+  ✓ je Name die beste Runde, absteigend; bei Gleichstand zählt, wer zuerst da war
+  ✓ ungültige oder unpassende Namen abgelehnt
+  ✓ unplausible Punktzahlen abgelehnt
+  ✓ kaputte Anfrage abgelehnt
+  ✓ KB I und KB II sind getrennte Listen
+  ✓ höchstens 15 Einträge pro Gerät und Stunde
+  ✓ Zurücksetzen mit falschem Schlüssel abgelehnt
+  ✓ Zurücksetzen mit Schlüssel leert die Liste (Kopfzeile bleibt)
+  ✓ Zurücksetzen von KB I lässt KB II unberührt
+  ✓ solange kein eigener Schlüssel eingetragen ist, geht Zurücksetzen gar nicht
+
+== Freischaltung in den Lernkarten (KB I)
+  ✓ Startseite zeigt den Spiel-Kasten
+  ✓ Fortschritt: Durchgang 1 von 3 · 0 von 85 Karten
+  ✓ ohne Freischaltung kein „Jetzt spielen“
+  ✓ unauffälliger Link „Highscore-Liste“ unten auf der Startseite
+  ✓ gezählt wird nur eine umgedrehte Karte (egal ob gewusst oder nicht)
+  ✓ „Zurück“ nimmt auch die Zählung zurück
+  ✓ Fortschritt: Durchgang 3 von 3 · 84 von 85 Karten
+  ✓ Hinweis „Neue Spielrunde freigeschaltet!“ erscheint sofort
+  ✓ Ergebnis der Runde: Kasten mit „Jetzt spielen“
+  ✓ Startseite: „1 Spielrunde frei!“ und „Jetzt spielen“
+
+== Spiel und Eintragen
+  ✓ Spiel: „Sie haben 1 Spielrunde frei (KB I).“
+  ✓ eine Runde läuft bis „Game over“
+  ✓ die Runde ist verbraucht
+  ✓ keine weitere Runde frei → kein „Noch eine Runde“
+  ✓ zu kurzer Vorname: Hinweis statt Eintrag
+  ✓ unpassender Name wird abgelehnt
+  ✓ eingetragen: „Platz 1 in der Liste KB I!“
+  ✓ in der Tabelle: „Mia S.“ mit 67 Punkten
+
+== Highscore-Seite
+  ✓ Liste KB I: 🥇 Mia S.
+  ✓ eigener Eintrag hervorgehoben
+  ✓ Reiter KB II: leere Liste, eigene Adresse
+  ✓ ohne geheimen Link kein Zurücksetzen-Knopf
+  ✓ Spiel ohne freie Runde: gesperrt mit Erklärung
+  ✓ unbekannter Kartensatz: Hinweis
+
+== Ohne Verbindung: Punkte werden nachgetragen
+  ✓ zwei Runden frei
+  ✓ „Noch eine Runde (1 frei)“
+  ✓ Name ist vom letzten Mal vorausgefüllt
+  ✓ ohne Verbindung: „wird automatisch eingetragen“
+  ✓ Eintrag wartet auf dem Handy
+  ✓ beim nächsten Öffnen der Lernkarten nachgetragen
+  ✓ Lernkarten zeigen die verbleibende Runde
+
+== Zurücksetzen per geheimem Link
+  ✓ falscher Schlüssel: „Zurücksetzen hat nicht geklappt“
+  ✓ Schlüssel verschwindet sofort aus der Adresszeile
+  ✓ Zurücksetzen-Kasten sichtbar
+  ✓ Liste KB I ist leer
+
+== KB II, Übersicht, nicht eingerichtete Liste
+  ✓ Übersicht: Link zur Highscore-Liste
+  ✓ KB II: eigener Spiel-Kasten (79 Karten)
+  ✓ Liste noch nicht eingerichtet: Punkte werden aufbewahrt
+  ✓ Highscore-Seite: „noch nicht eingerichtet“
+
+== Spiel startet auch offline
+  ✓ Spielseite lädt ohne Netz (Offline-Speicher)
+  ✓ Runde läuft offline
+
+== Datenschutz
+  ✓ keine Anfrage an fremde Adressen
+  ✓ keine Fehler in der Konsole (außer den absichtlich unterbrochenen Verbindungen)
+
+58 von 58 Prüfungen bestanden.
