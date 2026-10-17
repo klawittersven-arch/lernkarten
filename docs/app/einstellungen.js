@@ -21,7 +21,15 @@ var EINSTELLUNGEN = {
   // Bei einer Änderung auch die Texte spielRegel und gesperrt unten anpassen.
   durchgaengeProSpiel: 1,
 
-  // Eine Highscore-Liste je Kartensatz. kennung = speicherName in karten.js,
+  // Klassen: Jede Klasse bekommt eigene QR-Codes (…/kb1-diabetes/?klasse=3bfp2-1) und damit
+  // eigene Highscore-Listen. Das Handy merkt sich die Klasse beim ersten Scannen.
+  // kennung: nur Kleinbuchstaben, Ziffern und Bindestrich · name: so erscheint sie in der App
+  klassen: [
+    { kennung: '3bfp2-1', name: '3BFP2/1' },
+    { kennung: '3bfp2-2', name: '3BFP2/2' }
+  ],
+
+  // Eine Highscore-Liste je Kartensatz (und je Klasse). kennung = speicherName in karten.js,
   // ordner = Ordner des Kartensatzes in docs/
   listen: [
     { kennung: 'kb1-diabetes', ordner: 'kb1-diabetes', titel: 'KB I – Diabetes mellitus', kurz: 'KB I' },
@@ -110,6 +118,7 @@ var EINSTELLUNGEN = {
     // Highscore-Seite
     highscoreTitel: 'Highscore',
     highscoreUntertitel: 'Diabetes Run! – Spielrunden aus den Lernkarten',
+    klasse: 'Klasse {x}',
     highscoreLeer: 'Noch keine Einträge – spielen Sie die erste Runde!',
     highscoreLaedt: 'Liste wird geladen …',
     highscoreFehler: 'Die Liste ist gerade nicht erreichbar. Bitte später noch einmal versuchen.',

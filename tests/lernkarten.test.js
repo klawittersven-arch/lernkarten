@@ -57,7 +57,7 @@ function kartenLaden(ordner) {
     const opKarten = alle.filter((k) => /Was wird von mir erwartet|zum Operator/.test(k.vorne)).concat(D.themen.filter((t) => /Operatoren/.test(t.titel || '')));
     H.pruefe(opKarten.length === 0, 'keine eigenen Karten zu den Operatoren', opKarten.map((k) => k.vorne || k.titel));
     H.pruefe(alle.every((k) => k.afb === undefined || /^(I|II|III)( \+ (I|II|III))?$/.test(k.afb)), 'AFB-Angaben haben die Form „I“, „II“, „I + II“ …');
-    const benutzt = [...new Set([...fs.readFileSync(path.join(APP, 'lernkarten.js'), 'utf8').matchAll(/\bT\.(\w+)/g)].map((m) => m[1]))];
+    const benutzt = [...new Set([...fs.readFileSync(path.join(APP, 'lernkarten.js'), 'utf8').matchAll(/(?<![.\w])T\.(\w+)/g)].map((m) => m[1]))];
     const fehlen = benutzt.filter((k) => typeof D.texte[k] !== 'string');
     H.pruefe(fehlen.length === 0, `alle ${benutzt.length} Beschriftungen der Oberfläche vorhanden`, fehlen);
     const html = fs.readFileSync(path.join(H.DOCS, S.ordner, 'index.html'), 'utf8');

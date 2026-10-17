@@ -1,17 +1,22 @@
-"""QR-Code für einen Kartensatz erzeugen und (optional) ans Ende der Ich-kann-Liste setzen.
+"""QR-Codes für die Kartensätze erzeugen und (optional) ans Ende der Ich-kann-Liste setzen.
 
 Aufruf (im Hauptverzeichnis des Repositorys):
     pip install segno python-docx zxing-cpp pillow
-    python werkzeuge/qr_erzeugen.py kb1-diabetes                      # nur qr/qr_kb1-diabetes.png
-    python werkzeuge/qr_erzeugen.py kb1-diabetes Ich_kann_Liste.docx  # zusätzlich …_mit_QR.docx
+    python werkzeuge/qr_erzeugen.py kb1-diabetes                          # qr/qr_kb1-diabetes.png
+    python werkzeuge/qr_erzeugen.py kb1-diabetes --klasse 3bfp2-1         # qr/qr_kb1-diabetes_3bfp2-1.png
+    python werkzeuge/qr_erzeugen.py kb1-diabetes --klasse 3bfp2-1 Liste.docx   # + Liste_mit_QR_3BFP2-1.docx
+    python werkzeuge/qr_erzeugen.py --sammelblatt QR-Codes_Klassen.docx   # alle Kartensätze × alle Klassen
 
 - Liest Besitzer und Namen des Repositorys aus dem Git-Remote „origin“;
-  die Adresse ist https://<besitzer>.github.io/<repository>/<ordner>/
-- Erzeugt qr/qr_<ordner>.png (Fehlerkorrektur M, Ruhezone 4 Module, mindestens
-  600 × 600 px) und prüft, dass er sich dekodieren lässt.
+  die Adresse ist https://<besitzer>.github.io/<repository>/<ordner>/ (mit Klasse: …/?klasse=<kennung>).
+- Klassen und Titel der Kartensätze stehen in docs/app/einstellungen.js.
+- Erzeugt die QR-Codes (Fehlerkorrektur M, Ruhezone 4 Module, mindestens 600 × 600 px)
+  und prüft, dass sie sich dekodieren lassen.
 - Mit einer .docx-Datei: hängt unten einen Kasten mit QR-Code (3,2 cm) und kurzem Text an
-  und speichert das Ergebnis als „…_mit_QR.docx“. Das Original bleibt unverändert.
+  und speichert das Ergebnis als „…_mit_QR….docx“. Das Original bleibt unverändert.
+- Sammelblatt: ein Word-Dokument mit allen Kästen zum Herauskopieren in die Ich-kann-Listen.
 """
+import argparse
 import re
 import subprocess
 import sys
@@ -70,9 +75,15 @@ def zelle_rahmen(zelle, farbe="3F6C72"):
     tc_pr.append(raender)
 
 
-def in_liste_einsetzen(docx_pfad, qr_datei, adresse):
-    doc = Document(docx_pfad)
-    doc.add_paragraph()
+def einstellungen_lesen():
+    """Klassen und Titel der Kartensätze aus docs/app/einstellungen.js."""
+    text = (WURZEL / "docs" / "app" / "einstellungen.js").read_text(encoding="utf-8")
+    klassen = dict(re.findall(r"\{\s*kennung:\s*'([a-z0-9-]+)',\s*name:\s*'([^']+)'\s*\}", text))
+    titel = dict(re.findall(r"\{\s*kennung:\s*'([a-z0-9-]+)',\s*ordner:\s*'[^']+',\s*titel:\s*'([^']+)'", text))
+    return klassen, titel
+
+
+def kasten_anhaengen(doc, qr_datei, adresse, klassenname=None):
     tabelle = doc.add_table(rows=1, cols=2)
     tabelle.alignment = WD_TABLE_ALIGNMENT.CENTER
     tabelle.autofit = False
@@ -87,7 +98,7 @@ def in_liste_einsetzen(docx_pfad, qr_datei, adresse):
     p.add_run().add_picture(str(qr_datei), width=Cm(3.2))
 
     p = rechts.paragraphs[0]
-    r = p.add_run("Lernkarten fürs Smartphone")
+    r = p.add_run("Lernkarten fürs Smartphone" + (f" – Klasse {klassenname}" if klassenname else ""))
     r.bold = True
     r.font.size = Pt(13)
     r.font.color.rgb = RGBColor(0x25, 0x43, 0x4B)
@@ -99,29 +110,89 @@ def in_liste_einsetzen(docx_pfad, qr_datei, adresse):
     r = rechts.add_paragraph().add_run(adresse.replace("https://", "").rstrip("/"))
     r.font.size = Pt(9.5)
     r.font.color.rgb = RGBColor(0x3F, 0x6C, 0x72)
-    doc.add_paragraph()
 
-    ziel = Path(docx_pfad).with_name(Path(docx_pfad).stem + "_mit_QR.docx")
+
+def in_liste_einsetzen(docx_pfad, qr_datei, adresse, klassenname=None):
+    doc = Document(docx_pfad)
+    doc.add_paragraph()
+    kasten_anhaengen(doc, qr_datei, adresse, klassenname)
+    doc.add_paragraph()
+    zusatz = "_" + klassenname.replace("/", "-") if klassenname else ""
+    ziel = Path(docx_pfad).with_name(Path(docx_pfad).stem + "_mit_QR" + zusatz + ".docx")
     doc.save(ziel)
     return ziel
 
 
-def main():
-    if len(sys.argv) < 2:
-        sys.exit(__doc__)
-    ordner = sys.argv[1].strip("/")
-    if not (WURZEL / "docs" / ordner / "karten.js").exists():
-        sys.exit(f"docs/{ordner}/karten.js gibt es nicht.")
+def qr_fuer(ordner, klasse=None):
     besitzer, repo = repo_aus_remote()
-    adresse = f"https://{besitzer.lower()}.github.io/{repo}/{ordner}/"
-    qr_datei = WURZEL / "qr" / f"qr_{ordner}.png"
+    adresse = f"https://{besitzer.lower()}.github.io/{repo}/{ordner}/" + (f"?klasse={klasse}" if klasse else "")
+    qr_datei = WURZEL / "qr" / (f"qr_{ordner}_{klasse}.png" if klasse else f"qr_{ordner}.png")
     qr_datei.parent.mkdir(exist_ok=True)
     print(f"Adresse: {adresse}")
     qr_erzeugen(adresse, qr_datei)
     qr_pruefen(qr_datei, adresse)
     print(f"  gespeichert: {qr_datei.relative_to(WURZEL)}")
-    if len(sys.argv) > 2:
-        print(f"  Ich-kann-Liste mit QR-Code: {in_liste_einsetzen(sys.argv[2], qr_datei, adresse)}")
+    return qr_datei, adresse
+
+
+def kartensaetze():
+    return sorted(d.name for d in (WURZEL / "docs").iterdir() if (d / "karten.js").exists())
+
+
+def sammelblatt(ziel):
+    klassen, titel = einstellungen_lesen()
+    doc = Document()
+    for abschnitt in doc.sections:
+        abschnitt.left_margin = abschnitt.right_margin = Cm(2)
+        abschnitt.top_margin = abschnitt.bottom_margin = Cm(1.8)
+    kopf = doc.add_paragraph()
+    r = kopf.add_run("QR-Codes der Lernkarten je Klasse")
+    r.bold = True
+    r.font.size = Pt(16)
+    doc.add_paragraph(
+        "Jeden Kasten an das Ende der passenden Ich-kann-Liste kopieren (Kasten anklicken → "
+        "Tabelle markieren → Kopieren). Wer den Code scannt, landet automatisch in den "
+        "Highscore-Listen seiner Klasse."
+    )
+    for ordner in kartensaetze():
+        for kennung, name in klassen.items():
+            qr_datei, adresse = qr_fuer(ordner, kennung)
+            u = doc.add_paragraph()
+            u.paragraph_format.space_before = Pt(14)
+            u.paragraph_format.keep_with_next = True  # Überschrift nicht vom Kasten trennen
+            r = u.add_run(f"{titel.get(ordner, ordner)} · Klasse {name}")
+            r.bold = True
+            r.font.size = Pt(12)
+            kasten_anhaengen(doc, qr_datei, adresse, name)
+    doc.save(ziel)
+    print(f"Sammelblatt: {ziel}")
+
+
+def main():
+    a = argparse.ArgumentParser(description="QR-Codes für die Lernkarten erzeugen")
+    a.add_argument("ordner", nargs="?", help="Ordner des Kartensatzes, z. B. kb1-diabetes")
+    a.add_argument("liste", nargs="?", help="Ich-kann-Liste (.docx), in die der QR-Kasten soll")
+    a.add_argument("--klasse", help="Kennung der Klasse aus einstellungen.js, z. B. 3bfp2-1")
+    a.add_argument("--sammelblatt", metavar="ZIEL.docx", help="alle Kartensätze × alle Klassen in ein Dokument")
+    arg = a.parse_args()
+
+    if arg.sammelblatt:
+        sammelblatt(arg.sammelblatt)
+        return
+    if not arg.ordner:
+        sys.exit(__doc__)
+    ordner = arg.ordner.strip("/")
+    if not (WURZEL / "docs" / ordner / "karten.js").exists():
+        sys.exit(f"docs/{ordner}/karten.js gibt es nicht.")
+    klassenname = None
+    if arg.klasse:
+        klassen, _ = einstellungen_lesen()
+        if arg.klasse not in klassen:
+            sys.exit(f"Klasse „{arg.klasse}“ steht nicht in docs/app/einstellungen.js ({', '.join(klassen)}).")
+        klassenname = klassen[arg.klasse]
+    qr_datei, adresse = qr_fuer(ordner, arg.klasse)
+    if arg.liste:
+        print(f"  Ich-kann-Liste mit QR-Code: {in_liste_einsetzen(arg.liste, qr_datei, adresse, klassenname)}")
 
 
 if __name__ == "__main__":

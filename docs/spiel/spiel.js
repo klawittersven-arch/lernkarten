@@ -125,7 +125,7 @@
   }
 
   function freiText(n) {
-    return LK.ersetzen(n === 1 ? T.freiEine : T.freiMehr, { x: n, satz: L.kurz });
+    return LK.ersetzen(n === 1 ? T.freiEine : T.freiMehr, { x: n, satz: LK.listenName(SATZ) });
   }
 
   function zeigeStart() {
@@ -248,7 +248,7 @@
       box.replaceChild(warte, form);
       LK.eintragen(SATZ, name, punkte).then(function (r) {
         var text, art = 'gut';
-        if (r && r.ok) text = r.platz ? LK.ersetzen(T.eingetragen, { x: r.platz, satz: L.kurz }) : T.eingetragenOhnePlatz;
+        if (r && r.ok) text = r.platz ? LK.ersetzen(T.eingetragen, { x: r.platz, satz: LK.listenName(SATZ) }) : T.eingetragenOhnePlatz;
         else if (r && r.ausstehend) { text = r.nichtEingerichtet ? T.nichtEingerichtet : T.ausstehend; art = 'warten'; }
         else { text = T.abgelehnt + (r && r.fehler ? ' (' + r.fehler + ')' : ''); art = 'warten'; }
         box.replaceChild(meldung(text, art), warte);

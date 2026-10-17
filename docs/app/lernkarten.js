@@ -439,7 +439,8 @@
   function texteEinsetzen() {
     $('titel').textContent = D.titel;
     $('untertitel').textContent = D.untertitel;
-    $('klausur').textContent = D.klausur;
+    var klasse = LK && LK.klasse();
+    $('klausur').textContent = D.klausur + (klasse ? ' · ' + ersetzen(LK.T.klasse, { x: klasse.name }) : '');
     $('themen-ueberschrift').textContent = T.themenWaehlen;
     $('alle-themen').textContent = T.alleThemen;
     $('keine-themen').textContent = T.keineThemen;

@@ -78,6 +78,19 @@
   ✓ nach der 79. Karte: Gratulation bildschirmfüllend
   ✓ danach Ergebnis der Runde mit „Jetzt spielen“
 
+== Klassen: eigene QR-Codes, eigene Highscore-Listen
+  ✓ QR-Code der 3BFP2/1: Kopfzeile zeigt „Klasse 3BFP2/1“
+  ✓ Handy merkt sich die Klasse (später ohne QR-Code geöffnet)
+  ✓ Spiel nennt die Klasse
+  ✓ eingetragen in „KB I · 3BFP2/1“
+  ✓ in der Google-Tabelle: eigenes Blatt „kb1-diabetes-3bfp2-1“
+  ✓ Highscore der 3BFP2/1 zeigt „Lea M.“
+  ✓ Highscore der 3BFP2/2: eigene, leere Liste – „Lea M.“ aus der anderen Klasse nicht sichtbar
+  ✓ unbekannte Klasse in der Adresse wird ignoriert
+  ✓ Zurücksetzen-Link der Klasse: Schlüssel verschwindet, Klasse bleibt
+  ✓ Knopf nennt Liste und Klasse
+  ✓ nur die Liste KB I der 3BFP2/1 wurde geleert
+
 == KB II, Übersicht, nicht eingerichtete Liste
   ✓ Übersicht: Link zur Highscore-Liste
   ✓ KB II: eigener Spiel-Kasten (79 Karten)
@@ -92,4 +105,4 @@
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole (außer den absichtlich unterbrochenen Verbindungen)
 
-73 von 73 Prüfungen bestanden.
+84 von 84 Prüfungen bestanden.

@@ -244,6 +244,53 @@ function kartenIds(ordner) {
     await c4.close();
   }
 
+  console.log('\n== Klassen: eigene QR-Codes, eigene Highscore-Listen');
+  {
+    const c5 = await kontext();
+    const k1 = await c5.newPage();
+    H.beobachten(k1, protokoll, 'klasse1');
+    k1.on('dialog', (d) => d.accept());
+    await k1.goto(basis + 'kb1-diabetes/?klasse=3bfp2-1');
+    H.pruefe((await k1.locator('#klausur').innerText()).endsWith('· Klasse 3BFP2/1'), 'QR-Code der 3BFP2/1: Kopfzeile zeigt „Klasse 3BFP2/1“');
+    await k1.goto(basis + 'kb1-diabetes/');
+    H.pruefe((await k1.locator('#klausur').innerText()).endsWith('· Klasse 3BFP2/1'), 'Handy merkt sich die Klasse (später ohne QR-Code geöffnet)');
+    await k1.evaluate(() => localStorage.setItem('lernkarten:kb1-diabetes:spiel-verdient', '1'));
+    await k1.goto(basis + 'spiel/?satz=kb1-diabetes');
+    H.pruefe((await k1.locator('#frei').innerText()) === 'Sie haben 1 Spielrunde frei (KB I · 3BFP2/1).', 'Spiel nennt die Klasse');
+    await spielBisEnde(k1);
+    await k1.fill('#vorname', 'Lea');
+    await k1.fill('#initial', 'm');
+    await k1.click('#knopf-eintragen');
+    await H.bis(() => k1.locator('#eintrag-meldung.gut').count());
+    H.pruefe((await k1.locator('#eintrag-meldung').innerText()) === 'Eingetragen: Platz 1 in der Liste KB I · 3BFP2/1!', 'eingetragen in „KB I · 3BFP2/1“');
+    const blatt1 = attrappe.blaetter.get('kb1-diabetes-3bfp2-1');
+    H.pruefe(blatt1 && blatt1.zeilen.length === 2 && blatt1.zeilen[1][1] === 'Lea M.', 'in der Google-Tabelle: eigenes Blatt „kb1-diabetes-3bfp2-1“');
+    await k1.click('#link-highscore');
+    await H.bis(() => k1.locator('#liste li').count());
+    H.pruefe((await k1.locator('#untertitel').innerText()).endsWith('Klasse 3BFP2/1') && (await k1.locator('#liste-titel').innerText()) === 'KB I – Diabetes mellitus · 3BFP2/1'
+      && (await k1.locator('#liste').innerText()).includes('Lea M.'), 'Highscore der 3BFP2/1 zeigt „Lea M.“');
+
+    const c6 = await kontext();
+    const k2 = await c6.newPage();
+    H.beobachten(k2, protokoll, 'klasse2');
+    await k2.goto(basis + 'kb1-diabetes/?klasse=3bfp2-2');
+    await k2.goto(basis + 'highscore/?liste=kb1-diabetes');
+    await H.bis(async () => (await k2.locator('#liste-status').innerText()).startsWith('Noch keine Einträge'));
+    H.pruefe((await k2.locator('#liste-titel').innerText()) === 'KB I – Diabetes mellitus · 3BFP2/2' && !(await k2.locator('#liste').innerText()).includes('Lea'),
+      'Highscore der 3BFP2/2: eigene, leere Liste – „Lea M.“ aus der anderen Klasse nicht sichtbar');
+    await k2.goto(basis + 'kb2-beratung/?klasse=unbekannt');
+    H.pruefe((await k2.locator('#klausur').innerText()).endsWith('· Klasse 3BFP2/2'), 'unbekannte Klasse in der Adresse wird ignoriert');
+    await c6.close();
+
+    await k1.goto(basis + 'highscore/?liste=kb1-diabetes&klasse=3bfp2-1&zuruecksetzen=' + TEST_SCHLUESSEL);
+    H.pruefe(p.url && !k1.url().includes(TEST_SCHLUESSEL) && k1.url().includes('klasse=3bfp2-1'), 'Zurücksetzen-Link der Klasse: Schlüssel verschwindet, Klasse bleibt');
+    H.pruefe((await k1.locator('#zuruecksetzen-knopf').innerText()) === 'Liste „KB I · 3BFP2/1“ jetzt zurücksetzen', 'Knopf nennt Liste und Klasse');
+    await k1.click('#zuruecksetzen-knopf');
+    await H.bis(async () => (await k1.locator('#zuruecksetzen-status').innerText()).includes('wurde zurückgesetzt'));
+    H.pruefe(attrappe.blaetter.get('kb1-diabetes-3bfp2-1').zeilen.length === 1, 'nur die Liste KB I der 3BFP2/1 wurde geleert');
+    await c5.close();
+  }
+
   console.log('\n== KB II, Übersicht, nicht eingerichtete Liste');
   {
     const c2 = await kontext(false);

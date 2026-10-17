@@ -13,11 +13,15 @@
   try { q = new URLSearchParams(location.search); } catch (e) { /* alter Browser */ }
   var aktiv = (q && LK.liste(q.get('liste'))) || LISTEN[0];
   var schluessel = q && q.get('zuruecksetzen');
+  var KLASSE = LK.klasse();
+  function adresse(l) {
+    return location.pathname + '?liste=' + encodeURIComponent(l.kennung) + (KLASSE ? '&klasse=' + encodeURIComponent(KLASSE.kennung) : '');
+  }
   // Schlüssel sofort aus der Adresszeile entfernen (nicht im Verlauf, nicht beim Teilen)
-  if (schluessel && history.replaceState) history.replaceState(null, '', location.pathname + '?liste=' + encodeURIComponent(aktiv.kennung));
+  if (schluessel && history.replaceState) history.replaceState(null, '', adresse(aktiv));
 
   $('titel').textContent = T.highscoreTitel;
-  $('untertitel').textContent = T.highscoreUntertitel;
+  $('untertitel').textContent = T.highscoreUntertitel + (KLASSE ? ' · ' + LK.ersetzen(T.klasse, { x: KLASSE.name }) : '');
   $('link-uebersicht').textContent = T.zurUebersicht;
   document.title = T.highscoreTitel + ' – ' + T.titel;
 
@@ -42,8 +46,8 @@
   function waehlen(l) {
     aktiv = l;
     LISTEN.forEach(function (x) { $('reiter-' + x.kennung).setAttribute('aria-selected', x === l ? 'true' : 'false'); });
-    if (history.replaceState) history.replaceState(null, '', location.pathname + '?liste=' + encodeURIComponent(l.kennung));
-    $('liste-titel').textContent = l.titel;
+    if (history.replaceState) history.replaceState(null, '', adresse(l));
+    $('liste-titel').textContent = l.titel + (KLASSE ? ' · ' + KLASSE.name : '');
     $('link-lernkarten').textContent = LK.ersetzen(T.zuDenLernkartenSatz, { satz: l.kurz || l.titel });
     $('link-lernkarten').href = '../' + l.ordner + '/';
     zuruecksetzenZeigen();
@@ -102,8 +106,8 @@
     box.hidden = !schluessel;
     if (!schluessel) return;
     $('zuruecksetzen-titel').textContent = T.zuruecksetzenTitel;
-    $('zuruecksetzen-text').textContent = LK.ersetzen(T.zuruecksetzenText, { satz: aktiv.titel });
-    $('zuruecksetzen-knopf').textContent = LK.ersetzen(T.zuruecksetzenKnopf, { satz: aktiv.kurz || aktiv.titel });
+    $('zuruecksetzen-text').textContent = LK.ersetzen(T.zuruecksetzenText, { satz: LK.listenName(aktiv.kennung) });
+    $('zuruecksetzen-knopf').textContent = LK.ersetzen(T.zuruecksetzenKnopf, { satz: LK.listenName(aktiv.kennung) });
     $('zuruecksetzen-knopf').disabled = false;
     $('testeintrag-knopf').textContent = T.testeintragKnopf;
     $('zuruecksetzen-status').textContent = '';
@@ -124,13 +128,13 @@
 
   $('zuruecksetzen-knopf').addEventListener('click', function () {
     var l = aktiv;
-    if (!window.confirm(LK.ersetzen(T.zuruecksetzenFrage, { satz: l.titel }))) return;
+    if (!window.confirm(LK.ersetzen(T.zuruecksetzenFrage, { satz: LK.listenName(l.kennung) }))) return;
     var knopf = this;
     knopf.disabled = true;
     $('zuruecksetzen-status').textContent = T.highscoreLaedt;
     LK.zuruecksetzen(l.kennung, schluessel).then(function (r) {
       if (!r || !r.ok) throw new Error((r && r.fehler) || 'Fehler');
-      $('zuruecksetzen-status').textContent = LK.ersetzen(T.zurueckgesetzt, { satz: l.titel });
+      $('zuruecksetzen-status').textContent = LK.ersetzen(T.zurueckgesetzt, { satz: LK.listenName(l.kennung) });
       laden();
     }).catch(function (e) {
       knopf.disabled = false;

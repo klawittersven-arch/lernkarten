@@ -65,6 +65,27 @@ danach wird nur noch das Tempo höher. Jedes Muster bleibt mit der richtigen Ein
 Stellschrauben: Funktion `muster()` und die Konstanten darüber in `docs/spiel/spiel.js`.
 (Die Fassung im Repository `kb2-beratung` für den Unterricht endet weiterhin nach etwa 2 Minuten.)
 
+### Klassen: eigene QR-Codes und eigene Highscore-Listen
+
+Jede Klasse bekommt eigene QR-Codes. Die Adresse enthält die Klasse, z. B.
+`…/lernkarten/kb1-diabetes/?klasse=3bfp2-1`. Das Handy merkt sich die Klasse beim ersten Scannen;
+Lernkarten, Spiel und Highscore sind für alle Klassen gleich, nur die Highscore-Listen sind getrennt
+(in der Google-Tabelle je ein Blatt, z. B. `kb1-diabetes-3bfp2-1`). Die SuS sehen nur die Listen
+ihrer Klasse; oben in der App steht „Klasse 3BFP2/1“.
+
+| | 3BFP2/1 | 3BFP2/2 |
+|---|---|---|
+| KB I | `qr/qr_kb1-diabetes_3bfp2-1.png` | `qr/qr_kb1-diabetes_3bfp2-2.png` |
+| KB II | `qr/qr_kb2-beratung_3bfp2-1.png` | `qr/qr_kb2-beratung_3bfp2-2.png` |
+
+- **Klassen ändern oder ergänzen:** in `docs/app/einstellungen.js` bei `klassen`, danach QR-Codes erzeugen:
+  `python werkzeuge/qr_erzeugen.py --sammelblatt QR-Codes_Klassen.docx` (alle Kästen zum Kopieren in die
+  Ich-kann-Listen) oder einzeln `python werkzeuge/qr_erzeugen.py kb1-diabetes --klasse 3bfp2-1 Liste.docx`.
+- **Zurücksetzen** je Klasse und Kartensatz:
+  `…/highscore/?liste=kb1-diabetes&klasse=3bfp2-1&zuruecksetzen=SCHLÜSSEL`.
+- Ohne Klasse in der Adresse (alte QR-Codes `qr_kb1-diabetes.png`) landen Einträge in den Listen ohne Klasse.
+- Das Google-Apps-Script muss dafür nicht geändert werden.
+
 ### Highscore-Liste einrichten (einmalig, ca. 10 Minuten)
 
 1. In Google Drive: **Neu → Google Tabellen → Leere Tabelle**, Name z. B. „Lernkarten Highscore“.

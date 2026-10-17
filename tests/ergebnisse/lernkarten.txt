@@ -181,7 +181,7 @@
 == Datenschutz
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole
-  ✓ kb1-diabetes: alle Dateien zusammen 127 KB (< 150 KB)
-  ✓ kb2-beratung: alle Dateien zusammen 128 KB (< 150 KB)
+  ✓ kb1-diabetes: alle Dateien zusammen 129 KB (< 150 KB)
+  ✓ kb2-beratung: alle Dateien zusammen 129 KB (< 150 KB)
 
 95 von 95 Prüfungen bestanden.

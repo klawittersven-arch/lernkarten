@@ -54,6 +54,29 @@
     return null;
   }
 
+  /* ---------- Klasse: kommt mit dem QR-Code (?klasse=3bfp2-1) und wird auf dem Gerät
+     gemerkt; jede Klasse hat eigene Highscore-Listen (z. B. „kb1-diabetes-3bfp2-1“) ---------- */
+  function klasseFinden(kennung) {
+    var k = E.klassen || [];
+    for (var i = 0; i < k.length; i++) if (k[i].kennung === kennung) return k[i];
+    return null;
+  }
+  var KLASSE = (function () {
+    var ausAdresse = '';
+    try { ausAdresse = (new URLSearchParams(location.search).get('klasse') || '').toLowerCase(); } catch (e) { /* alter Browser */ }
+    if (klasseFinden(ausAdresse)) { schreiben('lernkarten:klasse', ausAdresse); return klasseFinden(ausAdresse); }
+    return klasseFinden(lesen('lernkarten:klasse'));
+  })();
+
+  // Name der Highscore-Liste für einen Kartensatz (mit Klasse, falls bekannt)
+  function listenKennung(satz) { return KLASSE ? satz + '-' + KLASSE.kennung : satz; }
+  // Kurzname für Texte, z. B. „KB I · 3BFP2/1“
+  function listenName(satz) {
+    var l = liste(satz);
+    var n = l ? (l.kurz || l.titel) : satz;
+    return KLASSE ? n + ' · ' + KLASSE.name : n;
+  }
+
   function spielAn(kennung) { return E.spielAn !== false && !!liste(kennung); }
 
   /* ---------- Spielrunden: „verdient“ schreibt nur die Lernkarten-App,
@@ -139,13 +162,14 @@
     return holen(a + (a.indexOf('?') === -1 ? '?' : '&') + teile.join('&'), { method: 'GET', cache: 'no-store' });
   }
 
-  function listeLaden(kennung) {
+  // satz = Kennung des Kartensatzes; die Klasse wird automatisch ergänzt
+  function listeLaden(satz) {
     if (!eingerichtet()) return Promise.reject(new Error('nicht eingerichtet'));
-    return anfrageGet({ aktion: 'liste', liste: kennung });
+    return anfrageGet({ aktion: 'liste', liste: listenKennung(satz) });
   }
 
-  function zuruecksetzen(kennung, schluessel) {
-    return anfrageGet({ aktion: 'zuruecksetzen', liste: kennung, schluessel: schluessel });
+  function zuruecksetzen(satz, schluessel) {
+    return anfrageGet({ aktion: 'zuruecksetzen', liste: listenKennung(satz), schluessel: schluessel });
   }
 
   // Eintrag senden; als Text (nicht application/json), damit der Browser keine
@@ -159,13 +183,13 @@
   function warteschlange() { var w = lesen(WS); return Array.isArray(w) ? w : []; }
 
   // Lehrkraft-Test (Highscore-Seite): sofort senden, ohne Warteschlange
-  function testEintragen(liste_) {
-    return senden({ aktion: 'eintragen', liste: liste_, name: 'Test T.', punkte: 1, geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now() });
+  function testEintragen(satz) {
+    return senden({ aktion: 'eintragen', liste: listenKennung(satz), name: 'Test T.', punkte: 1, geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now() });
   }
 
-  function eintragen(liste_, name, punkte) {
+  function eintragen(satz, name, punkte) {
     var eintrag = {
-      aktion: 'eintragen', liste: liste_, name: name, punkte: Math.max(0, Math.floor(punkte)),
+      aktion: 'eintragen', liste: listenKennung(satz), name: name, punkte: Math.max(0, Math.floor(punkte)),
       geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now()
     };
     if (!eingerichtet()) {
@@ -212,6 +236,9 @@
     T: T,
     ersetzen: ersetzen,
     liste: liste,
+    klasse: function () { return KLASSE; },
+    listenKennung: listenKennung,
+    listenName: listenName,
     spielAn: spielAn,
     Runden: Runden,
     namePruefen: namePruefen,
