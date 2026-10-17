@@ -1,0 +1,42 @@
+Schwierigkeit von „Diabetes Run!“ (schwerstes Muster je Zeitpunkt)
+Zeit   Tempo     Sichtbar*  knappste Reaktionszeit (Muster)              alle machbar?
+ 15 s   180 px/s  1.53 s     1.44 s (Hindernis → Hindernis (Abstand))             ja
+ 30 s   210 px/s  1.31 s     1.18 s (KBS-Lkw)                                     ja
+ 60 s   280 px/s  0.99 s     0.85 s (KBS-Lkw)                                     ja
+ 90 s   350 px/s  0.79 s     0.67 s (KBS-Lkw)                                     ja
+120 s   420 px/s  0.66 s     0.54 s (KBS-Lkw)                                     ja
+150 s   490 px/s  0.56 s     0.44 s (KBS-Lkw)                                     ja
+180 s   560 px/s  0.49 s     0.38 s (KBS-Lkw)                                     ja
+210 s   630 px/s  0.44 s     0.31 s (KBS-Lkw)                                     ja
+240 s   700 px/s  0.39 s     0.28 s (KBS-Lkw)                                     ja
+270 s   770 px/s  0.36 s     0.24 s (KBS-Lkw)                                     ja
+300 s   840 px/s  0.33 s     0.21 s (KBS-Lkw)                                     ja
+* Sichtbar = Zeit vom Auftauchen am rechten Bildrand bis zur Figur
+
+Hindernisse je Minute (Mittel aus 20 Läufen)
+Abschnitt      Hindernisse  davon Lkw  Schlaglöcher  Kombinationen
+  0–30  s        42        0.0       0.0          0.0
+ 30–60  s        44        1.5       4.2          2.4
+ 60–90  s        46        3.1       6.3          3.4
+ 90–120 s        49        3.3       7.4          4.9
+120–150 s        51        4.6      10.8          7.1
+150–180 s        55        6.0      10.6          9.8
+180–210 s        59        7.0      14.9         10.1
+210–240 s        64        9.5      18.7         12.5
+240–270 s        66       11.5      19.9         13.6
+270–300 s        67       11.5      21.0         12.0
+
+Prüfungen
+  ✓ bis 4 Minuten ist jedes Muster mit passender Eingabe machbar (kein absichtliches Ende)
+  ✓ die ersten 30 Sekunden sind gemütlich (≥ 0,8 s Reaktionszeit: 1.444 / 1.181 s)
+  ✓ die Reaktionszeit wird stetig knapper
+  ✓ nach 3 Minuten schwer, aber machbar (0.376 s)
+  ✓ nach 4 Minuten kaum noch zu schaffen (0.278 s)
+  ✓ nach 5 Minuten praktisch unmöglich (0.212 s)
+  ✓ die Zahl der Hindernisse je Minute steigt stetig
+  ✓ in den ersten 30 Sekunden keine Lkw, Schlaglöcher oder Kombinationen
+  ✓ schwierige Hindernisse und Abfolgen werden immer häufiger
+  ✓ Gegenprobe: ohne Springen/Ducken scheitert die Figur an jedem Hindernis
+  ✓ Punkte nach 4/5/6 Minuten: 6309 / 9197 / 12610 – unter der Grenze 20 000 des Apps Script
+
+11 von 11 Prüfungen bestanden.

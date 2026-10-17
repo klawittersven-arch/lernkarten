@@ -36,7 +36,7 @@
   ✓ zu kurzer Vorname: Hinweis statt Eintrag
   ✓ unpassender Name wird abgelehnt
   ✓ eingetragen: „Platz 1 in der Liste KB I!“
-  ✓ in der Tabelle: „Mia S.“ mit 67 Punkten
+  ✓ in der Tabelle: „Mia S.“ mit 33 Punkten
 
 == Highscore-Seite
   ✓ Liste KB I: 🥇 Mia S.

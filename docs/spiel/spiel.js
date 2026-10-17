@@ -266,20 +266,48 @@
   var SCHWERKRAFT = 1500;
   var SPRUNG_V = 430;
   var DOPPELSPRUNG_V = 380;
-  var V_START = 150, V_MAX = 900;
+  var V_START = 150;
 
-  /* Schwierigkeit: Die ersten 30 Sekunden sind gemütlich (fast alle schaffen sie).
-     Danach steigen Tempo, Dichte und Gemeinheit rasant, sodass ein Lauf praktisch
-     nie länger als 2 Minuten dauert. */
-  var LEICHT_BIS = 30;          // Sekunden
-  var SCHLUSS_AB = 100;         // ab hier ist jeder Lauf nach wenigen Hindernissen zu Ende
+  /* Schwierigkeit (für das Lernen zu Hause, kein Zeitlimit):
+     - 0–30 s: gemütlich – nur einzelne Hindernisse mit viel Abstand, hier kommen alle mit.
+     - 30 s bis 4 min: Tempo, Dichte und schwierige Abfolgen (Lkw, Schlaglöcher,
+       Hindernis + Wespenschwarm) steigen gleichmäßig an.
+     - danach steigt das Tempo weiter: Die Hindernisse tauchen so spät auf, dass kaum
+       noch jemand rechtzeitig reagieren kann. Es gibt kein künstliches Ende – jedes
+       Muster bleibt mit der richtigen Eingabe machbar (geprüft in tests/schwierigkeit.test.js). */
+  var LEICHT_BIS = 30;           // Sekunden
+  var VOLL_AB = 240;             // ab hier volle Dichte und Gemeinheit (4 Minuten)
+  var V_LEICHT = V_START + 2 * LEICHT_BIS;  // 210 px/s nach 30 s
+  var V_VOLL = 700;              // Tempo nach 4 Minuten
+  var V_GRENZE = 1400;           // höchstes Tempo
+  var STEIGUNG = (V_VOLL - V_LEICHT) / (VOLL_AB - LEICHT_BIS);  // ≈ 3 px/s je Sekunde
+
   function tempoBei(t) {
-    if (t < LEICHT_BIS) return V_START + 2 * t;                       // 150 → 210 px/s
-    return Math.min(V_MAX, V_START + 2 * LEICHT_BIS + 9 * (t - LEICHT_BIS)); // +9 px/s pro Sekunde
+    if (t < LEICHT_BIS) return V_START + 2 * t;                    // 150 → 210 px/s
+    return Math.min(V_GRENZE, V_LEICHT + STEIGUNG * (t - LEICHT_BIS));
   }
-  // 0 = leicht, 1 = volle Härte (erreicht nach 90 Sekunden)
-  function haerte() {
-    return sp.zeit < LEICHT_BIS ? 0 : Math.min(1, (sp.zeit - LEICHT_BIS) / 60);
+
+  // 0 = leicht (bis 30 s), 1 = volle Härte (nach 4 Minuten), dazwischen gleichmäßig
+  function haerteBei(t) {
+    return t < LEICHT_BIS ? 0 : Math.min(1, (t - LEICHT_BIS) / (VOLL_AB - LEICHT_BIS));
+  }
+
+  // Alle Stellschrauben der Hindernis-Abfolge. Abstände in Sekunden Fahrzeit,
+  // damit sie bei jedem Tempo gleich viel Zeit zum Reagieren lassen.
+  function muster(t) {
+    var h = haerteBei(t);
+    var ab30 = t >= LEICHT_BIS;
+    return {
+      h: h,
+      lkw: ab30 ? 0.04 + 0.12 * h : 0,        // Anteil KBS-Lkw (Doppelsprung)
+      loch: ab30 ? 0.06 + 0.30 * h : 0,       // Anteil Schlaglöcher
+      lochMax: 40 + 46 * h,                   // breitestes Schlagloch in px
+      kombi: ab30 ? 0.06 + 0.40 * h : 0,      // Bodenhindernis mit Wespen oder Loch direkt dahinter
+      kombiWespe: 0.70 - 0.15 * h,            // s vom Hindernis-Ende bis zum Wespenschwarm
+      kombiLoch: 0.42 - 0.12 * h,             // s vom Hindernis-Ende bis zum Loch
+      abstandMin: 0.85 - 0.30 * h,            // kleinster Abstand zum nächsten Hindernis (s)
+      abstandZufall: 0.90 - 0.60 * h          // zufällig dazu: 0 bis so viele Sekunden
+    };
   }
 
   var leinwand = document.getElementById('leinwand');
@@ -446,26 +474,22 @@
     o.y = BODEN - 42;
   }
 
+  var statistik = { hindernisse: 0, lkw: 0, loch: 0, kombi: 0 };
+
   function hindernisErzeugen() {
     var o = freiesObjekt();
     if (!o) return;
-    var h = haerte();
+    var m = muster(sp.zeit);
     var x = B + 4;
     sp.anzahl++;
+    statistik.hindernisse++;
 
-    // Schlussphase: Bodenhindernis mit Wespenschwarm direkt dahinter – im Sprung
-    // trifft man den Schwarm, geduckt das Hindernis. So endet jeder Lauf vor 2 Minuten.
-    if (sp.zeit >= SCHLUSS_AB) {
-      objektSetzen(o, 'weinkiste', x, false, 1);
-      var w = freiesObjekt();
-      if (w) {
-        objektSetzen(w, 'schwarm', o.x + o.b + sp.v * 0.1, true, 1);
-        o = w;
-      }
-    } else if (sp.zeit >= LEICHT_BIS && Math.random() < 0.14) {
+    if (Math.random() < m.lkw) {
       lkwSetzen(o, x);
-    } else if (sp.zeit >= LEICHT_BIS && Math.random() < 0.15 + 0.25 * h) {
-      lochSetzen(o, x, Math.round(26 + Math.random() * (14 + 46 * h)));
+      statistik.lkw++;
+    } else if (Math.random() < m.loch) {
+      lochSetzen(o, x, Math.round(26 + Math.random() * (m.lochMax - 26)));
+      statistik.loch++;
     } else {
       var r = Math.random();
       var art = ARTEN[0];
@@ -478,20 +502,21 @@
       }
       objektSetzen(o, art.name, x, art.luft, art.rand);
 
-      // Ab 30 Sekunden: gemeine Kombinationen (Hindernis + Wespe oder Loch direkt dahinter)
-      if (!art.luft && sp.zeit >= LEICHT_BIS && Math.random() < 0.15 + 0.35 * h) {
+      // Gemeine Kombinationen: Bodenhindernis mit Wespenschwarm oder Loch direkt dahinter
+      if (!art.luft && Math.random() < m.kombi) {
         var k = freiesObjekt();
         if (k) {
-          var nah = o.x + o.b + sp.v * (0.42 - 0.12 * h);
-          if (Math.random() < 0.5) objektSetzen(k, 'schwarm', nah + sp.v * 0.08, true, 1);
-          else lochSetzen(k, nah, Math.round(24 + Math.random() * 20));
+          statistik.kombi++;
+          var ende = o.x + o.b;
+          if (Math.random() < 0.5) objektSetzen(k, 'schwarm', ende + sp.v * m.kombiWespe, true, 1);
+          else lochSetzen(k, ende + sp.v * m.kombiLoch, Math.round(24 + Math.random() * 20));
           o = k;
         }
       }
     }
 
-    // Abstand zum nächsten Hindernis: wird nach 30 Sekunden immer knapper
-    var abstand = Math.max(110, sp.v * (0.85 - 0.4 * h)) + Math.random() * sp.v * (0.9 - 0.65 * h);
+    // Abstand zum nächsten Hindernis: wird bis 4 Minuten gleichmäßig knapper
+    var abstand = Math.max(110, sp.v * m.abstandMin) + Math.random() * sp.v * m.abstandZufall;
     sp.naechstes = (o.x - B - 4) + abstand + o.b;
   }
 
@@ -557,7 +582,9 @@
     if (sp.naechstes <= 0) hindernisErzeugen();
   }
 
-  function punkte() { return Math.floor(sp.strecke / 8); }
+  // Punkte = zurückgelegte Strecke (1 Punkt je 16 Bildpunkte)
+  var PUNKTE_TEILER = 16;
+  function punkte() { return Math.floor(sp.strecke / PUNKTE_TEILER); }
 
   /* ---------- Zeichnen (nur Kopieren vorgezeichneter Bilder) ---------- */
   var sparmodus = false;
@@ -903,6 +930,64 @@
         y: sp.y, amBoden: sp.amBoden, duckt: sp.duckt, sparmodus: sparmodus, pausiert: pausiert
       };
     },
-    tempo: tempoBei
+    tempo: tempoBei,
+    // Nur für Tests: Hindernisse vor die Figur stellen (abstand = px zwischen Figur und
+    // Hindernis-Anfang) und eine feste Eingabefolge abspielen ({ t, springen } / { t, ducken }).
+    // Ergebnis: true, wenn die Figur nach „dauer“ Sekunden noch läuft.
+    probe: function (sekunde, hindernisse, eingaben, dauer) {
+      laufZuruecksetzen();
+      sp.zeit = sekunde;
+      sp.v = tempoBei(sekunde);
+      sp.naechstes = 1e9;
+      hindernisse.forEach(function (h, i) {
+        var o = objekte[i];
+        var x = SPIELER_X + 12 + h.abstand;
+        if (h.art === 'loch') lochSetzen(o, x, h.breite);
+        else if (h.art === 'lkw') lkwSetzen(o, x);
+        else objektSetzen(o, h.art, x, h.art === 'schwarm', h.art === 'rollator' ? 2 : 1);
+      });
+      var e = eingaben.slice().sort(function (a, b) { return a.t - b.t; });
+      var k = 0, start = sp.zeit, ok = true;
+      for (var i = 0, n = Math.round(dauer / DT); i < n; i++) {
+        while (k < e.length && e[k].t <= sp.zeit - start + 1e-9) {
+          if (e[k].springen) { eingabe.springenNeu = true; eingabe.springen = false; }
+          if (e[k].ducken !== undefined) eingabe.ducken = e[k].ducken;
+          k++;
+        }
+        schritt();
+        if (sp.aus) { ok = false; break; }
+      }
+      laufZuruecksetzen();
+      return ok;
+    },
+    breite: function (art) { return bilder[art] ? bilder[art].width : 0; },
+    muster: muster,
+    // Nur für Tests: unverwundbar bis „bis“ Sekunden laufen und je Abschnitt zählen,
+    // wie viele Hindernisse (davon Lkw, Löcher, Kombinationen) erzeugt werden
+    ablauf: function (bis, abschnitt) {
+      var war = TEST.unverwundbar;
+      TEST.unverwundbar = true;
+      laufZuruecksetzen();
+      var aus = [], grenze = abschnitt;
+      statistik = { hindernisse: 0, lkw: 0, loch: 0, kombi: 0 };
+      while (sp.zeit < bis) {
+        schritt();
+        sp.aus = false;
+        if (sp.zeit >= grenze) {
+          aus.push({ bis: grenze, hindernisse: statistik.hindernisse, lkw: statistik.lkw, loch: statistik.loch, kombi: statistik.kombi });
+          statistik = { hindernisse: 0, lkw: 0, loch: 0, kombi: 0 };
+          grenze += abschnitt;
+        }
+      }
+      TEST.unverwundbar = war;
+      laufZuruecksetzen();
+      return aus;
+    },
+    // Punkte nach so vielen Sekunden ohne Fehler
+    punkteNach: function (sekunden) {
+      var strecke = 0;
+      for (var t = 0; t < sekunden; t += DT) strecke += tempoBei(t + DT) * DT;
+      return Math.floor(strecke / PUNKTE_TEILER);
+    }
   };
 })();

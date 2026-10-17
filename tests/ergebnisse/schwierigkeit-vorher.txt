@@ -1,0 +1,14 @@
+Schwierigkeit von „Diabetes Run!“ (schwerstes Muster je Zeitpunkt)
+Zeit   Tempo     Sichtbar*  knappste Reaktionszeit (Muster)              alle machbar?
+ 15 s   180 px/s  1.53 s     1.44 s (Hindernis → Hindernis (Abstand))             ja
+ 30 s   210 px/s  1.31 s     1.15 s (KBS-Lkw)                                     ja
+ 60 s   480 px/s  0.57 s     0.46 s (KBS-Lkw)                                     ja
+ 90 s   750 px/s  0.37 s     0.24 s (Kombi Hindernis + Wespen)                    ja
+120 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+150 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+180 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+210 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+240 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+270 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+300 s   900 px/s  0.31 s     0.08 s (Schlussphase (alt))                          ja
+* Sichtbar = Zeit vom Auftauchen am rechten Bildrand bis zur Figur

@@ -39,6 +39,27 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 - Ohne Internet erspielte Punkte werden auf dem Handy aufbewahrt und beim nächsten Öffnen der
   Lernkarten oder der Highscore-Liste nachgetragen.
 
+### Schwierigkeit des Spiels
+
+Kein Zeitlimit – gute Spielerinnen und Spieler können lange spielen, die Punkte streuen deshalb.
+Gemessen mit `tests/schwierigkeit.test.js` (schwerstes Hindernis-Muster je Zeitpunkt; zum Vergleich:
+Reaktionszeit beim Menschen mit Entscheidung „springen oder ducken?“ ca. 0,3–0,45 s):
+
+| Zeit | Tempo | Hindernisse/min | Zeit zum Reagieren | |
+|---|---|---|---|---|
+| 0:00–0:30 | 150–210 px/s | 42, nur einfache | über 1 s | alle kommen mit |
+| 1:00 | 280 px/s | 46 | 0,85 s | |
+| 2:00 | 420 px/s | 51 | 0,54 s | |
+| 3:00 | 560 px/s | 59 | 0,38 s | schwer – für gute Reaktion machbar |
+| 4:00 | 700 px/s | 66 | 0,28 s | kaum noch zu schaffen |
+| 5:00 | 840 px/s | 67 | 0,21 s | praktisch unmöglich |
+
+Ab 30 Sekunden steigen Tempo, Zahl der Hindernisse und der Anteil schwieriger Abfolgen (Lkw mit
+Doppelsprung, Schlaglöcher, Hindernis mit Wespenschwarm dahinter) gleichmäßig bis zur 4. Minute;
+danach wird nur noch das Tempo höher. Jedes Muster bleibt mit der richtigen Eingabe machbar.
+Stellschrauben: Funktion `muster()` und die Konstanten darüber in `docs/spiel/spiel.js`.
+(Die Fassung im Repository `kb2-beratung` für den Unterricht endet weiterhin nach etwa 2 Minuten.)
+
 ### Highscore-Liste einrichten (einmalig, ca. 10 Minuten)
 
 1. In Google Drive: **Neu → Google Tabellen → Leere Tabelle**, Name z. B. „Lernkarten Highscore“.
