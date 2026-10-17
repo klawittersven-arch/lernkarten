@@ -59,6 +59,7 @@
   ✓ falscher Schlüssel: „Zurücksetzen hat nicht geklappt“
   ✓ Schlüssel verschwindet sofort aus der Adresszeile
   ✓ Zurücksetzen-Kasten sichtbar
+  ✓ Lehrkraft-Test: „Testeintrag senden“ kommt in der Tabelle an und erscheint in der Liste
   ✓ Liste KB I ist leer
 
 == KB II, Übersicht, nicht eingerichtete Liste
@@ -75,4 +76,4 @@
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole (außer den absichtlich unterbrochenen Verbindungen)
 
-58 von 58 Prüfungen bestanden.
+59 von 59 Prüfungen bestanden.

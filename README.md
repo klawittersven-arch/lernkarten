@@ -63,6 +63,9 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
   `https://klawittersven-arch.github.io/lernkarten/highscore/?liste=kb1-diabetes&zuruecksetzen=SCHLÜSSEL`
   bzw. `…?liste=kb2-beratung&zuruecksetzen=SCHLÜSSEL`. Die Seite fragt noch einmal nach und entfernt
   den Schlüssel sofort aus der Adresszeile.
+- **Verbindung testen:** Auf derselben Seite (über den Zurücksetzen-Link) sendet „Testeintrag senden“
+  einen Eintrag „Test T.“ mit 1 Punkt. Erscheint er in der Liste, funktioniert alles. Danach die Zeile
+  in der Tabelle löschen oder die Liste zurücksetzen.
 - **Einzelne Einträge löschen:** in der Google-Tabelle die Zeile löschen. Jedes Kartenset hat ein
   eigenes Tabellenblatt (`kb1-diabetes`, `kb2-beratung`), jede Zeile ist eine gespielte Runde.
   Versehentlich zurückgesetzt? *Datei → Versionsverlauf* in der Tabelle.

@@ -76,6 +76,7 @@ function kartenIds(ordner) {
 
   async function kontext(mitAdresse = true) {
     const ctx = await browser.newContext(OPT);
+    if (!mitAdresse) await ctx.addInitScript(() => { window.HIGHSCORE_TEST_ADRESSE = 'keine'; });
     if (mitAdresse) await ctx.addInitScript((a) => { window.HIGHSCORE_TEST_ADRESSE = a; }, attrappeAdresse);
     return ctx;
   }
@@ -192,6 +193,10 @@ function kartenIds(ordner) {
   await p.goto(basis + 'highscore/?liste=kb1-diabetes&zuruecksetzen=' + TEST_SCHLUESSEL);
   H.pruefe(!p.url().includes(TEST_SCHLUESSEL), 'Schlüssel verschwindet sofort aus der Adresszeile');
   H.pruefe(await p.locator('#zuruecksetzen').isVisible(), 'Zurücksetzen-Kasten sichtbar');
+  await p.click('#testeintrag-knopf');
+  await H.bis(async () => (await p.locator('#zuruecksetzen-status').innerText()).startsWith('Testeintrag angekommen'));
+  await H.bis(async () => (await p.locator('#liste').innerText()).includes('Test T.'));
+  H.pruefe((await p.locator('#liste').innerText()).includes('Test T.'), 'Lehrkraft-Test: „Testeintrag senden“ kommt in der Tabelle an und erscheint in der Liste');
   await p.click('#zuruecksetzen-knopf');
   await H.bis(async () => (await p.locator('#zuruecksetzen-status').innerText()).includes('wurde zurückgesetzt'));
   await H.bis(async () => (await p.locator('#liste-status').innerText()).startsWith('Noch keine Einträge'));

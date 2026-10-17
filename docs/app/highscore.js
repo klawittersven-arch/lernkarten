@@ -158,6 +158,11 @@
   var WS = 'lernkarten:highscore-ausstehend';
   function warteschlange() { var w = lesen(WS); return Array.isArray(w) ? w : []; }
 
+  // Lehrkraft-Test (Highscore-Seite): sofort senden, ohne Warteschlange
+  function testEintragen(liste_) {
+    return senden({ aktion: 'eintragen', liste: liste_, name: 'Test T.', punkte: 1, geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now() });
+  }
+
   function eintragen(liste_, name, punkte) {
     var eintrag = {
       aktion: 'eintragen', liste: liste_, name: name, punkte: Math.max(0, Math.floor(punkte)),
@@ -216,6 +221,7 @@
     eingerichtet: eingerichtet,
     listeLaden: listeLaden,
     eintragen: eintragen,
+    testEintragen: testEintragen,
     ausstehendeSenden: ausstehendeSenden,
     warteschlange: warteschlange,
     zuruecksetzen: zuruecksetzen,

@@ -105,8 +105,22 @@
     $('zuruecksetzen-text').textContent = LK.ersetzen(T.zuruecksetzenText, { satz: aktiv.titel });
     $('zuruecksetzen-knopf').textContent = LK.ersetzen(T.zuruecksetzenKnopf, { satz: aktiv.kurz || aktiv.titel });
     $('zuruecksetzen-knopf').disabled = false;
+    $('testeintrag-knopf').textContent = T.testeintragKnopf;
     $('zuruecksetzen-status').textContent = '';
   }
+
+  // Prüft die ganze Strecke Handy → Google-Tabelle → Liste, ohne eine Spielrunde zu brauchen
+  $('testeintrag-knopf').addEventListener('click', function () {
+    var l = aktiv;
+    $('zuruecksetzen-status').textContent = T.highscoreLaedt;
+    LK.testEintragen(l.kennung).then(function (r) {
+      if (!r || !r.ok) throw new Error((r && r.fehler) || 'Fehler');
+      $('zuruecksetzen-status').textContent = LK.ersetzen(T.testeintragOk, { x: r.platz });
+      laden();
+    }).catch(function (e) {
+      $('zuruecksetzen-status').textContent = LK.ersetzen(T.testeintragFehler, { x: e.message });
+    });
+  });
 
   $('zuruecksetzen-knopf').addEventListener('click', function () {
     var l = aktiv;

@@ -14,7 +14,7 @@ var EINSTELLUNGEN = {
   // Adresse der Highscore-Liste: die Web-App-Adresse aus Google Apps Script
   // (endet auf /exec). Leer lassen ('') = Liste noch nicht eingerichtet;
   // erreichte Punkte werden dann auf dem Handy aufbewahrt und später nachgetragen.
-  highscoreAdresse: '',
+  highscoreAdresse: 'https://script.google.com/macros/s/AKfycbyZULtysjGijW52hK62WO2nJ4G0T1PjmzFE1ZCm6fIPKS9lwjl37M8jbkv5sHzyaTB7Cg/exec',
 
   // Nach so vielen vollständigen Durchgängen durch einen Kartensatz gibt es eine Spielrunde.
   // Ein Durchgang ist vollständig, wenn jede Karte des Satzes einmal umgedreht und bewertet wurde.
@@ -113,6 +113,9 @@ var EINSTELLUNGEN = {
     zuruecksetzenFrage: 'Wirklich alle Einträge der Liste „{satz}“ löschen?',
     zurueckgesetzt: 'Die Liste „{satz}“ wurde zurückgesetzt.',
     zuruecksetzenFehler: 'Zurücksetzen hat nicht geklappt: {x}',
+    testeintragKnopf: 'Testeintrag senden („Test T.“, 1 Punkt)',
+    testeintragOk: 'Testeintrag angekommen (Platz {x}) – die Verbindung zur Google-Tabelle funktioniert. Löschen Sie ihn in der Tabelle oder setzen Sie die Liste zurück.',
+    testeintragFehler: 'Testeintrag ist nicht angekommen: {x}',
 
     wusstestDuUeberschrift: 'Wusstest du?'
   },
