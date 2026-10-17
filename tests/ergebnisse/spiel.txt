@@ -23,12 +23,21 @@
   ✓ Regel: jede Runde nach einem vollständigen Durchgang
   ✓ ohne Freischaltung kein „Jetzt spielen“
   ✓ unauffälliger Link „Highscore-Liste“ unten auf der Startseite
+  ✓ Karte ohne Umdrehen bewertet: einmaliger Tipp „zählt nur, wenn umgedreht“
+  ✓ beim Lernen oben: „🎮 noch 84 Karten bis zur Spielrunde“
   ✓ gezählt wird nur eine umgedrehte Karte (egal ob gewusst oder nicht)
   ✓ „Zurück“ nimmt auch die Zählung zurück
   ✓ Fortschritt: 84 von 85 Karten
-  ✓ Hinweis „Neue Spielrunde freigeschaltet!“ erscheint sofort
+  ✓ beim Lernen oben: „🎮 noch 1 Karte bis zur Spielrunde“
+  ✓ sofort bildschirmfüllend: „Super! Sie sind alle Lernkarten … durchgegangen …“
+  ✓ Gratulation füllt den ganzen Bildschirm
+  ✓ Knöpfe „🎮 Jetzt spielen“ und „Nein, danke – weiterlernen“
+  ✓ solange die Gratulation offen ist, geht das Lernen nicht versehentlich weiter
+  ✓ „Nein, danke“ schließt die Gratulation, Lernen geht weiter
   ✓ Ergebnis der Runde: Kasten mit „Jetzt spielen“
   ✓ Startseite: „1 Spielrunde frei!“ und „Jetzt spielen“
+  ✓ schon angekündigte Runde: beim erneuten Öffnen keine zweite Gratulation
+  ✓ Runde verdient, aber noch nicht angekündigt (z. B. App geschlossen): Gratulation beim Öffnen
 
 == Spiel und Eintragen
   ✓ Spiel: „Sie haben 1 Spielrunde frei (KB I).“
@@ -64,6 +73,11 @@
   ✓ Lehrkraft-Test: „Testeintrag senden“ kommt in der Tabelle an und erscheint in der Liste
   ✓ Liste KB I ist leer
 
+== Echter Durchgang über die Oberfläche (KB II, alle 79 Karten umdrehen)
+  ✓ nach 78 Karten: noch keine Gratulation, „noch 1 Karte“
+  ✓ nach der 79. Karte: Gratulation bildschirmfüllend
+  ✓ danach Ergebnis der Runde mit „Jetzt spielen“
+
 == KB II, Übersicht, nicht eingerichtete Liste
   ✓ Übersicht: Link zur Highscore-Liste
   ✓ KB II: eigener Spiel-Kasten (79 Karten)
@@ -78,4 +92,4 @@
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole (außer den absichtlich unterbrochenen Verbindungen)
 
-61 von 61 Prüfungen bestanden.
+73 von 73 Prüfungen bestanden.

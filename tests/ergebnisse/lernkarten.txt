@@ -174,14 +174,14 @@
 == Offline nach dem ersten Laden (beide Kartensätze auf demselben Handy)
   ✓ kb1-diabetes: eigener Service Worker aktiv
   ✓ kb2-beratung: eigener Service Worker aktiv
-  ✓ getrennte Offline-Speicher (Kartensätze und Spiel): lernkarten-/lernkarten/kb1-diabetes/-v2, lernkarten-/lernkarten/kb2-beratung/-v2, lernkarten-/lernkarten/spiel/-v1
+  ✓ getrennte Offline-Speicher (Kartensätze und Spiel): lernkarten-/lernkarten/kb1-diabetes/-v3, lernkarten-/lernkarten/kb2-beratung/-v3, lernkarten-/lernkarten/spiel/-v2
   ✓ kb1-diabetes: offline lernbar
   ✓ kb2-beratung: offline lernbar
 
 == Datenschutz
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole
-  ✓ kb1-diabetes: alle Dateien zusammen 119 KB (< 150 KB)
-  ✓ kb2-beratung: alle Dateien zusammen 120 KB (< 150 KB)
+  ✓ kb1-diabetes: alle Dateien zusammen 127 KB (< 150 KB)
+  ✓ kb2-beratung: alle Dateien zusammen 128 KB (< 150 KB)
 
 95 von 95 Prüfungen bestanden.

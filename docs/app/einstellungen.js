@@ -52,6 +52,17 @@ var EINSTELLUNGEN = {
     spielFortschrittMehr: 'Bis zur nächsten Runde: Durchgang {d} von {n} · {x} von {y} Karten',  // wenn durchgaengeProSpiel > 1
     spielRegel: 'Jedes Mal, wenn Sie alle Karten einmal durchgegangen sind, dürfen Sie zur Belohnung eine Runde spielen und sich in die Highscore-Liste eintragen! Es zählt jede umgedrehte Karte – egal, ob gewusst oder nicht.',
     spielNeu: '🎮 Neue Spielrunde freigeschaltet!',
+    spielRestEine: '🎮 noch 1 Karte bis zur Spielrunde',
+    spielRestMehr: '🎮 noch {x} Karten bis zur Spielrunde',
+    nichtGezaehlt: 'Tipp: Für die Spielrunde zählt eine Karte nur, wenn Sie sie vorher umgedreht haben.',
+
+    // Gratulation (bildschirmfüllend), sobald alle Karten einmal durchgegangen sind
+    belohnungTitel: 'Super!',
+    belohnungText: 'Sie sind alle Lernkarten von „{satz}“ einmal durchgegangen. Zur Belohnung dürfen Sie jetzt eine Runde „Diabetes Run!“ spielen und sich in die Highscore-Liste eintragen!',
+    belohnungMehr: 'Sie haben {x} Spielrunden frei.',
+    belohnungStart: '🎮 Jetzt spielen',
+    belohnungSpaeter: 'Nein, danke – weiterlernen',
+    belohnungHinweis: 'Die Runde bleibt gespeichert – Sie können sie auch später über „Jetzt spielen“ auf der Startseite starten.',
     highscoreLink: '🏆 Highscore-Liste',
 
     // Spielseite

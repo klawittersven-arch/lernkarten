@@ -31,7 +31,12 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
   oder „noch nicht“ (Fleiß zählt, nicht Auswendiglernen). Ein Durchgang ist vollständig, wenn jede
   Karte des Satzes einmal gezählt wurde – in beliebig vielen Runden, gemischt oder nach Themen.
   Nach jedem vollständigen Durchgang gibt es eine Spielrunde. KB I und KB II zählen getrennt.
-  Der Kasten „🎮 Belohnungsspiel: Diabetes Run!“ auf der Startseite zeigt den Fortschritt.
+- **Nicht zu übersehen:** Sobald die letzte fehlende Karte bewertet ist, erscheint bildschirmfüllend
+  „Super! … Zur Belohnung dürfen Sie jetzt eine Runde „Diabetes Run!“ spielen …“ mit den Knöpfen
+  „🎮 Jetzt spielen“ und „Nein, danke – weiterlernen“. Wurde die App vorher geschlossen, erscheint die
+  Gratulation beim nächsten Öffnen. Beim Lernen zeigt die Kopfzeile „🎮 noch x Karten bis zur
+  Spielrunde“; wer eine Karte ohne Umdrehen bewertet, bekommt einmal den Tipp, dass sie so nicht zählt.
+  Auf der Startseite zeigt der Kasten „🎮 Belohnungsspiel: Diabetes Run!“ Fortschritt und freie Runden.
 - **Spielen:** Jede freie Runde lässt sich genau einmal spielen. Danach tragen sich die SuS mit
   Vorname und erstem Buchstaben des Nachnamens ein („Mia S.“).
 - **Highscore:** eine Liste je Kartensatz, je Name zählt die beste Runde. Erreichbar über den

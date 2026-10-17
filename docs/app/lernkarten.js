@@ -73,7 +73,10 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       <span class="nur-vorlesen" id="schliessen-text"></span>
     </button>
-    <p class="zaehler" id="zaehler"></p>
+    <div class="zaehler-block">
+      <p class="zaehler" id="zaehler"></p>
+      <p class="spiel-rest" id="spiel-rest" hidden></p>
+    </div>
     <button type="button" class="symbol-knopf" id="knopf-zurueck">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
       <span class="nur-vorlesen" id="zurueck-text"></span>
@@ -151,6 +154,20 @@
 
 <p class="nur-vorlesen" id="ansage" aria-live="polite"></p>
 <p class="toast" id="toast" role="status" hidden></p>
+
+<!-- ============ Gratulation: Spielrunde freigeschaltet ============ -->
+<div class="belohnung" id="belohnung" role="dialog" aria-modal="true" aria-labelledby="belohnung-titel" hidden>
+  <div class="konfetti" id="konfetti" aria-hidden="true"></div>
+  <div class="belohnung-inhalt">
+    <div class="belohnung-symbol" aria-hidden="true">🏆</div>
+    <h2 id="belohnung-titel"></h2>
+    <p class="belohnung-text" id="belohnung-text"></p>
+    <p class="belohnung-mehr" id="belohnung-mehr" hidden></p>
+    <a class="knopf belohnung-start" id="belohnung-start"></a>
+    <button type="button" class="knopf belohnung-spaeter" id="belohnung-spaeter"></button>
+    <p class="belohnung-hinweis" id="belohnung-hinweis"></p>
+  </div>
+</div>
 `;
   document.body.insertAdjacentHTML('afterbegin', VORLAGE);
 
@@ -332,7 +349,68 @@
     $('spiel-regel').textContent = ersetzen(ST.spielRegel, { n: PRO_SPIEL });
   }
 
+  /* ---------- Gratulation (bildschirmfüllend) ---------- */
+  var ANGEBOTEN = 'lernkarten:' + SATZ + ':spiel-angeboten'; // so viele Runden wurden schon angekündigt
+  var belohnungOffen = false;
+  var fokusVorher = null;
+
+  function angeboten() {
+    try { var n = lager && JSON.parse(lager.getItem(ANGEBOTEN)); return typeof n === 'number' ? n : 0; } catch (e) { return 0; }
+  }
+
+  function belohnungZeigen() {
+    if (!SPIEL || belohnungOffen) return;
+    var frei = LK.Runden.frei(SATZ);
+    if (frei <= 0) return;
+    try { if (lager) lager.setItem(ANGEBOTEN, JSON.stringify(LK.Runden.verdient(SATZ))); } catch (e) { /* egal */ }
+    $('belohnung-titel').textContent = ST.belohnungTitel;
+    $('belohnung-text').textContent = ersetzen(ST.belohnungText, { satz: D.titel });
+    $('belohnung-mehr').hidden = frei < 2;
+    $('belohnung-mehr').textContent = ersetzen(ST.belohnungMehr, { x: frei });
+    $('belohnung-start').textContent = ST.belohnungStart;
+    $('belohnung-start').href = spielLink();
+    $('belohnung-spaeter').textContent = ST.belohnungSpaeter;
+    $('belohnung-hinweis').textContent = ST.belohnungHinweis;
+    konfettiStreuen();
+    fokusVorher = document.activeElement;
+    $('belohnung').hidden = false;
+    belohnungOffen = true;
+    document.body.classList.add('belohnung-offen');
+    $('belohnung-start').focus({ preventScroll: true });
+  }
+
+  function belohnungSchliessen() {
+    if (!belohnungOffen) return;
+    $('belohnung').hidden = true;
+    belohnungOffen = false;
+    document.body.classList.remove('belohnung-offen');
+    if (aktuelleAnsicht === 'start') startAktualisieren();
+    if (fokusVorher && fokusVorher.focus) fokusVorher.focus({ preventScroll: true });
+  }
+
+  // Runden, die noch nicht angekündigt wurden (z. B. Seite zwischendurch geschlossen)
+  function offeneBelohnung() {
+    return SPIEL && LK.Runden.frei(SATZ) > 0 && LK.Runden.verdient(SATZ) > angeboten();
+  }
+
+  function konfettiStreuen() {
+    var k = $('konfetti');
+    k.textContent = '';
+    if (wenigerBewegung()) return;
+    var farben = ['#F2B600', '#8CC4CC', '#FFFFFF', '#E26D5A', '#6FD39A'];
+    for (var i = 0; i < 36; i++) {
+      var s = document.createElement('span');
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.background = farben[i % farben.length];
+      s.style.animationDelay = (Math.random() * 1.2) + 's';
+      s.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+      s.style.transform = 'rotate(' + Math.round(Math.random() * 360) + 'deg)';
+      k.appendChild(s);
+    }
+  }
+
   var toastZeit = null;
+  var tippGezeigt = false;
   function toastZeigen(text) {
     var t = $('toast');
     t.textContent = text;
@@ -596,10 +674,16 @@
     $('anzahl-gewusst').textContent = g;
     $('anzahl-nochnicht').textContent = n;
     $('knopf-zurueck').disabled = !r.verlauf.length;
+    if (SPIEL) {
+      var d = durchgaenge();
+      var rest = REIHENFOLGE.filter(function (id) { return (zustand.zaehler[id] || 0) <= d; }).length;
+      $('spiel-rest').hidden = false;
+      $('spiel-rest').textContent = rest === 1 ? ST.spielRestEine : ersetzen(ST.spielRestMehr, { x: rest });
+    }
   }
 
   function umdrehen() {
-    if (sperre || aktuelleAnsicht !== 'lernen') return;
+    if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen') return;
     umgedreht = !umgedreht;
     if (umgedreht) gesehen = true;
     $('karte').classList.toggle('umgedreht', umgedreht);
@@ -607,7 +691,7 @@
   }
 
   function bewerten(wert) {
-    if (sperre || aktuelleAnsicht !== 'lernen' || !rundeLaeuft()) return;
+    if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen' || !rundeLaeuft()) return;
     var r = zustand.runde;
     var id = r.ids[r.pos];
     r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: gesehen });
@@ -616,15 +700,15 @@
     r.ergebnis[id] = wert;
     r.pos++;
     speichern();
-    if (spielrundenPruefen()) {
-      neuFreigeschaltet = true;
-      toastZeigen(ST.spielNeu);
-    }
+    var gratulation = spielrundenPruefen();
+    if (gratulation) neuFreigeschaltet = true;
+    else if (SPIEL && !gesehen && !tippGezeigt) { tippGezeigt = true; toastZeigen(ST.nichtGezaehlt); }
 
     var weiter = function () {
       sperre = false;
       if (r.pos >= r.ids.length) ergebnisZeigen();
       else karteZeigen(true);
+      if (gratulation) belohnungZeigen();
     };
     if (wenigerBewegung()) { weiter(); return; }
     sperre = true;
@@ -639,7 +723,7 @@
 
   function zuruecknehmen() {
     var r = zustand.runde;
-    if (sperre || !r || !r.verlauf.length) return;
+    if (sperre || belohnungOffen || !r || !r.verlauf.length) return;
     var v = r.verlauf.pop();
     if (v.vorher) zustand.stand[v.id] = v.vorher; else delete zustand.stand[v.id];
     if (v.gezaehlt && zustand.zaehler[v.id] > 0) zustand.zaehler[v.id]--;
@@ -662,7 +746,7 @@
   }
 
   function zugBeginn(e) {
-    if (sperre || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (sperre || belohnungOffen || (e.pointerType === 'mouse' && e.button !== 0)) return;
     zug = { x: e.clientX, y: e.clientY, dx: 0, id: e.pointerId, aktiv: false };
   }
 
@@ -791,8 +875,14 @@
   $('knopf-wiederholen').addEventListener('click', wiederholen);
   $('knopf-alle').addEventListener('click', function () { rundeStarten('alle'); });
 
+  $('belohnung-spaeter').addEventListener('click', belohnungSchliessen);
+
   document.addEventListener('keydown', function (e) {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (belohnungOffen) {
+      if (e.key === 'Escape') { e.preventDefault(); belohnungSchliessen(); }
+      return;
+    }
     if (aktuelleAnsicht === 'lernen') {
       var aufKnopf = e.target && e.target.tagName === 'BUTTON';
       if (e.key === 'ArrowRight') { e.preventDefault(); bewerten('g'); }
@@ -806,6 +896,7 @@
   });
 
   zeigeStart();
+  if (offeneBelohnung()) belohnungZeigen();
 
   // Zurück aus dem Spiel (Zurück-Taste, Wechsel der App): Spielstand neu anzeigen
   window.addEventListener('pageshow', function (e) { if (e.persisted && aktuelleAnsicht === 'start') startAktualisieren(); });
