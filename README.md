@@ -19,7 +19,7 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 - Am Ende einer Runde: „x Karten wiederholen“ – so lange, bis alles sitzt.
 - Auf der Startseite: Arbeitsblätter einzeln an- und abwählen, „Karten mischen“, Lernstand pro
   Arbeitsblatt. Eine angefangene Runde lässt sich später fortsetzen.
-- **Belohnung:** Wer alle Karten eines Satzes 3-mal durchgegangen ist, schaltet eine Runde des
+- **Belohnung:** Wer alle Karten eines Satzes einmal durchgegangen ist, schaltet eine Runde des
   Spiels „Diabetes Run!“ frei – siehe unten.
 - **Datenschutz:** keine Anmeldung, keine Cookies, keine fremden Schriften. Der Lernstand liegt nur
   im Browser des Handys. Nach dem ersten Aufruf funktioniert alles auch offline. Nur wer nach einer
@@ -30,8 +30,8 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 - **Freischalten:** Jede Karte, die umgedreht und dann bewertet wurde, zählt – egal ob „gewusst“
   oder „noch nicht“ (Fleiß zählt, nicht Auswendiglernen). Ein Durchgang ist vollständig, wenn jede
   Karte des Satzes einmal gezählt wurde – in beliebig vielen Runden, gemischt oder nach Themen.
-  Nach 3 Durchgängen gibt es eine Spielrunde, nach 6 die nächste usw. KB I und KB II zählen getrennt.
-  Der Kasten „🎮 Diabetes Run!“ auf der Startseite zeigt den Fortschritt.
+  Nach jedem vollständigen Durchgang gibt es eine Spielrunde. KB I und KB II zählen getrennt.
+  Der Kasten „🎮 Belohnungsspiel: Diabetes Run!“ auf der Startseite zeigt den Fortschritt.
 - **Spielen:** Jede freie Runde lässt sich genau einmal spielen. Danach tragen sich die SuS mit
   Vorname und erstem Buchstaben des Nachnamens ein („Mia S.“).
 - **Highscore:** eine Liste je Kartensatz, je Name zählt die beste Runde. Erreichbar über den

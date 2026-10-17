@@ -93,7 +93,9 @@ function kartenIds(ordner) {
   p.on('dialog', (d) => d.accept());
   await p.goto(basis + 'kb1-diabetes/');
   H.pruefe(await p.locator('#spiel-box').isVisible(), 'Startseite zeigt den Spiel-Kasten');
-  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Nächste Spielrunde: Durchgang 1 von 3 · 0 von 85 Karten', 'Fortschritt: Durchgang 1 von 3 · 0 von 85 Karten');
+  H.pruefe((await p.locator('#spiel-titel').innerText()) === 'Belohnungsspiel: Diabetes Run!', 'Titel „Belohnungsspiel: Diabetes Run!“');
+  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 0 von 85 Karten', 'Fortschritt: „Bis zur nächsten Runde: 0 von 85 Karten“');
+  H.pruefe((await p.locator('#spiel-regel').innerText()).startsWith('Jedes Mal, wenn Sie alle Karten einmal durchgegangen sind'), 'Regel: jede Runde nach einem vollständigen Durchgang');
   H.pruefe(await p.locator('#spiel-los').isHidden(), 'ohne Freischaltung kein „Jetzt spielen“');
   H.pruefe((await p.locator('#highscore-link').getAttribute('href')) === '../highscore/?liste=kb1-diabetes', 'unauffälliger Link „Highscore-Liste“ unten auf der Startseite');
 
@@ -106,15 +108,15 @@ function kartenIds(ordner) {
   z = (await lesen(p, 'lernkarten:kb1-diabetes')).zaehler;
   H.pruefe(!z[ids1[1]], '„Zurück“ nimmt auch die Zählung zurück', z);
 
-  // Zwei Durchgänge vorgeben, im dritten fehlt nur noch die erste Karte
+  // Im ersten Durchgang fehlt nur noch die erste Karte
   await p.evaluate(({ ids, k }) => {
     const s = JSON.parse(localStorage.getItem(k));
-    s.zaehler = {}; ids.forEach((id, i) => { s.zaehler[id] = i === 0 ? 2 : 3; });
+    s.zaehler = {}; ids.forEach((id, i) => { s.zaehler[id] = i === 0 ? 0 : 1; });
     s.runde = null; s.abgewaehlt = []; s.stand = {};
     localStorage.setItem(k, JSON.stringify(s));
   }, { ids: ids1, k: 'lernkarten:kb1-diabetes' });
   await p.reload();
-  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Nächste Spielrunde: Durchgang 3 von 3 · 84 von 85 Karten', 'Fortschritt: Durchgang 3 von 3 · 84 von 85 Karten');
+  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 84 von 85 Karten', 'Fortschritt: 84 von 85 Karten');
   await p.click('#keine-themen');
   await p.locator('.thema').first().locator('input').check();
   await p.click('#knopf-start');

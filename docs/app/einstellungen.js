@@ -18,7 +18,8 @@ var EINSTELLUNGEN = {
 
   // Nach so vielen vollständigen Durchgängen durch einen Kartensatz gibt es eine Spielrunde.
   // Ein Durchgang ist vollständig, wenn jede Karte des Satzes einmal umgedreht und bewertet wurde.
-  durchgaengeProSpiel: 3,
+  // Bei einer Änderung auch die Texte spielRegel und gesperrt unten anpassen.
+  durchgaengeProSpiel: 1,
 
   // Eine Highscore-Liste je Kartensatz. kennung = speicherName in karten.js,
   // ordner = Ordner des Kartensatzes in docs/
@@ -43,12 +44,13 @@ var EINSTELLUNGEN = {
   /* ---------- Texte ---------- */
   texte: {
     // Kasten auf der Startseite der Lernkarten
-    spielTitel: 'Diabetes Run!',
+    spielTitel: 'Belohnungsspiel: Diabetes Run!',
     spielFreiEine: '1 Spielrunde frei!',
     spielFreiMehr: '{x} Spielrunden frei!',
     spielLos: 'Jetzt spielen',
-    spielFortschritt: 'Nächste Spielrunde: Durchgang {d} von {n} · {x} von {y} Karten',
-    spielRegel: 'Für jede Spielrunde gehen Sie alle Karten {n}-mal durch. Es zählt jede Karte, die Sie umgedreht haben – egal, ob gewusst oder nicht.',
+    spielFortschritt: 'Bis zur nächsten Runde: {x} von {y} Karten',
+    spielFortschrittMehr: 'Bis zur nächsten Runde: Durchgang {d} von {n} · {x} von {y} Karten',  // wenn durchgaengeProSpiel > 1
+    spielRegel: 'Jedes Mal, wenn Sie alle Karten einmal durchgegangen sind, dürfen Sie zur Belohnung eine Runde spielen und sich in die Highscore-Liste eintragen! Es zählt jede umgedrehte Karte – egal, ob gewusst oder nicht.',
     spielNeu: '🎮 Neue Spielrunde freigeschaltet!',
     highscoreLink: '🏆 Highscore-Liste',
 
@@ -60,7 +62,7 @@ var EINSTELLUNGEN = {
     freiMehr: 'Sie haben {x} Spielrunden frei ({satz}).',
     losHinweis: '„Los geht’s!“ startet die Runde – danach ist sie verbraucht.',
     gesperrtTitel: 'Noch keine Spielrunde frei',
-    gesperrt: 'Für jede Spielrunde gehen Sie alle Lernkarten von „{satz}“ {n}-mal durch. Es zählt jede Karte, die Sie umgedreht haben – egal, ob gewusst oder nicht.',
+    gesperrt: 'Jedes Mal, wenn Sie alle Lernkarten von „{satz}“ einmal durchgegangen sind, dürfen Sie zur Belohnung eine Runde spielen. Es zählt jede umgedrehte Karte – egal, ob gewusst oder nicht.',
     unbekannt: 'Diesen Kartensatz gibt es nicht.',
     los: 'Los geht’s!',
     nochmal: 'Noch eine Runde ({x} frei)',

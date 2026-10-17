@@ -163,7 +163,7 @@
   var SATZ = D.speicherName || 'standard';
   var SPIEL = !!(LK && LK.spielAn(SATZ));
   var ST = SPIEL ? LK.T : {};
-  var PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.durchgaengeProSpiel || 3)) : 3;
+  var PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.durchgaengeProSpiel || 1)) : 1;
 
   /* ---------- Hilfen ---------- */
   function $(id) { return document.getElementById(id); }
@@ -326,7 +326,8 @@
     los.hidden = frei <= 0;
     los.href = spielLink();
     los.textContent = ST.spielLos;
-    $('spiel-text').textContent = ersetzen(ST.spielFortschritt, { d: seit + 1, n: PRO_SPIEL, x: imDurchgang, y: gesamt });
+    $('spiel-text').textContent = ersetzen(PRO_SPIEL > 1 ? ST.spielFortschrittMehr : ST.spielFortschritt,
+      { d: seit + 1, n: PRO_SPIEL, x: imDurchgang, y: gesamt });
     $('spiel-balken').style.width = (gesamt ? 100 * (seit * gesamt + imDurchgang) / (PRO_SPIEL * gesamt) : 0) + '%';
     $('spiel-regel').textContent = ersetzen(ST.spielRegel, { n: PRO_SPIEL });
   }

@@ -18,12 +18,14 @@
 
 == Freischaltung in den Lernkarten (KB I)
   ✓ Startseite zeigt den Spiel-Kasten
-  ✓ Fortschritt: Durchgang 1 von 3 · 0 von 85 Karten
+  ✓ Titel „Belohnungsspiel: Diabetes Run!“
+  ✓ Fortschritt: „Bis zur nächsten Runde: 0 von 85 Karten“
+  ✓ Regel: jede Runde nach einem vollständigen Durchgang
   ✓ ohne Freischaltung kein „Jetzt spielen“
   ✓ unauffälliger Link „Highscore-Liste“ unten auf der Startseite
   ✓ gezählt wird nur eine umgedrehte Karte (egal ob gewusst oder nicht)
   ✓ „Zurück“ nimmt auch die Zählung zurück
-  ✓ Fortschritt: Durchgang 3 von 3 · 84 von 85 Karten
+  ✓ Fortschritt: 84 von 85 Karten
   ✓ Hinweis „Neue Spielrunde freigeschaltet!“ erscheint sofort
   ✓ Ergebnis der Runde: Kasten mit „Jetzt spielen“
   ✓ Startseite: „1 Spielrunde frei!“ und „Jetzt spielen“
@@ -76,4 +78,4 @@
   ✓ keine Anfrage an fremde Adressen
   ✓ keine Fehler in der Konsole (außer den absichtlich unterbrochenen Verbindungen)
 
-59 von 59 Prüfungen bestanden.
+61 von 61 Prüfungen bestanden.

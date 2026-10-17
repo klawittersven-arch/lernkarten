@@ -19,7 +19,7 @@
   $('titel').textContent = T.highscoreTitel;
   $('untertitel').textContent = T.highscoreUntertitel;
   $('link-uebersicht').textContent = T.zurUebersicht;
-  document.title = T.highscoreTitel + ' – ' + T.spielTitel;
+  document.title = T.highscoreTitel + ' – ' + T.titel;
 
   var eigenerName = (function () {
     var n = LK.nameLesen();
