@@ -90,7 +90,7 @@ var EINSTELLUNGEN = {
     // Spielseite
     titel: 'KBS Diabetes Run!',
     logoAlt: 'Logo der Schule',
-    spielidee: 'Diese Hohenloher Pflegekraft ist auf Tour durchs schöne Ländle, doch der Zeitplan ist eng – und es lauern zahlreiche Gefahren, nicht nur für ihren Blutzucker! Verlockende Kuchen, Weinkisten, Rollatoren, Pflegewagen und Schlaglöcher überspringen, unter Wespenschwärmen durchducken, und für den Lkw braucht es einen Doppelsprung. Ab 30 Sekunden geht’s erst richtig los!',
+    spielidee: 'Diese Hohenloher Pflegekraft ist auf Tour durchs schöne Ländle, doch der Zeitplan ist eng – und es lauern zahlreiche Gefahren, nicht nur für ihren Blutzucker! Verlockende Kuchen, Weinkisten, Rollatoren, Pflegewagen und Schlaglöcher überspringen, unter Wespenschwärmen durchducken, und für den Lkw braucht es einen Doppelsprung.',
     freiEine: 'Sie haben 1 Spielrunde frei ({satz}).',
     freiMehr: 'Sie haben {x} Spielrunden frei ({satz}).',
     losHinweis: '„Los geht’s!“ startet die Runde – danach ist sie verbraucht.',
