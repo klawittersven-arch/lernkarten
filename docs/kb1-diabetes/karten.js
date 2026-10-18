@@ -30,6 +30,8 @@ var LERNKARTEN = {
   titel: 'KB I – Diabetes mellitus',
   untertitel: 'Lernkarten zur Ich-kann-Liste',
   klausur: 'Klausur am 09.11.2026',
+  // Kasten auf der Startseite (weglassen, wenn nicht gebraucht)
+  hinweis: 'In der Klausur kommt ein anderer Fall – lernen und verstehen Sie das Vorgehen, nicht nur die Beispielsätze!',
   // Schlüssel für den Lernstand auf dem Handy – nur ändern, wenn alle neu beginnen sollen
   speicherName: 'kb1-diabetes',
 
@@ -74,28 +76,6 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Es war einmal … das Leben – Die Hormone',
-      karten: [
-        { nr: 1,
-          vorne: 'Ich kann *erklären*, wie **Glukagon** den Blutzucker erhöht.',
-          hinten: [
-            '**Glukagon** wird in den **α-Zellen** der Bauchspeicheldrüse gebildet.',
-            'In der **Leber** bewirkt es, dass gespeichertes Glykogen abgebaut (**Glykogenolyse**) und als Glukose ins Blut abgegeben wird → der Blutzucker **steigt**.'
-          ] },
-        { nr: 1,
-          vorne: 'Ich kann *erklären*, warum der Blutzucker bei **körperlicher Belastung** steigt.',
-          hinten: 'Die Muskeln brauchen mehr Energie (Glukose und Sauerstoff) → der Körper stellt zusätzliche Glukose bereit.' },
-        { nr: 1,
-          vorne: 'Ich kann *erklären*, warum der Blutzucker bei **Stress oder einem Infekt** (z. B. Fieber) steigt – und was das pflegerisch bedeutet.',
-          hinten: [
-            'Stresshormone wie Adrenalin mobilisieren die Zuckerreserven → der Blutzucker steigt.',
-            '**Pflegerisch:** Bei Infekten den BZ häufiger kontrollieren.'
-          ] }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
       ab: 'Diabetes mellitus – gleiche Folge, unterschiedliche Ursachen?',
       karten: [
         { nr: 1,
@@ -126,8 +106,8 @@ var LERNKARTEN = {
           vorne: 'Ich kann den Regelkreis des Blutzuckers *beschreiben*: **Schritte 4–5** – was geschieht, wenn der Blutzucker sinkt?',
           nummeriert: true, start: 4,
           hinten: [
-            'Sinkt der Blutzucker, wird weniger Insulin und mehr Glukagon aus den α-Zellen abgegeben.',
-            'Die Leber baut Glykogen ab (**Glykogenolyse**) und bildet neue Glukose (**Glukoneogenese**); auch Adrenalin und Kortisol wirken mit → der Blutzucker steigt wieder.'
+            'Sinkt der Blutzucker, geben die β-Zellen weniger Insulin und die α-Zellen mehr Glukagon ab.',
+            'Wenn der Blutzucker zu weit abgesunken ist, baut die Leber Glykogen ab (**Glykogenolyse**) und bildet neue Glukose (**Glukoneogenese**) → der Blutzucker steigt wieder.'
           ] },
         { nr: 1,
           vorne: 'Ich kann die Fachbegriffe **Glykogenese**, **Glykogenolyse** und **Glukoneogenese** *erklären*.',
@@ -180,11 +160,6 @@ var LERNKARTEN = {
           fall: '„Wenn Insulin fehlt oder nicht wirkt, bleibt weniger Glukose im Blut.“',
           hinten: '**Falsch:** Die Zellen nehmen weniger Glukose auf, deshalb bleibt *mehr* Glukose im Blut.',
           hinweis: 'Die Aussagen sind nur Beispiele – in der Klausur kommen sie NICHT wortgleich vor!' },
-        { nr: 1,
-          vorne: 'Ich kann falsche Aussagen zu Typ 1 und Typ 2 *identifizieren* und die Korrektur fachlich *begründen*:',
-          fall: '„Nach einer Mahlzeit geben die α-Zellen mehr Insulin ab.“',
-          hinten: '**Falsch:** Insulin kommt aus den β-Zellen; die α-Zellen bilden Glukagon.',
-          hinweis: 'Die Aussagen sind nur Beispiele – in der Klausur kommen sie NICHT wortgleich vor!' },
         { nr: 2,
           vorne: 'Ich kann einer Patientin mit Typ-2-Diabetes verständlich *erklären*, warum ihr Blutzucker trotz eigener Insulinbildung erhöht ist.',
           hinten: [
@@ -192,8 +167,9 @@ var LERNKARTEN = {
             '„Ihr Körper macht noch genug Schlüssel, am Anfang sogar mehr als nötig.“',
             '„Aber die Schlösser an den Zellen klemmen. Das nennt man *Insulinresistenz*.“',
             '„Darum bleibt der Zucker im Blut, und Ihr Blutzucker steigt.“',
-            '„Später macht Ihr Körper oft auch weniger Schlüssel.“'
-          ] }
+            '„Später macht Ihr Körper aber zudem oft auch weniger Schlüssel.“'
+          ],
+          hinweis: 'Fachsprache nur gezielt nutzen und anschaulich erklären. Das ist nur eine Beispielantwort – andere Erklärungen sind selbstverständlich zulässig.' }
       ]
     },
 
@@ -204,21 +180,21 @@ var LERNKARTEN = {
         { nr: 1,
           vorne: 'Ich kann die **fünf Insulinarten** *nennen*.',
           hinten: [
-            'Normalinsulin (kurzwirksam)',
-            'kurzwirksames Insulinanalogon (Bolus)',
+            'Normalinsulin',
+            'kurzwirksames Insulinanalogon',
             'NPH-/Intermediärinsulin (Basal)',
-            'langwirksames Insulinanalogon (Basal)',
+            'langwirksames Insulinanalogon',
             'Mischinsulin'
           ] },
         { nr: 1,
-          vorne: 'Ich kann die pflegerisch wichtigen Besonderheiten von **Normalinsulin** (kurzwirksam) *beschreiben*.',
+          vorne: 'Ich kann die pflegerisch wichtigen Besonderheiten von **Normalinsulin** *beschreiben*.',
           hinten: [
             'Spritz-Ess-Abstand von 20–30 min',
             'zur Korrektur hoher BZ-Werte',
             'auch i. v. möglich'
           ] },
         { nr: 1,
-          vorne: 'Ich kann die pflegerisch wichtigen Besonderheiten eines **kurzwirksamen Insulinanalogons** (Bolus) *beschreiben*.',
+          vorne: 'Ich kann die pflegerisch wichtigen Besonderheiten eines **kurzwirksamen Insulinanalogons** *beschreiben*.',
           hinten: [
             'wirkt schnell und kurz',
             'kein klassischer Spritz-Ess-Abstand nötig'
@@ -230,7 +206,7 @@ var LERNKARTEN = {
             'trüb (Protamin) → vor der Gabe gleichmäßig durchmischen'
           ] },
         { nr: 1,
-          vorne: 'Ich kann die pflegerisch wichtigen Besonderheiten eines **langwirksamen Insulinanalogons** (Basal) *beschreiben*.',
+          vorne: 'Ich kann die pflegerisch wichtigen Besonderheiten eines **langwirksamen Insulinanalogons** *beschreiben*.',
           hinten: [
             'basale Versorgung',
             'klar → nicht durchmischen',
@@ -248,19 +224,19 @@ var LERNKARTEN = {
             '**trüb → vor der Gabe durchmischen:** NPH-/Intermediärinsulin (Protamin), Mischinsulin',
             '**klar → nicht durchmischen:** langwirksames Insulinanalogon'
           ] },
-        { nr: 1,
+        { nr: 2,
           vorne: 'Ich kann **Basal- und Bolusinsulin** *vergleichen*.',
           hinten: [
             '**Basalinsulin** deckt den Grundbedarf rund um die Uhr – unabhängig von den Mahlzeiten.',
             '**Bolusinsulin** deckt den zusätzlichen Bedarf zu den Mahlzeiten.'
           ] },
-        { nr: 2,
+        { nr: 3,
           vorne: 'Ich kann *erklären*, was „**Mahlzeitenbezug**“ bedeutet.',
           hinten: [
             '**Mahlzeitenbezug:** Die Insulingabe wird zeitlich so auf die Mahlzeit abgestimmt, dass Insulinwirkung und Aufnahme der Kohlenhydrate zusammenpassen.',
             'Er hängt vom **Wirkeintritt** ab: **Normalinsulin** (ca. 20–30 min) → Spritz-Ess-Abstand 20–30 min; **kurzwirksame Analoga** (ca. 5–15 min) → direkt zur Mahlzeit; bei **Mischinsulin** zählt der kurz wirksame Anteil; **Basalinsulin** hat keinen direkten Mahlzeitenbezug.'
           ] },
-        { nr: 2,
+        { nr: 3,
           vorne: 'Ich kann im Zusammenhang mit dem „Mahlzeitenbezug“ *erklären*, warum eine **verspätete Mahlzeit** gefährlich sein kann.',
           hinten: '**Gefahr:** Kommt die Mahlzeit zu spät, wirkt das Insulin, bevor Kohlenhydrate aufgenommen werden → **Hypoglykämie**.' }
       ]
@@ -330,8 +306,7 @@ var LERNKARTEN = {
             'zu hohe Insulindosis (Therapiefehler)',
             'zu wenig Kohlenhydrate, z. B. vergessene Mahlzeit',
             'vermehrte Bewegung',
-            'Durchfall/Erbrechen',
-            'Alkohol (hemmt noch Stunden später die Glukosefreisetzung aus der Leber)'
+            'Durchfall/Erbrechen'
           ] },
         { nr: 1,
           vorne: 'Ich kann Hypoglykämie und Hyperglykämie *vergleichen*: **Ursachen einer Hyperglykämie**',
@@ -339,21 +314,21 @@ var LERNKARTEN = {
             'falsch angepasste Insulindosis (Therapiefehler)',
             'akute Erkrankungen, Infekte',
             'Stress',
-            'Bewegungsmangel'
+            'Bewegungsmangel',
+            'zu viele Kohlenhydrate'
           ] },
         { nr: 1,
           vorne: 'Ich kann Hypoglykämie und Hyperglykämie *vergleichen*: **Symptome einer Hypoglykämie**',
           hinten: [
             'Blässe, Schwitzen, Zittern, (Konzentrations-)Schwäche, Tachykardie',
-            'durch den Glukosemangel im Gehirn auch Sprachstörungen und Krampfanfälle',
-            '(individuell und altersabhängig unterschiedlich ausgeprägt)'
+            'evtl. Sprachstörungen, Krampfanfälle und Bewusstlosigkeit'
           ] },
         { nr: 1,
           vorne: 'Ich kann Hypoglykämie und Hyperglykämie *vergleichen*: **Symptome einer Hyperglykämie**',
           hinten: [
-            'zunächst unspezifisch: Schwäche, Abgeschlagenheit',
+            'Schwäche, Abgeschlagenheit',
             'starker Durst, häufiges Wasserlassen (Polyurie), Kopf- und Bauchschmerzen, Übelkeit',
-            'durch den Flüssigkeitsverlust Bewusstseinsstörungen bis zum Koma'
+            'Bewusstseinsstörungen bis zum Koma'
           ] },
         { nr: 2,
           vorne: 'Ich kann *erklären*, wie bei einer Hyperglykämie ein **ketoazidotisches Koma** entsteht.',
@@ -362,7 +337,7 @@ var LERNKARTEN = {
           vorne: 'Ich kann die **Anzeichen** eines ketoazidotischen Komas *nennen*.',
           hinten: [
             'Übelkeit, Erbrechen, Bauchschmerzen',
-            'vertiefte Atmung (Kußmaul-Atmung), mit der der Körper die Säure ausgleichen will',
+            'vertiefte Atmung (Kußmaul-Atmung)',
             'der Atem riecht nach Azeton („obstartig“)'
           ] },
         { nr: 3,
@@ -378,13 +353,6 @@ var LERNKARTEN = {
             'keine Kohlenhydrate zuführen, damit der BZ nicht weiter steigt',
             'Ketonkörper messen, um eine Ketoazidose zu erkennen',
             'Insulin zuführen, weil es den BZ senkt'
-          ] },
-        { nr: 3,
-          vorne: 'Ich kann *beschreiben*, was bei einer Hypo- und einer Hyperglykämie für das **Insulin** gilt.',
-          hinten: [
-            'bei einer Hypoglykämie reduzieren, bei einer Hyperglykämie zuführen',
-            'beides nur nach ärztlicher Anordnung bzw. Rücksprache',
-            '**Die Dosis nie eigenmächtig ändern!**'
           ] },
         { nr: 4,
           vorne: 'Ich kann *identifizieren*, ob eine Hypo- oder eine Hyperglykämie vorliegt, und meine Zuordnung *begründen*:',
@@ -439,7 +407,7 @@ var LERNKARTEN = {
         { nr: 3,
           vorne: 'Ich kann anhand einer Vorgabe *bewerten*, ob Handlungsbedarf besteht:',
           fall: 'Bei Werten über 10 mmol/l soll die zuständige Pflegefachperson informiert werden. Gemessen: 215 mg/dl.',
-          hinten: '215 mg/dl : 18 = 11,9 mmol/l → über 10 mmol/l → Pflegefachperson **informieren**.' }
+          hinten: '215 mg/dl → über 10 mmol/l → Pflegefachperson **informieren**.' }
       ]
     },
 
@@ -459,7 +427,7 @@ var LERNKARTEN = {
           vorne: 'Ich kann den Ablauf der kapillären Blutzuckermessung *beschreiben*: **4 Handlungsschritte der Durchführung**',
           hinten: [
             'Mittel- oder Ringfinger wählen, weil Daumen und Zeigefinger im Alltag geschont werden sollen',
-            'Desinfektionsmittel vollständig trocknen lassen, weil es den Messwert verfälscht',
+            'Fingerkuppe desinfizieren. Desinfektionsmittel vollständig trocknen lassen, weil es den Messwert verfälscht.',
             'Seitliche Fingerbeere punktieren, weil das weniger schmerzhaft ist',
             'Ersten Tropfen abwischen, weil er Gewebsflüssigkeit enthält; zweiten Tropfen aufnehmen'
           ] },
@@ -507,7 +475,7 @@ var LERNKARTEN = {
         { nr: 1,
           vorne: 'Ich kann aus einer Fehlerquelle bei der Blutzuckermessung eine Regel *ableiten*:',
           fall: 'Kalte Hände / Finger ausgedrückt',
-          hinten: 'Hände ggf. erwärmen; den Finger nicht „ausmelken“.' },
+          hinten: 'Hände erwärmen; den Finger nicht „ausmelken“.' },
         { nr: 1,
           vorne: 'Ich kann aus einer Fehlerquelle bei der Blutzuckermessung eine Regel *ableiten*:',
           fall: 'Feuchte Haut / Desinfektionsmittel',
@@ -532,49 +500,38 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      // In der Ich-kann-Liste steht hier noch ein Platzhalter für den Titel des
-      // Arbeitsblatts. Sobald er feststeht, die Zeile „titel“ ersetzen durch:
-      //   ab: 'Titel des Arbeitsblatts',
-      titel: 'Langzeitschäden und diabetisches Fußsyndrom',
+      ab: 'Spätfolgen und diabetisches Fußsyndrom',
       karten: [
         { nr: 1,
-          vorne: 'Ich kann Langzeitschäden des Diabetes mellitus an den **kleinen Gefäßen** *nennen*.',
+          vorne: 'Ich kann **vier Langzeitschäden** des Diabetes mellitus *nennen*.',
           hinten: [
             'Retinopathie (Netzhaut, bis Erblindung)',
-            'Nephropathie (Niere, bis Niereninsuffizienz)'
+            'Nephropathie (Niere, bis Niereninsuffizienz)',
+            'Arteriosklerose → Herzinfarkt, Schlaganfall, pAVK',
+            '**Nerven:** Polyneuropathie mit vermindertem Schmerz- und Temperaturempfinden'
           ] },
-        { nr: 1,
-          vorne: 'Ich kann Langzeitschäden des Diabetes mellitus an den **großen Gefäßen** *nennen*.',
-          hinten: 'Arteriosklerose → Herzinfarkt, Schlaganfall, pAVK' },
-        { nr: 1,
-          vorne: 'Ich kann Langzeitschäden des Diabetes mellitus an den **Nerven** *nennen*.',
-          hinten: 'Polyneuropathie mit vermindertem Schmerz- und Temperaturempfinden' },
-        { nr: 1,
+        { nr: 2,
           vorne: 'Ich kann die Entstehung eines **diabetischen Fußsyndroms** *erklären*.',
           hinten: [
             'Wegen der Neuropathie werden Druckstellen und kleine Verletzungen nicht bemerkt.',
-            'Wegen der Durchblutungsstörung heilen sie schlecht → Geschwür (Ulkus), Infektion, im schlimmsten Fall Amputation.'
+            'Wegen der Durchblutungsstörung heilen sie schlecht → Geschwür (Ulkus) → Infektion → im schlimmsten Fall Amputation.'
           ] },
-        { nr: 2,
+        { nr: 3,
           vorne: 'Ich kann *beschreiben*, worauf ich bei der **Fußinspektion** achte.',
-          hinten: [
-            'beide Füße täglich, auch Sohle, Ferse und Zehenzwischenräume',
-            'Rötungen, Druckstellen, Blasen, Risse, Hornhaut, Verletzungen, Nagelveränderungen, Fußpilz',
-            'Schuhe auf Fremdkörper prüfen'
-          ] },
-        { nr: 2,
+          hinten: 'Rötungen, Druckstellen, Blasen, Risse, Hornhaut, Verletzungen, Nagelveränderungen, Fußpilz' },
+        { nr: 3,
           vorne: 'Ich kann Maßnahmen zur **Vorbeugung** eines diabetischen Fußsyndroms *ableiten*.',
           hinten: [
             'lauwarm waschen (unter 37 °C), gut abtrocknen, eincremen (nicht zwischen den Zehen)',
             'Nägel feilen, Podologie nutzen',
-            'nie barfuß, passende Schuhe, keine Wärmflasche',
+            'nie barfuß, passende Schuhe, Schuhe auf Fremdkörper prüfen, keine Wärmflasche',
             'gute BZ-Einstellung, nicht rauchen'
           ] },
-        { nr: 3,
-          vorne: 'Ich kann am Fall Frau Schneider den **Hautdefekt an der Ferse** *bewerten*.',
+        { nr: 4,
+          vorne: 'Ich kann am Fall Frau Schneider den **Hautdefekt an der Ferse** *beurteilen*.',
           hinten: 'Polyneuropathie, ein schmerzloser, unbemerkter Hautdefekt und trockene Haut sind Warnzeichen für ein beginnendes diabetisches Fußsyndrom.' },
-        { nr: 3,
-          vorne: 'Ich kann am Fall Frau Schneider (Hautdefekt an der Ferse) das **weitere Vorgehen** *begründen*.',
+        { nr: 4,
+          vorne: 'Ich kann am Fall Frau Schneider (Hautdefekt an der Ferse) das **weitere Vorgehen** *beschreiben*.',
           hinten: [
             'Wunde beschreiben und dokumentieren',
             'Hausärztin informieren',
@@ -582,8 +539,8 @@ var LERNKARTEN = {
             'Füße täglich inspizieren',
             'zur Fußpflege beraten'
           ] },
-        { nr: 3,
-          vorne: 'Ich kann am Fall Frau Schneider (Hautdefekt an der Ferse) *beschreiben*, mit wem ich **zusammenarbeite**.',
+        { nr: 4,
+          vorne: 'Ich kann am Fall Frau Schneider (Hautdefekt an der Ferse) die passenden **Personen zur Zusammenarbeit** *nennen*.',
           hinten: [
             '**Hausärztin** (Diagnose, Verordnung)',
             '**Wundexpertin** (Wundversorgung)',

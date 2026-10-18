@@ -94,7 +94,7 @@ function kartenIds(ordner) {
   await p.goto(basis + 'kb1-diabetes/');
   H.pruefe(await p.locator('#spiel-box').isVisible(), 'Startseite zeigt den Spiel-Kasten');
   H.pruefe((await p.locator('#spiel-titel').innerText()) === 'Belohnungsspiel: Diabetes Run!', 'Titel „Belohnungsspiel: Diabetes Run!“');
-  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 0 von 85 Karten', 'Fortschritt: „Bis zur nächsten Runde: 0 von 85 Karten“');
+  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 0 von 78 Karten', 'Fortschritt: „Bis zur nächsten Runde: 0 von 78 Karten“');
   H.pruefe((await p.locator('#spiel-regel').innerText()).startsWith('Jedes Mal, wenn Sie alle Karten einmal durchgegangen sind'), 'Regel: jede Runde nach einem vollständigen Durchgang');
   H.pruefe(await p.locator('#spiel-los').isHidden(), 'ohne Freischaltung kein „Jetzt spielen“');
   H.pruefe((await p.locator('#highscore-link').getAttribute('href')) === '../highscore/?liste=kb1-diabetes', 'unauffälliger Link „Highscore-Liste“ unten auf der Startseite');
@@ -104,7 +104,7 @@ function kartenIds(ordner) {
   H.pruefe(await p.locator('#toast').isVisible() && (await p.locator('#toast').innerText()).startsWith('Tipp: Für die Spielrunde zählt eine Karte nur'),
     'Karte ohne Umdrehen bewertet: einmaliger Tipp „zählt nur, wenn umgedreht“');
   await p.click('#karte'); await p.click('#knopf-nochnicht'); // mit Umdrehen
-  H.pruefe((await p.locator('#spiel-rest').innerText()) === '🎮 noch 84 Karten bis zur Spielrunde', 'beim Lernen oben: „🎮 noch 84 Karten bis zur Spielrunde“');
+  H.pruefe((await p.locator('#spiel-rest').innerText()) === '🎮 noch 77 Karten bis zur Spielrunde', 'beim Lernen oben: „🎮 noch 77 Karten bis zur Spielrunde“');
   let z = (await lesen(p, 'lernkarten:kb1-diabetes')).zaehler;
   H.pruefe(!z[ids1[0]] && z[ids1[1]] === 1, 'gezählt wird nur eine umgedrehte Karte (egal ob gewusst oder nicht)', z);
   await p.click('#knopf-zurueck');
@@ -119,7 +119,7 @@ function kartenIds(ordner) {
     localStorage.setItem(k, JSON.stringify(s));
   }, { ids: ids1, k: 'lernkarten:kb1-diabetes' });
   await p.reload();
-  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 84 von 85 Karten', 'Fortschritt: 84 von 85 Karten');
+  H.pruefe((await p.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 77 von 78 Karten', 'Fortschritt: 77 von 78 Karten');
   await p.click('#keine-themen');
   await p.locator('.thema').first().locator('input').check();
   await p.click('#knopf-start');
@@ -227,18 +227,18 @@ function kartenIds(ordner) {
   H.pruefe(attrappe.get({ aktion: 'liste', liste: 'kb1-diabetes' }).eintraege.length === 0, 'Liste KB I ist leer');
   await ctx.close();
 
-  console.log('\n== Echter Durchgang über die Oberfläche (KB II, alle 79 Karten umdrehen)');
+  console.log('\n== Echter Durchgang über die Oberfläche (KB II, alle 81 Karten umdrehen)');
   {
     const c4 = await kontext();
     const d = await c4.newPage();
     H.beobachten(d, protokoll, 'durchgang');
     await d.goto(basis + 'kb2-beratung/');
     await d.click('#knopf-start');
-    for (let i = 0; i < 78; i++) { await d.click('#karte'); await d.click(i % 3 ? '#knopf-gewusst' : '#knopf-nochnicht'); }
-    H.pruefe(await d.locator('#belohnung').isHidden() && (await d.locator('#spiel-rest').innerText()) === '🎮 noch 1 Karte bis zur Spielrunde', 'nach 78 Karten: noch keine Gratulation, „noch 1 Karte“');
+    for (let i = 0; i < 80; i++) { await d.click('#karte'); await d.click(i % 3 ? '#knopf-gewusst' : '#knopf-nochnicht'); }
+    H.pruefe(await d.locator('#belohnung').isHidden() && (await d.locator('#spiel-rest').innerText()) === '🎮 noch 1 Karte bis zur Spielrunde', 'nach 80 Karten: noch keine Gratulation, „noch 1 Karte“');
     await d.click('#karte'); await d.click('#knopf-gewusst');
     await H.bis(() => d.locator('#belohnung').isVisible());
-    H.pruefe(await d.locator('#belohnung').isVisible(), 'nach der 79. Karte: Gratulation bildschirmfüllend');
+    H.pruefe(await d.locator('#belohnung').isVisible(), 'nach der 81. Karte: Gratulation bildschirmfüllend');
     await d.click('#belohnung-spaeter');
     H.pruefe(await d.locator('#ansicht-ergebnis').isVisible() && await d.locator('#ergebnis-spiel').isVisible(), 'danach Ergebnis der Runde mit „Jetzt spielen“');
     await c4.close();
@@ -299,7 +299,7 @@ function kartenIds(ordner) {
     await q.goto(basis);
     H.pruefe((await q.locator('a[href="highscore/"]').count()) === 1, 'Übersicht: Link zur Highscore-Liste');
     await q.goto(basis + 'kb2-beratung/');
-    H.pruefe(await q.locator('#spiel-box').isVisible() && (await q.locator('#spiel-text').innerText()).endsWith('0 von 79 Karten'), 'KB II: eigener Spiel-Kasten (79 Karten)');
+    H.pruefe(await q.locator('#spiel-box').isVisible() && (await q.locator('#spiel-text').innerText()).endsWith('0 von 81 Karten'), 'KB II: eigener Spiel-Kasten (81 Karten)');
     await q.evaluate(() => localStorage.setItem('lernkarten:kb2-beratung:spiel-verdient', '1'));
     await q.goto(basis + 'spiel/?satz=kb2-beratung');
     await spielBisEnde(q);

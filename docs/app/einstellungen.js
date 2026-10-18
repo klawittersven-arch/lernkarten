@@ -149,7 +149,7 @@ var EINSTELLUNGEN = {
       'Bei einer Hypoglykämie: schnell wirksame Kohlenhydrate geben (z. B. Traubenzucker, Saft) und nach ca. 30 min den BZ kontrollieren.',
       '1 mmol/l ≙ 18 mg/dl – also mg/dl : 18 = mmol/l.',
       'Den ersten Blutstropfen abwischen – er enthält Gewebsflüssigkeit.',
-      'Die Insulindosis nie eigenmächtig ändern!'
+      'Kein aktueller BZ-Wert dokumentiert? Vor der Insulingabe erst den BZ messen.'
     ],
     'kb2-beratung': [
       'Beraten statt belehren: Die Entscheidung bleibt bei der beratenen Person.',

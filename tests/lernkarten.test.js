@@ -11,8 +11,8 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 
 // Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
 const SAETZE = [
-  { ordner: 'kb1-diabetes', themen: 12, karten: 85, hinweis: false },
-  { ordner: 'kb2-beratung', themen: 8, karten: 79, hinweis: true }
+  { ordner: 'kb1-diabetes', themen: 11, karten: 78, hinweis: true },
+  { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true }
 ];
 
 function kartenLaden(ordner) {
@@ -98,8 +98,8 @@ function kartenLaden(ordner) {
     H.beobachten(p, protokoll, 'bedienung');
     p.on('dialog', (d) => d.accept());
     await p.goto(url);
-    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 85 Karten lernen', 'Start: „Alle 85 Karten lernen“');
-    H.pruefe(await p.locator('.thema').count() === 12, 'Start: 12 Themen zur Auswahl');
+    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 78 Karten lernen', 'Start: „Alle 78 Karten lernen“');
+    H.pruefe(await p.locator('.thema').count() === 11, 'Start: 11 Themen zur Auswahl');
 
     await p.click('#keine-themen');
     H.pruefe(await p.locator('#knopf-start').isDisabled(), '„Keine“: Start-Knopf gesperrt');
@@ -198,7 +198,7 @@ function kartenLaden(ordner) {
 
     await p.click('#knopf-schliessen');
     await p.click('#zuruecksetzen');
-    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 85 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
+    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 78 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
     const cookies = await ctx.cookies();
     H.pruefe(cookies.length === 0, 'keine Cookies');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'lernkarten-start.png') });
@@ -206,18 +206,18 @@ function kartenLaden(ordner) {
   }
 
   /* ---------- 3. Besonderheiten KB II ---------- */
-  console.log('\n== Besonderheiten KB II (AFB, Hinweis auf der Startseite, kurzer Thementitel)');
+  console.log('\n== Besonderheiten KB II (Hinweis auf der Startseite, kurzer Thementitel)');
   {
     const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'kb2');
     await p.goto(basis + 'kb1-diabetes/');
-    H.pruefe(await p.locator('#start-hinweis').isHidden(), 'KB I: kein Hinweiskasten auf der Startseite');
+    H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB I: Hinweis „anderer Fall“ auf der Startseite');
     await p.goto(basis + 'kb2-beratung/');
     H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB II: Hinweis „anderer Fall“ auf der Startseite');
     await p.click('#knopf-start');
-    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 79', 'KB II: Runde mit 79 Karten');
-    H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'AB „Die Wittener Werkzeuge“ · Nr. 1 · AFB II', 'Kopfzeile mit AB, Nummer und AFB', await p.locator('#vorne-kopf').innerText());
+    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 81', 'KB II: Runde mit 81 Karten');
+    H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'AB „Die Wittener Werkzeuge“ · Nr. 1', 'Kopfzeile mit AB und Nummer (ohne AFB)', await p.locator('#vorne-kopf').innerText());
     await p.click('#knopf-schliessen');
     const titel = await p.locator('.thema-titel').allInnerTexts();
     H.pruefe(titel.includes('ABs zum Beratungsprozess (6 Phasen, Beratung planen)'), 'langer Abschnitt mit drei ABs erscheint unter seinem kurzen Titel');

@@ -6,8 +6,8 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 
 | Kartensatz | Adresse (QR-Code) |
 |---|---|
-| KB I – Diabetes mellitus (Klausur 09.11.2026), 85 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
-| KB II – Beratung (Klausur 09.11.2026), 79 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
+| KB I – Diabetes mellitus (Klausur 09.11.2026), 78 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
+| KB II – Beratung (Klausur 09.11.2026), 81 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/ ·
 Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
@@ -142,14 +142,10 @@ Nach 1–2 Minuten ist die Änderung online.
   `nr` (Nummer in der Ich-kann-Liste) und `afb` (z. B. `'I + II'`) erscheinen oben auf der Karte.
   Die genaue Anleitung steht oben in der Datei.
 - Ganz oben in `karten.js` steht optional `hinweis: '…'` – ein Kasten auf der Startseite
-  (bei KB II: „In der Klausur kommt ein anderer Fall …“).
+  (bei beiden Kartensätzen: „In der Klausur kommt ein anderer Fall …“).
 - Ein Thema heißt wie sein Arbeitsblatt (`ab: '…'`, bei mehreren ABs eine Liste `['…', '…']`).
   Ist das zu lang, setzt `titel: '…'` einen kürzeren Namen für die Liste und die Karten.
 - Neue Karte: eine vorhandene Karte samt `{ … },` kopieren und darunter einfügen.
-
-**Offen (KB I):** Für den Abschnitt „Langzeitschäden und diabetisches Fußsyndrom“ steht in der
-Ich-kann-Liste noch ein Platzhalter für den AB-Titel. Sobald er feststeht, in `karten.js`
-`titel: '…'` durch `ab: 'Titel des Arbeitsblatts'` ersetzen.
 
 ## GitHub Pages einschalten (einmalig)
 
@@ -177,8 +173,8 @@ Neu erzeugen und gleich unten in die Ich-kann-Liste setzen:
 
 ```
 pip install segno python-docx zxing-cpp pillow
-python werkzeuge/qr_erzeugen.py kb1-diabetes 00_KB1_Ich_kann_Liste_Diabetes_v12.docx
-python werkzeuge/qr_erzeugen.py kb2-beratung KB2_Ich_kann_Liste.docx
+python werkzeuge/qr_erzeugen.py kb1-diabetes 00_KB1_Ich_kann_Liste_Diabetes_v14_FINAL.docx
+python werkzeuge/qr_erzeugen.py kb2-beratung 00_KB2_Ich_kann_Liste_Beratung_v11_FINAL.docx
 ```
 
 Ergebnis: `…_mit_QR.docx` neben der Originaldatei, das Original bleibt unverändert. Die Ich-kann-Listen
