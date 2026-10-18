@@ -59,7 +59,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Mehr als nur hohe Werte – Leben mit Diabetes mellitus',
+      titel: 'Fallsituation: Informationen, Ressourcen, Veränderungen',
       karten: [
         { nr: 1,
           vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*: **Wie gehe ich beim Falltext vor?**',
@@ -99,7 +99,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Diabetes mellitus – gleiche Folge, unterschiedliche Ursachen?',
+      titel: 'Insulinwirkung an der Zelle: Typ 1 und Typ 2',
       karten: [
         { nr: 1,
           vorne: 'Ich kann am Beispiel einer Muskelzelle *beschreiben*, was bei **normaler Insulinwirkung** geschieht.',
@@ -115,7 +115,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'So regelt Insulin den Blutzucker',
+      titel: 'Blutzucker-Regelkreis und Krankheitsbild',
       karten: [
         { nr: 1,
           vorne: 'Ich kann den Regelkreis des Blutzuckers *beschreiben*: **Schritte 1–3** – was geschieht nach einer kohlenhydratreichen Mahlzeit?',
@@ -171,7 +171,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Vergleichen und Zusammenhänge erklären',
+      titel: 'Typ 1 und Typ 2: vergleichen und erklären',
       karten: [
         { nr: 1,
           vorne: 'Ich kann falsche Aussagen zu Typ 1 und Typ 2 *identifizieren* und die Korrektur fachlich *begründen*:',
@@ -198,7 +198,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['Insulinarten erschließen und ordnen (mit Karten und Tabelle)', 'Die Wirkprofile der Insulinarten'],
+      titel: 'Insulinarten und Mahlzeitenbezug',
       karten: [
         { nr: 1,
           vorne: 'Ich kann die **fünf Insulinarten** *nennen*.',
@@ -267,7 +267,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Sicher entscheiden vor der Insulingabe',
+      titel: 'Insulingabe: STOPP-Checkliste, Umgang mit Insulin',
       karten: [
         { nr: 1,
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
@@ -304,7 +304,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Akutkomplikation: Hyperglykämie (A) / Hypoglykämie (B)',
+      titel: 'Hypo- und Hyperglykämie',
       karten: [
         { nr: 1,
           vorne: 'Ich kann Hypoglykämie und Hyperglykämie *vergleichen*: **Blutzuckerwert**',
@@ -392,7 +392,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Kapilläre Blutzuckermessung – Wie messe ich richtig?',
+      titel: 'Blutzuckermessung: Indikation, 10-R-Regel, Umrechnen',
       karten: [
         { nr: 1,
           vorne: 'Ich kann den Begriff „**Indikation**“ *erklären*.',
@@ -430,7 +430,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Pflegepraxis Blutzuckermessung',
+      titel: 'Blutzuckermessung: Ablauf',
       karten: [
         { nr: 1,
           vorne: 'Ich kann den Ablauf der kapillären Blutzuckermessung *beschreiben*: **4 Handlungsschritte der Vorbereitung**',
@@ -479,7 +479,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Kapilläre Blutzuckermessung – Wie vermeide und erkenne ich Messfehler?',
+      titel: 'Blutzuckermessung: Messfehler',
       karten: [
         { nr: 1,
           vorne: 'Ich kann **vier typische Fehlerquellen** bei der Blutzuckermessung *nennen*.',
@@ -517,7 +517,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Spätfolgen und diabetisches Fußsyndrom',
+      titel: 'Spätfolgen und diabetisches Fußsyndrom',
       karten: [
         { nr: 1,
           vorne: 'Ich kann **vier Langzeitschäden** des Diabetes mellitus *nennen*.',

@@ -252,7 +252,7 @@
 
   D.themen.forEach(function (t) {
     var ab = t.ab ? [].concat(t.ab) : null;
-    // titel (falls angegeben) ersetzt die AB-Titel in der Liste und auf den Karten
+    // titel: Name des Themas in der Liste und auf den Karten (ältere Fassung: ab = AB-Titel)
     var name = t.titel || ab.join(' / ');
     var thema = {
       id: 't' + kennung(name),

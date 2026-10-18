@@ -72,7 +72,7 @@
   }
   function bestSetzen(n) { try { localStorage.setItem(BEST, JSON.stringify(n)); } catch (e) { /* egal */ } }
 
-  /* ---------- Aufgaben ziehen: aus jedem AB reihum, dann mischen ---------- */
+  /* ---------- Aufgaben ziehen: aus jedem Thema reihum, dann mischen ---------- */
   function themaTitel(t) {
     if (t.titel) return t.titel;
     return Array.isArray(t.ab) ? t.ab.join(' · ') : t.ab;
@@ -282,7 +282,7 @@
     var f = a.f;
     $('zaehler').textContent = LK.ersetzen(T.aufgabeZaehler, { x: nr + 1, y: aufgaben.length });
     $('fortschritt').style.width = (100 * nr / aufgaben.length) + '%';
-    $('aufgabe-kopf').textContent = 'AB „' + a.thema + '“';
+    $('aufgabe-kopf').textContent = a.thema;
     var frage = a.typ === 'richtigfalsch' ? T.anleitungRichtigFalsch : f.frage;
     $('aufgabe-frage').innerHTML = formatieren(frage);
     var fall = a.typ === 'richtigfalsch' ? f.aussage : f.fall;
@@ -647,7 +647,7 @@
       var a = aufgaben[i];
       var f = a.f;
       var li = el('li', 'fehler-karte');
-      li.appendChild(el('p', 'fehler-kopf', LK.ersetzen(T.fehlerKopf, { x: i + 1, p: ergebnis.punkte[i], m: PUNKTE }) + ' · AB „' + a.thema + '“'));
+      li.appendChild(el('p', 'fehler-kopf', LK.ersetzen(T.fehlerKopf, { x: i + 1, p: ergebnis.punkte[i], m: PUNKTE }) + ' · ' + a.thema));
       li.appendChild(formatiert('p', 'fehler-frage', a.typ === 'richtigfalsch' ? f.aussage : f.frage));
       if (f.fall && a.typ !== 'richtigfalsch') li.appendChild(formatiert('p', 'fall klein-fall', f.fall));
       if (a.typ === 'auswahl' || a.typ === 'richtigfalsch' || a.typ === 'zahl') {

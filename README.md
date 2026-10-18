@@ -17,8 +17,8 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 - Karte antippen → sie dreht sich um. Dann **„Gewusst“** oder **„Noch nicht“** tippen
   (oder nach rechts/links wischen). „Zurück“ (Pfeil oben rechts) nimmt einen Fehltipp zurück.
 - Am Ende einer Runde: „x Karten wiederholen“ – so lange, bis alles sitzt.
-- Auf der Startseite: Arbeitsblätter einzeln an- und abwählen, „Karten mischen“, Lernstand pro
-  Arbeitsblatt. Eine angefangene Runde lässt sich später fortsetzen.
+- Auf der Startseite: Themen einzeln an- und abwählen, „Karten mischen“, Lernstand pro
+  Thema. Eine angefangene Runde lässt sich später fortsetzen.
 - **Belohnung:** Wer alle Karten eines Satzes einmal durchgegangen ist, schaltet eine Runde des
   Spiels „Diabetes Run!“ frei – siehe unten.
 - **Datenschutz:** keine Anmeldung, keine Cookies, keine fremden Schriften. Der Lernstand liegt nur
@@ -135,7 +135,7 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
 Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challenge starten“**
 (Seite `challenge/?satz=kb1-diabetes`). Wer sich fit fühlt, macht einen Abschlusstest am Handy:
 
-- **20 Aufgaben**, zufällig aus dem Aufgabenpool des Kartensatzes gezogen – aus jedem Arbeitsblatt
+- **20 Aufgaben**, zufällig aus dem Aufgabenpool des Kartensatzes gezogen – aus jedem Thema
   mindestens eine, in zufälliger Reihenfolge; auch die Antwortmöglichkeiten werden gemischt.
 - Aufgabenarten: eine richtige Antwort auswählen, richtig/falsch, zuordnen, Reihenfolge,
   Zahl eingeben (z. B. mg/dl in mmol/l).
@@ -175,7 +175,8 @@ Nach 1–2 Minuten ist die Änderung online.
   `karten.js` in einem kleinen Fenster zeigt.
 - Ganz oben in `karten.js` steht optional `hinweis: '…'` – ein Kasten auf der Startseite
   (bei beiden Kartensätzen: „In der Klausur kommt ein anderer Fall …“).
-- Ein Thema heißt wie sein Arbeitsblatt (`ab: '…'`, bei mehreren ABs eine Liste `['…', '…']`).
+- Jedes Thema hat einen neutralen Namen (`titel: '…'`) – bewusst keine AB-Titel, weil die
+  Arbeitsblätter in den Klassen unterschiedlich heißen.
   Ist das zu lang, setzt `titel: '…'` einen kürzeren Namen für die Liste und die Karten.
 - Neue Karte: eine vorhandene Karte samt `{ … },` kopieren und darunter einfügen.
 

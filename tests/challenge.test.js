@@ -23,7 +23,7 @@ const EINSTELLUNGEN = laden(path.join(H.DOCS, 'app', 'einstellungen.js'), 'EINST
 const ANZAHL = EINSTELLUNGEN.challenge.aufgaben;
 
 const istText = (t) => typeof t === 'string' && t.trim().length > 0;
-function abTitel(t) { return [].concat(t.ab).join(' | '); }
+function abTitel(t) { return t.titel || [].concat(t.ab).join(' | '); }
 
 // Fehler einer Aufgabe in fragen.js (leer = in Ordnung)
 function aufgabePruefen(f) {
@@ -126,7 +126,7 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     const abKarten = K.themen.map(abTitel);
     const fremd = F.themen.filter((t) => !abKarten.includes(abTitel(t))).map(abTitel);
     const ohne = abKarten.filter((ab) => !F.themen.some((t) => abTitel(t) === ab));
-    H.pruefe(fremd.length === 0 && ohne.length === 0, `${satz}: dieselben ABs wie die Lernkarten (jedes AB kommt vor)`, { fremd, ohne });
+    H.pruefe(fremd.length === 0 && ohne.length === 0, `${satz}: dieselben Themen wie die Lernkarten (jedes Thema kommt vor)`, { fremd, ohne });
     const typen = new Set(alle.map((f) => f.typ));
     H.pruefe(['auswahl', 'zuordnen', 'reihenfolge', 'richtigfalsch'].every((t) => typen.has(t)), `${satz}: verschiedene Aufgabenarten (${[...typen].join(', ')})`);
   }

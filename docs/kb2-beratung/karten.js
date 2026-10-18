@@ -40,7 +40,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Die Wittener Werkzeuge',
+      titel: 'Wittener Werkzeuge',
       karten: [
         { nr: 1,
           vorne: 'Ich kann den Begriff „**doppelte Fürsorge**“ im Kontext der Wittener Werkzeuge *erklären*.',
@@ -75,7 +75,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['‚Beratung‘ … oder doch etwas anderes?', 'Informieren, anleiten, schulen oder beraten?'],
+      titel: 'Patientenedukation, hinderliche Faktoren, gesprächshemmendes Verhalten',
       karten: [
         { nr: 1,
           vorne: 'Ich kann die **vier Formen der Patientenedukation** *nennen*.',
@@ -206,7 +206,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['Frau Schneider braucht Beratung – aber wie?', 'Beratungsansätze – drei unterschiedliche Blickrichtungen'],
+      titel: 'Beratungsgrundsätze, -ansätze, Gesprächstechniken',
       karten: [
         { nr: 1,
           vorne: 'Ich kann den Beratungsgrundsatz „**ergebnisoffen**“ *beschreiben*.',
@@ -303,7 +303,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['Problemfokus und Ressourcenorientierung unterscheiden', 'Beratungsansätze anwenden'],
+      titel: 'Ressourcenorientierung, passenden Ansatz wählen',
       karten: [
         { nr: 1,
           vorne: 'Ich kann eine problemorientierte Aussage ressourcenorientiert um*formulieren*:',
@@ -325,13 +325,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: [
-        'Beratungsprozess – Frau Schneider braucht eine Beratung nach den 6 Phasen',
-        'Beratung planen – Was ist zuerst wichtig, was soll erreicht werden?',
-        'Die 6 Phasen der Beratung praktisch anwenden'
-      ],
-      // Name in der Liste und auf den Karten (die drei AB-Titel wären dafür zu lang)
-      titel: 'ABs zum Beratungsprozess (6 Phasen, Beratung planen)',
+      titel: 'Beratungsprozess (6 Phasen) und SMART-Ziele',
       karten: [
         { nr: 1,
           vorne: 'Ich kann die **sechs Phasen des Beratungsprozesses** *nennen*.',
@@ -403,7 +397,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Professionell beraten – Beratungsformen, Kompetenzen und Grenzen',
+      titel: 'Beratungskompetenz',
       karten: [
         { nr: 1,
           vorne: 'Ich kann die **vier Bereiche der Beratungskompetenz** *nennen*.',
@@ -489,7 +483,7 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Die Grenzen pflegerischer Beratung',
+      titel: 'Bezugspersonen einbeziehen, Beratung beurteilen',
       karten: [
         { nr: 1,
           vorne: 'Ich kann *nennen*, worauf ich achte, wenn **Bezugspersonen** in eine Beratung einbezogen werden.',

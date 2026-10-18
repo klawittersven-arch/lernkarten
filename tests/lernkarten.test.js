@@ -35,7 +35,8 @@ function kartenLaden(ordner) {
     D.themen.forEach((t) => t.karten.forEach((k) => alle.push(k)));
     H.pruefe(D.themen.length === S.themen, `${S.themen} Themen`, D.themen.length);
     H.pruefe(alle.length === S.karten, `${S.karten} Karten`, alle.length);
-    H.pruefe(D.themen.every((t) => (t.ab || t.titel) && t.karten.length > 0), 'jedes Thema hat einen Titel und Karten');
+    H.pruefe(D.themen.every((t) => t.titel && t.karten.length > 0), 'jedes Thema hat einen Titel und Karten');
+    H.pruefe(D.themen.every((t) => t.ab === undefined), 'keine AB-Titel (die ABs heißen in den Klassen unterschiedlich)');
     const fehlerhaft = alle.filter((k) => {
       const hinten = [].concat(k.hinten);
       return typeof k.vorne !== 'string' || !k.vorne.trim() || !hinten.length || hinten.some((h) => typeof h !== 'string' || !h.trim());
@@ -105,7 +106,7 @@ function kartenLaden(ordner) {
 
     await p.click('#keine-themen');
     H.pruefe(await p.locator('#knopf-start').isDisabled(), '„Keine“: Start-Knopf gesperrt');
-    await p.locator('.thema', { hasText: 'So regelt Insulin den Blutzucker' }).locator('input').check();
+    await p.locator('.thema', { hasText: 'Blutzucker-Regelkreis und Krankheitsbild' }).locator('input').check();
     H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 8 Karten lernen', 'ein Thema gewählt: „Alle 8 Karten lernen“');
 
     await p.click('#knopf-start');
@@ -114,7 +115,7 @@ function kartenLaden(ordner) {
     const vorne = await p.locator('#vorne-text').innerText();
     H.pruefe(vorne.startsWith('Ich kann den Regelkreis') && await p.locator('#vorne-text strong').count() > 0 && await p.locator('#vorne-text em').count() > 0,
       'Vorderseite: Kompetenz mit fettem Teilaspekt und kursivem Operator', vorne);
-    H.pruefe((await p.locator('#vorne-kopf').innerText()).includes('AB „So regelt Insulin den Blutzucker“ · Nr. 1'), 'Kopfzeile nennt AB und Nummer');
+    H.pruefe((await p.locator('#vorne-kopf').innerText()).includes('Blutzucker-Regelkreis und Krankheitsbild · Nr. 1'), 'Kopfzeile nennt Thema und Nummer');
     H.pruefe(!(await p.locator('#karte').getAttribute('class')).includes('umgedreht'), 'Karte zeigt zuerst die Vorderseite');
 
     await p.click('#karte');
@@ -179,7 +180,7 @@ function kartenLaden(ordner) {
     await p.click('#knopf-wiederholen');
     H.pruefe(await zaehler() === '1 / 3', 'Wiederholungsrunde mit den 3 offenen Karten');
     await p.click('#knopf-schliessen');
-    const stand = await p.locator('.thema', { hasText: 'So regelt Insulin' }).locator('.thema-stand').innerText();
+    const stand = await p.locator('.thema', { hasText: 'Blutzucker-Regelkreis und Krankheitsbild' }).locator('.thema-stand').innerText();
     H.pruefe(stand.startsWith('5 von 8 gewusst'), 'Übersicht: Thema zeigt „5 von 8 gewusst“', stand);
     H.pruefe((await p.locator('#knopf-start').innerText()) === 'Weiterlernen · Karte 1 von 3', 'Übersicht bietet Weiterlernen an');
     H.pruefe((await p.locator('#knopf-start-2').innerText()) === 'Nur offene Karten lernen (3)', 'zweite Wahl: „Nur offene Karten lernen (3)“');
@@ -219,10 +220,10 @@ function kartenLaden(ordner) {
     H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB II: Hinweis „anderer Fall“ auf der Startseite');
     await p.click('#knopf-start');
     H.pruefe(await p.locator('#zaehler').innerText() === '1 / 81', 'KB II: Runde mit 81 Karten');
-    H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'AB „Die Wittener Werkzeuge“ · Nr. 1', 'Kopfzeile mit AB und Nummer (ohne AFB)', await p.locator('#vorne-kopf').innerText());
+    H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'Wittener Werkzeuge · Nr. 1', 'Kopfzeile mit Thema und Nummer (ohne AFB)', await p.locator('#vorne-kopf').innerText());
     await p.click('#knopf-schliessen');
     const titel = await p.locator('.thema-titel').allInnerTexts();
-    H.pruefe(titel.includes('ABs zum Beratungsprozess (6 Phasen, Beratung planen)'), 'langer Abschnitt mit drei ABs erscheint unter seinem kurzen Titel');
+    H.pruefe(titel.includes('Beratungsprozess (6 Phasen) und SMART-Ziele') && !titel.some((t) => t.startsWith('AB')), 'Themenliste mit neutralen Namen, ohne AB-Titel');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'kb2-start.png') });
     await ctx.close();
   }
@@ -235,7 +236,7 @@ function kartenLaden(ordner) {
     H.beobachten(p, protokoll, 'hilfe');
     await p.goto(basis + 'kb1-diabetes/');
     await p.click('#keine-themen');
-    await p.locator('.thema', { hasText: 'Sicher entscheiden vor der Insulingabe' }).locator('input').check();
+    await p.locator('.thema', { hasText: 'Insulingabe: STOPP-Checkliste' }).locator('input').check();
     await p.click('#knopf-start');
     H.pruefe(await p.locator('#hilfe-knopf').isVisible() && (await p.locator('#hilfe-knopf').innerText()) === '📋 STOPP-Checkliste anzeigen',
       'STOPP-Karte: Knopf „📋 STOPP-Checkliste anzeigen“ unter der Karte');

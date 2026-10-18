@@ -1,7 +1,7 @@
 /* =====================================================================
  * KLAUSUR-CHALLENGE KB I – Diabetes mellitus
  * Alle Aufgaben der Challenge stehen in dieser Datei (Aufgabenpool).
- * Bei jeder Challenge werden 20 Aufgaben gezogen – aus jedem Arbeitsblatt
+ * Bei jeder Challenge werden 20 Aufgaben gezogen – aus jedem Thema
  * mindestens eine – und in zufälliger Reihenfolge gestellt.
  * =====================================================================
  *
@@ -32,7 +32,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Mehr als nur hohe Werte – Leben mit Diabetes mellitus',
+      titel: 'Fallsituation: Informationen, Ressourcen, Veränderungen',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die Angaben aus dem Text über Frau Schneider (75 J.) zu.',
@@ -61,7 +61,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Diabetes mellitus – gleiche Folge, unterschiedliche Ursachen?',
+      titel: 'Insulinwirkung an der Zelle: Typ 1 und Typ 2',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Was geschieht an der Muskelzelle? Ordnen Sie zu.',
@@ -83,7 +83,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'So regelt Insulin den Blutzucker',
+      titel: 'Blutzucker-Regelkreis und Krankheitsbild',
       fragen: [
         { typ: 'reihenfolge',
           frage: 'Bringen Sie die 5 Schritte des Blutzucker-Regelkreises in die richtige Reihenfolge.',
@@ -131,7 +131,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Vergleichen und Zusammenhänge erklären',
+      titel: 'Typ 1 und Typ 2: vergleichen und erklären',
       fragen: [
         { typ: 'richtigfalsch',
           aussage: '„Bei Typ 1 ist genug Insulin vorhanden, aber die Zellen reagieren nicht darauf.“',
@@ -166,8 +166,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['Insulinarten erschließen und ordnen (mit Karten und Tabelle)', 'Die Wirkprofile der Insulinarten'],
-      titel: 'Insulinarten und Wirkprofile',
+      titel: 'Insulinarten und Mahlzeitenbezug',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die Insuline zu: Was decken sie ab?',
@@ -229,7 +228,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Sicher entscheiden vor der Insulingabe',
+      titel: 'Insulingabe: STOPP-Checkliste, Umgang mit Insulin',
       fragen: [
         { typ: 'auswahl',
           frage: 'Kann die Insulingabe wie geplant durchgeführt werden?',
@@ -274,7 +273,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Akutkomplikation: Hyperglykämie (A) / Hypoglykämie (B)',
+      titel: 'Hypo- und Hyperglykämie',
       fragen: [
         { typ: 'auswahl',
           frage: 'Welche **Blutzuckerwerte** gelten laut Ich-kann-Liste?',
@@ -367,7 +366,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Kapilläre Blutzuckermessung – Wie messe ich richtig?',
+      titel: 'Blutzuckermessung: Indikation, 10-R-Regel, Umrechnen',
       fragen: [
         { typ: 'auswahl',
           frage: 'Was bedeutet der Begriff „**Indikation**“?',
@@ -411,7 +410,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Pflegepraxis Blutzuckermessung',
+      titel: 'Blutzuckermessung: Ablauf',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Zu welcher Phase der kapillären Blutzuckermessung gehört der Handlungsschritt?',
@@ -450,7 +449,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Kapilläre Blutzuckermessung – Wie vermeide und erkenne ich Messfehler?',
+      titel: 'Blutzuckermessung: Messfehler',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Leiten Sie aus jeder Fehlerquelle die passende Regel ab.',
@@ -485,7 +484,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Spätfolgen und diabetisches Fußsyndrom',
+      titel: 'Spätfolgen und diabetisches Fußsyndrom',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die Langzeitschäden des Diabetes mellitus zu.',

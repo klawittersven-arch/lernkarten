@@ -29,7 +29,7 @@ var EINSTELLUNGEN = {
   // Adresse der Lernkarten oder der Challenge mit ?vorschau=1 öffnen.
   challengeAn: true,
   challenge: {
-    aufgaben: 20,                 // so viele Aufgaben je Challenge (aus jedem AB mindestens eine)
+    aufgaben: 20,                 // so viele Aufgaben je Challenge (aus jedem Thema mindestens eine)
     punkteProAufgabe: 100,        // Teilpunkte beim Zuordnen und bei Reihenfolgen
     zeitbonusMax: 500,            // höchstens so viele Bonuspunkte für Tempo – zählt anteilig zu den richtigen Antworten
     zeitbonusVollBisMinuten: 4,   // bis hierhin gibt es den vollen Zeitbonus …
@@ -135,7 +135,7 @@ var EINSTELLUNGEN = {
     challengeLos: '🏁 Klausur-Challenge starten',
 
     // Klausur-Challenge: Challenge-Seite
-    challengeIdee: 'Sind Sie fit für die Klausur? Testen Sie sich mit {n} zufälligen Aufgaben aus allen Arbeitsblättern der Ich-kann-Liste.',
+    challengeIdee: 'Sind Sie fit für die Klausur? Testen Sie sich mit {n} zufälligen Aufgaben aus allen Themen der Ich-kann-Liste.',
     challengeRegelPunkte: 'Pro richtig gelöster Aufgabe gibt es {p} Punkte – beim Zuordnen und bei Reihenfolgen auch Teilpunkte.',
     challengeRegelZeit: 'Die Zeit läuft von der ersten bis zur letzten Aufgabe mit – auch, wenn Sie zwischendurch die App verlassen. Je schneller Sie sind, desto mehr Zeitbonus gibt es (bis zu {b} Punkte). Der Bonus zählt aber nur anteilig zu Ihren richtigen Antworten – Raten lohnt sich also nicht.',
     challengeRegelEnde: 'Die Lösungen sehen Sie erst am Ende – wie in der Klausur. Danach können Sie sich in die Highscore-Liste Ihrer Klasse eintragen.',

@@ -1,7 +1,7 @@
 /* =====================================================================
  * KLAUSUR-CHALLENGE KB II – Beratung
  * Alle Aufgaben der Challenge stehen in dieser Datei (Aufgabenpool).
- * Bei jeder Challenge werden 20 Aufgaben gezogen – aus jedem Arbeitsblatt
+ * Bei jeder Challenge werden 20 Aufgaben gezogen – aus jedem Thema
  * mindestens eine – und in zufälliger Reihenfolge gestellt.
  * =====================================================================
  *
@@ -32,7 +32,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Die Wittener Werkzeuge',
+      titel: 'Wittener Werkzeuge',
       fragen: [
         { typ: 'auswahl',
           frage: 'Was bedeutet „**doppelte Fürsorge**“ im Kontext der Wittener Werkzeuge?',
@@ -73,8 +73,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['‚Beratung‘ … oder doch etwas anderes?', 'Informieren, anleiten, schulen oder beraten?'],
-      titel: 'Informieren, anleiten, schulen oder beraten?',
+      titel: 'Patientenedukation, hinderliche Faktoren, gesprächshemmendes Verhalten',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie jeder Form der Patientenedukation ihr **Ziel** zu.',
@@ -163,8 +162,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['Frau Schneider braucht Beratung – aber wie?', 'Beratungsansätze – drei unterschiedliche Blickrichtungen'],
-      titel: 'Beratungsgrundsätze, -ansätze und Gesprächstechniken',
+      titel: 'Beratungsgrundsätze, -ansätze, Gesprächstechniken',
       fragen: [
         { typ: 'auswahl',
           frage: 'Was bedeutet der Beratungsgrundsatz „**ergebnisoffen**“?',
@@ -252,8 +250,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: ['Problemfokus und Ressourcenorientierung unterscheiden', 'Beratungsansätze anwenden'],
-      titel: 'Problemfokus, Ressourcen und Beratungsansätze anwenden',
+      titel: 'Ressourcenorientierung, passenden Ansatz wählen',
       fragen: [
         { typ: 'auswahl',
           frage: 'Problemorientiert: „Sie bewegen sich viel zu wenig.“ – Welche Umformulierung ist **ressourcenorientiert**?',
@@ -298,12 +295,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: [
-        'Beratungsprozess – Frau Schneider braucht eine Beratung nach den 6 Phasen',
-        'Beratung planen – Was ist zuerst wichtig, was soll erreicht werden?',
-        'Die 6 Phasen der Beratung praktisch anwenden'
-      ],
-      titel: 'Beratungsprozess (6 Phasen, Beratung planen)',
+      titel: 'Beratungsprozess (6 Phasen) und SMART-Ziele',
       fragen: [
         { typ: 'reihenfolge',
           frage: 'Bringen Sie die **sechs Phasen des Beratungsprozesses** in die richtige Reihenfolge.',
@@ -372,7 +364,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Professionell beraten – Beratungsformen, Kompetenzen und Grenzen',
+      titel: 'Beratungskompetenz',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die Beschreibung dem passenden Bereich der **Beratungskompetenz** zu.',
@@ -407,7 +399,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      ab: 'Die Grenzen pflegerischer Beratung',
+      titel: 'Bezugspersonen einbeziehen, Beratung beurteilen',
       fragen: [
         { typ: 'zuordnen',
           frage: 'Bezugspersonen professionell einbeziehen: Ordnen Sie die passende **Begründung** zu.',
