@@ -561,6 +561,7 @@ var LERNKARTEN = {
     zuruecksetzen: 'Lernstand löschen',
     zuruecksetzenFrage: 'Ihren gesamten Lernstand auf diesem Gerät löschen?',
     datenschutz: 'Keine Anmeldung, keine Cookies. Ihr Lernstand wird nur auf diesem Gerät gespeichert.',
-    bedienung: 'Karte antippen zum Umdrehen. Wischen nach rechts = gewusst, nach links = noch nicht.'
+    bedienung: 'Karte antippen zum Umdrehen. Wischen nach rechts = gewusst, nach links = noch nicht.',
+    hilfeSchliessen: 'Schließen'
   }
 };

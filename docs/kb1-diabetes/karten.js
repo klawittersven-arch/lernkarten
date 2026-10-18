@@ -18,7 +18,8 @@
  *     fall: 'Jana ist …',           ← (optional) Fall oder Aussage, eingerahmt unter der Kompetenz
  *     hinten: ['Punkt 1', 'Punkt 2'],  ← Rückseite: jeder Eintrag wird ein Stichpunkt
  *     nummeriert: true,             ← (optional) 1., 2., 3. statt Punkten; start: 4 beginnt bei 4.
- *     hinweis: '…'                  ← (optional) kleiner Kasten unten auf der Rückseite
+ *     hinweis: '…',                 ← (optional) kleiner Kasten unten auf der Rückseite
+ *     hilfe: 'stopp'                ← (optional) Knopf unter der Karte, der eine Liste aus „hilfen“ zeigt
  *   },
  *
  * Neue Karte: eine vorhandene Karte samt { … }, kopieren und darunter einfügen.
@@ -35,6 +36,25 @@ var LERNKARTEN = {
   // Schlüssel für den Lernstand auf dem Handy – nur ändern, wenn alle neu beginnen sollen
   speicherName: 'kb1-diabetes',
 
+  // Listen, die sich auf einzelnen Karten per Knopf einblenden lassen (Karte mit hilfe: 'stopp')
+  hilfen: {
+    stopp: {
+      knopf: '📋 STOPP-Checkliste anzeigen',
+      titel: 'STOPP-Checkliste',
+      nummeriert: true,
+      punkte: [
+        'richtige Person',
+        'ärztliche Anordnung',
+        'richtiges Insulinpräparat',
+        'richtige Dosis',
+        'richtiger Zeitpunkt',
+        'aktueller Blutzuckerwert',
+        'Mahlzeit / Nahrungsverfügbarkeit',
+        'Besonderheiten des Präparats'
+      ]
+    }
+  },
+
   themen: [
 
     /* ------------------------------------------------------------------ */
@@ -48,28 +68,31 @@ var LERNKARTEN = {
             'Text zweimal lesen und mit drei Farben markieren: **Informationen**, **Ressourcen**, **Veränderungen**.'
           ] },
         { nr: 1,
-          vorne: 'Ich kann im Text über Frau Schneider (75 J.) die **gesicherten Informationen** *identifizieren*.',
+          vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*:',
+          fall: 'Herr Krämer (68 J.) isst seit einigen Tagen kaum noch etwas und wirkt manchmal verwirrt. Seine Tochter wohnt im selben Haus und schaut täglich nach ihm. Er hat seit 10 Jahren Diabetes mellitus Typ 2 und spritzt morgens Mischinsulin.',
+          nummeriert: true,
           hinten: [
-            'Diabetes mellitus Typ 2 seit 13 Jahren',
-            'Mischinsulin morgens und abends durch den ambulanten Pflegedienst',
-            'arterielle Hypertonie',
-            'diabetische Polyneuropathie',
-            '1,60 m / 77 kg'
+            '„… isst seit einigen Tagen kaum noch etwas und wirkt manchmal verwirrt.“ → **auffällige Veränderung**',
+            '„Seine Tochter wohnt im selben Haus und schaut täglich nach ihm.“ → **Ressource**',
+            '„Er hat seit 10 Jahren Diabetes mellitus Typ 2 und spritzt morgens Mischinsulin.“ → **pflegerelevante Information**'
           ] },
         { nr: 1,
-          vorne: 'Ich kann im Text über Frau Schneider (75 J.) die **Ressourcen** *identifizieren*.',
+          vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*:',
+          fall: 'Frau Yilmaz (72 J.) misst ihren Blutzucker seit Jahren selbstständig und zuverlässig. Sie hat Diabetes mellitus Typ 2 und eine arterielle Hypertonie. Seit zwei Wochen klagt sie über Kribbeln und Taubheit in beiden Füßen.',
+          nummeriert: true,
           hinten: [
-            'im Ort gut eingebunden (Seniorennachmittag, Gartenparzelle)',
-            'der Pflegedienst übernimmt BZ-Messung und Insulingabe'
+            '„… misst ihren Blutzucker seit Jahren selbstständig und zuverlässig.“ → **Ressource**',
+            '„Sie hat Diabetes mellitus Typ 2 und eine arterielle Hypertonie.“ → **pflegerelevante Information**',
+            '„Seit zwei Wochen klagt sie über Kribbeln und Taubheit in beiden Füßen.“ → **auffällige Veränderung**'
           ] },
         { nr: 1,
-          vorne: 'Ich kann im Text über Frau Schneider (75 J.) die **auffälligen Veränderungen** *identifizieren*.',
+          vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*:',
+          fall: 'Herr Weber (80 J.) hat Diabetes mellitus Typ 2 und eine diabetische Polyneuropathie. In letzter Zeit vergisst er häufig seine Mahlzeiten. Er geht gern mit seinem Hund spazieren und ist so jeden Tag in Bewegung.',
+          nummeriert: true,
           hinten: [
-            'sozialer Rückzug',
-            'Treppensteigen fällt schwer',
-            'Schmerzen und Schwäche in den Beinen',
-            'unbemerkter Hautdefekt an der rechten Ferse',
-            'stärker schwankende Blutzuckerwerte'
+            '„… hat Diabetes mellitus Typ 2 und eine diabetische Polyneuropathie.“ → **pflegerelevante Information**',
+            '„In letzter Zeit vergisst er häufig seine Mahlzeiten.“ → **auffällige Veränderung**',
+            '„Er geht gern mit seinem Hund spazieren und ist so jeden Tag in Bewegung.“ → **Ressource**'
           ] }
       ]
     },
@@ -247,29 +270,19 @@ var LERNKARTEN = {
       ab: 'Sicher entscheiden vor der Insulingabe',
       karten: [
         { nr: 1,
-          vorne: 'Ich kann die **8 Punkte der STOPP-Checkliste** *nennen*.',
-          nummeriert: true,
-          hinten: [
-            'richtige Person',
-            'ärztliche Anordnung',
-            'richtiges Insulinpräparat',
-            'richtige Dosis',
-            'richtiger Zeitpunkt',
-            'aktueller Blutzuckerwert',
-            'Mahlzeit / Nahrungsverfügbarkeit',
-            'Besonderheiten des Präparats'
-          ] },
-        { nr: 1,
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
           fall: 'Normalinsulin ist für 12:00 Uhr angeordnet, das Essen kommt erst um 12:45 Uhr.',
+          hilfe: 'stopp',
           hinten: '→ **nicht wie geplant** (Punkte 5, 7): Der Spritz-Ess-Abstand passt nicht; Zeitpunkt und Mahlzeit klären.' },
         { nr: 1,
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
           fall: 'Es ist kein aktueller BZ-Wert dokumentiert.',
+          hilfe: 'stopp',
           hinten: '→ **erst klären** (Punkt 6): vor der Gabe den BZ messen.' },
         { nr: 1,
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
           fall: 'Basalinsulin ist fällig, der Patient hat abends wenig gegessen.',
+          hilfe: 'stopp',
           hinten: '→ **Gabe möglich** (Punkte 2, 5, 7): Basalinsulin deckt den Grundbedarf.' },
         { nr: 2,
           vorne: 'Ich kann die **vier Bereiche** *nennen*, zu denen es Wenn-dann-Regeln zum sicheren Umgang mit Insulin gibt.',
@@ -385,8 +398,12 @@ var LERNKARTEN = {
           vorne: 'Ich kann den Begriff „**Indikation**“ *erklären*.',
           hinten: 'der fachlich begründete Anlass für eine Maßnahme.' },
         { nr: 1,
-          vorne: 'Ich kann am Fall Frau Schneider die Indikation für eine **Blutzuckermessung** *ableiten*.',
-          hinten: 'Die zuletzt schwankenden BZ-Werte und die ärztliche Anordnung begründen die zusätzliche Messung vor dem Mittagessen.' },
+          vorne: 'Ich kann anhand eines Fallbeispiels die Indikation für eine **Blutzuckermessung** *ableiten*:',
+          fall: 'Herr Brandt (64 J.) hat Diabetes mellitus Typ 2 und spritzt Insulin. Kurz vor dem Mittagessen ist er plötzlich blass, zittrig und schwitzt stark.',
+          hinten: [
+            '**Indikation:** Blässe, Zittern und Schwitzen bei Insulintherapie sind Anzeichen einer möglichen **Hypoglykämie**.',
+            '→ sofort den Blutzucker messen, um den Verdacht zu prüfen.'
+          ] },
         { nr: 2,
           vorne: 'Ich kann Angaben aus einer Fallsituation den „Richtig“-Kontrollen der **10-R-Regel** *zuordnen*:',
           fall: 'morgens und abends · NovoMix 30® · aktueller Medikationsplan · Frau Schneider · 16 I.E. morgens / 10 I.E. abends',
@@ -528,10 +545,11 @@ var LERNKARTEN = {
             'gute BZ-Einstellung, nicht rauchen'
           ] },
         { nr: 4,
-          vorne: 'Ich kann am Fall Frau Schneider den **Hautdefekt an der Ferse** *beurteilen*.',
-          hinten: 'Polyneuropathie, ein schmerzloser, unbemerkter Hautdefekt und trockene Haut sind Warnzeichen für ein beginnendes diabetisches Fußsyndrom.' },
+          vorne: 'Ich kann anhand eines Fallbeispiels Beobachtungen an den Füßen von Diabetikern *beurteilen*:',
+          fall: 'Herr Özdemir (69 J.) hat Diabetes mellitus Typ 2 und eine Polyneuropathie. Bei der Fußinspektion sehen Sie am Großzehenballen eine gerötete Druckstelle, die er selbst nicht bemerkt hat und die nicht schmerzt. Die Haut an seinen Füßen ist sehr trocken.',
+          hinten: 'Polyneuropathie, eine schmerzlose, unbemerkte Druckstelle und trockene Haut sind **Warnzeichen für ein beginnendes diabetisches Fußsyndrom**.' },
         { nr: 4,
-          vorne: 'Ich kann am Fall Frau Schneider (Hautdefekt an der Ferse) das **weitere Vorgehen** *beschreiben*.',
+          vorne: 'Ich kann am Fall Frau Schneider (Diabetikerin, Hautdefekt an der Ferse) das **weitere Vorgehen** *beschreiben*.',
           hinten: [
             'Wunde beschreiben und dokumentieren',
             'Hausärztin informieren',
@@ -540,7 +558,7 @@ var LERNKARTEN = {
             'zur Fußpflege beraten'
           ] },
         { nr: 4,
-          vorne: 'Ich kann am Fall Frau Schneider (Hautdefekt an der Ferse) die passenden **Personen zur Zusammenarbeit** *nennen*.',
+          vorne: 'Ich kann am Fall Frau Schneider (Diabetikerin, Hautdefekt an der Ferse) die passenden **Personen zur Zusammenarbeit** *nennen*.',
           hinten: [
             '**Hausärztin** (Diagnose, Verordnung)',
             '**Wundexpertin** (Wundversorgung)',
@@ -581,6 +599,7 @@ var LERNKARTEN = {
     zuruecksetzen: 'Lernstand löschen',
     zuruecksetzenFrage: 'Ihren gesamten Lernstand auf diesem Gerät löschen?',
     datenschutz: 'Keine Anmeldung, keine Cookies. Ihr Lernstand wird nur auf diesem Gerät gespeichert.',
-    bedienung: 'Karte antippen zum Umdrehen. Wischen nach rechts = gewusst, nach links = noch nicht.'
+    bedienung: 'Karte antippen zum Umdrehen. Wischen nach rechts = gewusst, nach links = noch nicht.',
+    hilfeSchliessen: 'Schließen'
   }
 };

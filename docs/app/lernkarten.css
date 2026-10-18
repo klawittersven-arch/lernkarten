@@ -173,6 +173,7 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
 .zaehler { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .buehne {
+  --hilfe-hoehe: 0px; /* Platz für den Knopf unter der Karte (nur bei Karten mit Liste zum Nachschlagen) */
   flex: 1; width: 100%; max-width: 680px; margin: 0 auto;
   padding: 14px 16px calc(var(--leiste-hoehe) + 14px + env(safe-area-inset-bottom));
   overflow-x: clip;
@@ -182,11 +183,28 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
   position: relative; perspective: 1600px;
   cursor: pointer; user-select: none; -webkit-user-select: none;
   touch-action: pan-y; outline: none; border-radius: 20px;
-  --karten-hoehe: max(320px, calc(100dvh - var(--kopf-hoehe) - 4px - var(--leiste-hoehe) - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+  --karten-hoehe: max(320px, calc(100dvh - var(--kopf-hoehe) - 4px - var(--leiste-hoehe) - 28px - var(--hilfe-hoehe) - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
 }
 @supports not (height: 100dvh) {
-  .karte { --karten-hoehe: max(320px, calc(100vh - var(--kopf-hoehe) - 4px - var(--leiste-hoehe) - 28px)); }
+  .karte { --karten-hoehe: max(320px, calc(100vh - var(--kopf-hoehe) - 4px - var(--leiste-hoehe) - 28px - var(--hilfe-hoehe))); }
 }
+.buehne.mit-hilfe { --hilfe-hoehe: 56px; }
+.hilfe-knopf {
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  min-height: 46px; margin: 10px 0 0; padding: 8px 12px;
+  font-size: 16px; font-weight: 700; color: var(--akzent);
+  background: var(--hellblau); border: 2px solid var(--rand); border-radius: 12px;
+  cursor: pointer; touch-action: manipulation;
+}
+.hilfe-dialog {
+  width: min(calc(100% - 32px), 480px); max-height: calc(100% - 48px);
+  padding: 0; border: 0; border-radius: 16px;
+  background: var(--karte); color: var(--text); box-shadow: var(--schatten);
+}
+.hilfe-dialog::backdrop { background: rgba(10, 20, 24, .55); }
+.hilfe-innen { padding: 18px 20px 20px; }
+.hilfe-dialog h2 { margin: 0 0 10px; font-size: 20px; }
+.hilfe-dialog .knopf { width: 100%; margin-top: 16px; }
 @media (min-width: 700px) { .karte { --karten-hoehe: 460px; } }
 .karte:focus-visible { box-shadow: 0 0 0 3px var(--fokus); }
 .karte.zieht { transition: none; }

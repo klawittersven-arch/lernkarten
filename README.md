@@ -6,7 +6,7 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 
 | Kartensatz | Adresse (QR-Code) |
 |---|---|
-| KB I – Diabetes mellitus (Klausur 09.11.2026), 78 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
+| KB I – Diabetes mellitus (Klausur 09.11.2026), 77 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
 | KB II – Beratung (Klausur 09.11.2026), 81 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/ ·
@@ -170,6 +170,9 @@ Nach 1–2 Minuten ist die Änderung online.
   `hinten` (ein Text oder eine Liste von Stichpunkten) und optional `hinweis` (Kasten unten).
   `nr` (Nummer in der Ich-kann-Liste) und `afb` (z. B. `'I + II'`) erscheinen oben auf der Karte.
   Die genaue Anleitung steht oben in der Datei.
+- Listen zum Nachschlagen: Eine Karte mit `hilfe: 'stopp'` bekommt unter der Karte einen Knopf
+  (z. B. „📋 STOPP-Checkliste anzeigen“), der die Liste `hilfen: { stopp: { … } }` oben in
+  `karten.js` in einem kleinen Fenster zeigt.
 - Ganz oben in `karten.js` steht optional `hinweis: '…'` – ein Kasten auf der Startseite
   (bei beiden Kartensätzen: „In der Klausur kommt ein anderer Fall …“).
 - Ein Thema heißt wie sein Arbeitsblatt (`ab: '…'`, bei mehreren ABs eine Liste `['…', '…']`).

@@ -113,6 +113,7 @@
       <span class="wisch-marke links" id="marke-links" aria-hidden="true"></span>
       <span class="wisch-marke rechts" id="marke-rechts" aria-hidden="true"></span>
     </div>
+    <button type="button" class="hilfe-knopf" id="hilfe-knopf" hidden></button>
   </main>
 
   <div class="lern-leiste">
@@ -163,6 +164,15 @@
 
 <p class="nur-vorlesen" id="ansage" aria-live="polite"></p>
 <p class="toast" id="toast" role="status" hidden></p>
+
+<!-- ============ Liste zum Nachschlagen (z. B. STOPP-Checkliste) ============ -->
+<dialog class="hilfe-dialog" id="hilfe-dialog" aria-labelledby="hilfe-titel">
+  <div class="hilfe-innen">
+    <h2 id="hilfe-titel"></h2>
+    <div class="antwort" id="hilfe-inhalt"></div>
+    <button type="button" class="knopf haupt" id="hilfe-schliessen"></button>
+  </div>
+</dialog>
 
 <!-- ============ Gratulation: Spielrunde freigeschaltet ============ -->
 <div class="belohnung" id="belohnung" role="dialog" aria-modal="true" aria-labelledby="belohnung-titel" hidden>
@@ -470,6 +480,7 @@
     $('marke-links').textContent = T.nochNicht;
     $('marke-rechts').textContent = T.gewusst;
     $('knopf-uebersicht').textContent = T.beenden;
+    $('hilfe-schliessen').textContent = T.hilfeSchliessen;
     document.title = 'Lernkarten ' + D.titel;
     if (D.hinweis) {
       $('start-hinweis').innerHTML = formatieren(D.hinweis);
@@ -657,6 +668,11 @@
     hinweis.hidden = !k.hinweis;
     hinweis.innerHTML = k.hinweis ? formatieren(k.hinweis) : '';
 
+    var hilfe = hilfeDerKarte();
+    $('hilfe-knopf').hidden = !hilfe;
+    $('hilfe-knopf').textContent = hilfe ? (hilfe.knopf || hilfe.titel) : '';
+    $('buehne').classList.toggle('mit-hilfe', !!hilfe);
+
     seitenSichtbarkeit();
     void el.offsetWidth; // Umstellung ohne Animation übernehmen
     el.classList.remove('ohne-animation');
@@ -703,6 +719,41 @@
       $('spiel-rest').textContent = rest === 1 ? ST.spielRestEine : ersetzen(ST.spielRestMehr, { x: rest });
     }
   }
+
+  /* ---------- Liste zum Nachschlagen (Karte mit hilfe: '…', Inhalt in karten.js unter hilfen) ---------- */
+  function hilfeDerKarte() {
+    var r = zustand.runde;
+    if (!r || !rundeLaeuft()) return null;
+    var name = KARTEN[r.ids[r.pos]].daten.hilfe;
+    var h = name && D.hilfen && D.hilfen[name];
+    return h && Array.isArray(h.punkte) ? h : null;
+  }
+
+  function hilfeOeffnen() {
+    var h = hilfeDerKarte();
+    if (!h) return;
+    $('hilfe-titel').textContent = h.titel || '';
+    var inhalt = $('hilfe-inhalt');
+    inhalt.textContent = '';
+    var liste = document.createElement(h.nummeriert ? 'ol' : 'ul');
+    h.punkte.forEach(function (punkt) {
+      var li = document.createElement('li');
+      li.innerHTML = formatieren(punkt);
+      liste.appendChild(li);
+    });
+    inhalt.appendChild(liste);
+    var d = $('hilfe-dialog');
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    $('hilfe-schliessen').focus();
+  }
+
+  function hilfeSchliessen() {
+    var d = $('hilfe-dialog');
+    if (typeof d.close === 'function') { if (d.open) d.close(); } else d.removeAttribute('open');
+    $('hilfe-knopf').focus({ preventScroll: true });
+  }
+
+  function hilfeOffen() { return $('hilfe-dialog').hasAttribute('open'); }
 
   function umdrehen() {
     if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen') return;
@@ -915,8 +966,14 @@
 
   $('belohnung-spaeter').addEventListener('click', belohnungSchliessen);
 
+  $('hilfe-knopf').addEventListener('click', hilfeOeffnen);
+  $('hilfe-schliessen').addEventListener('click', hilfeSchliessen);
+  // Tipp neben das Fenster (auf den abgedunkelten Hintergrund) schließt es ebenfalls
+  $('hilfe-dialog').addEventListener('click', function (e) { if (e.target === this) hilfeSchliessen(); });
+
   document.addEventListener('keydown', function (e) {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (hilfeOffen()) return; // Esc schließt das Fenster selbst
     if (belohnungOffen) {
       if (e.key === 'Escape') { e.preventDefault(); belohnungSchliessen(); }
       return;

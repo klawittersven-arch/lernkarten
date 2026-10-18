@@ -11,7 +11,7 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 
 // Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
 const SAETZE = [
-  { ordner: 'kb1-diabetes', themen: 11, karten: 78, hinweis: true },
+  { ordner: 'kb1-diabetes', themen: 11, karten: 77, hinweis: true },
   { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true }
 ];
 
@@ -44,6 +44,8 @@ function kartenLaden(ordner) {
     const schluessel = alle.map((k) => k.vorne + '|' + (k.fall || ''));
     const doppelt = schluessel.filter((s, i) => schluessel.indexOf(s) !== i);
     H.pruefe(doppelt.length === 0, 'keine zwei Karten mit gleicher Vorder- und Fallseite', doppelt);
+    const ohneHilfe = alle.filter((k) => k.hilfe !== undefined && !(D.hilfen && D.hilfen[k.hilfe] && D.hilfen[k.hilfe].titel && Array.isArray(D.hilfen[k.hilfe].punkte) && D.hilfen[k.hilfe].punkte.length));
+    H.pruefe(ohneHilfe.length === 0, 'jede Liste zum Nachschlagen (hilfe) ist in „hilfen“ vorhanden', ohneHilfe.map((k) => k.vorne));
     const texte = alle.flatMap((k) => [k.vorne, k.fall || '', k.hinweis || ''].concat(k.hinten)).concat([D.hinweis || '']);
     const sterne = texte.filter((t) => {
       const ohneFett = t.replace(/\*\*(.+?)\*\*/g, '$1');
@@ -98,7 +100,7 @@ function kartenLaden(ordner) {
     H.beobachten(p, protokoll, 'bedienung');
     p.on('dialog', (d) => d.accept());
     await p.goto(url);
-    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 78 Karten lernen', 'Start: „Alle 78 Karten lernen“');
+    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 77 Karten lernen', 'Start: „Alle 77 Karten lernen“');
     H.pruefe(await p.locator('.thema').count() === 11, 'Start: 11 Themen zur Auswahl');
 
     await p.click('#keine-themen');
@@ -198,7 +200,7 @@ function kartenLaden(ordner) {
 
     await p.click('#knopf-schliessen');
     await p.click('#zuruecksetzen');
-    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 78 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
+    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 77 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
     const cookies = await ctx.cookies();
     H.pruefe(cookies.length === 0, 'keine Cookies');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'lernkarten-start.png') });
@@ -225,6 +227,40 @@ function kartenLaden(ordner) {
     await ctx.close();
   }
 
+  /* ---------- 3b. Liste zum Nachschlagen (STOPP-Checkliste) ---------- */
+  console.log('\n== Knopf „STOPP-Checkliste anzeigen“ (KB I)');
+  {
+    const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
+    const p = await ctx.newPage();
+    H.beobachten(p, protokoll, 'hilfe');
+    await p.goto(basis + 'kb1-diabetes/');
+    await p.click('#keine-themen');
+    await p.locator('.thema', { hasText: 'Sicher entscheiden vor der Insulingabe' }).locator('input').check();
+    await p.click('#knopf-start');
+    H.pruefe(await p.locator('#hilfe-knopf').isVisible() && (await p.locator('#hilfe-knopf').innerText()) === '📋 STOPP-Checkliste anzeigen',
+      'STOPP-Karte: Knopf „📋 STOPP-Checkliste anzeigen“ unter der Karte');
+    const platz = await p.evaluate(() => document.querySelector('.lern-leiste').getBoundingClientRect().top - document.getElementById('hilfe-knopf').getBoundingClientRect().bottom);
+    H.pruefe(platz >= 0, 'Karte und Knopf passen über die Bewertungsknöpfe', platz);
+    await p.click('#hilfe-knopf');
+    H.pruefe(await p.locator('#hilfe-dialog').isVisible() && (await p.locator('#hilfe-titel').innerText()) === 'STOPP-Checkliste'
+      && await p.locator('#hilfe-inhalt li').count() === 8 && (await p.locator('#hilfe-inhalt li').nth(5).innerText()) === 'aktueller Blutzuckerwert',
+      'Knopf öffnet die STOPP-Checkliste mit allen 8 Punkten');
+    H.pruefe(!(await p.locator('#karte').getAttribute('class')).includes('umgedreht'), 'die Karte dreht sich dabei nicht um');
+    await p.screenshot({ path: path.join(ERGEBNISSE, 'stopp-checkliste.png') });
+    await p.keyboard.press('ArrowRight');
+    H.pruefe((await p.locator('#zaehler').innerText()) === '1 / 8', 'solange die Liste offen ist, geht das Lernen nicht versehentlich weiter');
+    await p.click('#hilfe-schliessen');
+    H.pruefe(await p.locator('#hilfe-dialog').isHidden(), '„Schließen“ schließt die Liste');
+    await p.click('#karte');
+    H.pruefe(await p.locator('#hilfe-knopf').isVisible(), 'Knopf auch auf der Rückseite (dort stehen die Punktnummern)');
+    await p.click('#hilfe-knopf');
+    await p.keyboard.press('Escape');
+    H.pruefe(await p.locator('#hilfe-dialog').isHidden() && await p.locator('#ansicht-lernen').isVisible(), 'Esc schließt nur die Liste, nicht die Lernrunde');
+    for (let i = 0; i < 3; i++) await p.click('#knopf-gewusst');
+    H.pruefe((await p.locator('#zaehler').innerText()) === '4 / 8' && await p.locator('#hilfe-knopf').isHidden(), 'Karte ohne Liste (Wenn-dann-Regeln): kein Knopf');
+    await ctx.close();
+  }
+
   /* ---------- 4. Alle Karten: Layout auf großen und kleinen Handys ---------- */
   for (const S of SAETZE) {
     for (const [breite, hoehe, schema] of [[390, 844, 'light'], [320, 568, 'dark']]) {
@@ -243,9 +279,11 @@ function kartenLaden(ordner) {
             const karte = document.getElementById('karte').getBoundingClientRect();
             const leiste = document.querySelector('.lern-leiste').getBoundingClientRect();
             const knopf = document.getElementById('knopf-nochnicht').getBoundingClientRect();
+            const hilfe = document.getElementById('hilfe-knopf');
+            const unten = hilfe.hidden ? karte.bottom : hilfe.getBoundingClientRect().bottom;   // Karte samt Knopf darunter
             return {
               text: document.getElementById('vorne-text').innerText.slice(0, 60),
-              hoehe: karte.height, platz: leiste.top - karte.top,
+              hoehe: unten - karte.top, platz: leiste.top - karte.top,
               quer: document.documentElement.scrollWidth > window.innerWidth,
               knopf: knopf.height
             };
