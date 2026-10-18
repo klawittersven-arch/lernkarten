@@ -7,7 +7,7 @@
  * Nach größeren Änderungen VERSION erhöhen – dann wird der Speicher erneuert. */
 'use strict';
 
-var VERSION = 'v8';
+var VERSION = 'v9';
 // eigener Speicher je Ordner, z. B. „lernkarten-/lernkarten/kb1-diabetes/-v1“
 var PRAEFIX = 'lernkarten-' + new URL('./', self.location).pathname + '-';
 var CACHE = PRAEFIX + VERSION;
@@ -28,7 +28,10 @@ var DATEIEN = [
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
-      return c.addAll(DATEIEN.map(function (d) { return new Request(d, { cache: 'reload' }); }));
+      return c.addAll(DATEIEN.map(function (d) { return new Request(d, { cache: 'reload' }); })).then(function () {
+        // Aufgaben der Klausur-Challenge gleich mitspeichern (fehlt die Datei, macht das nichts)
+        return c.add(new Request('fragen.js', { cache: 'reload' })).catch(function () { /* egal */ });
+      });
     }).then(function () { return self.skipWaiting(); })
   );
 });

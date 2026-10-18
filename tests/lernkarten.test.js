@@ -282,9 +282,10 @@ function kartenLaden(ordner) {
       H.pruefe(sw && sw.endsWith(`/lernkarten/${S.ordner}/sw.js`), `${S.ordner}: eigener Service Worker aktiv`);
     }
     const caches = (await p.evaluate(async () => (await caches.keys()))).sort();
-    const erwartet = SAETZE.map((s) => s.ordner).concat(['spiel']).sort();
+    const erwartet = SAETZE.map((s) => s.ordner).concat(['spiel', 'challenge']).sort();
     const gefunden = caches.map((c) => (c.match(/^lernkarten-\/lernkarten\/([a-z0-9-]+)\/-v\d+$/) || [])[1]).sort();
-    H.pruefe(JSON.stringify(gefunden) === JSON.stringify(erwartet), `getrennte Offline-Speicher (Kartensätze und Spiel): ${caches.join(', ')}`);
+    H.pruefe(JSON.stringify(gefunden) === JSON.stringify(erwartet), `getrennte Offline-Speicher (Kartensätze, Spiel, Challenge): ${caches.join(', ')}`);
+    await H.bis(() => p.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration('../challenge/'); return !!(r && r.active); }));
     await ctx.setOffline(true);
     for (const S of SAETZE) {
       await p.goto(basis + S.ordner + '/');
@@ -293,6 +294,9 @@ function kartenLaden(ordner) {
       await p.click('#knopf-gewusst');
       await H.warte(400);
       H.pruefe(await p.locator('#zaehler').innerText() === `2 / ${S.karten}`, `${S.ordner}: offline lernbar`);
+      await p.goto(basis + 'challenge/?satz=' + S.ordner);
+      await p.click('#knopf-challenge-start');
+      H.pruefe((await p.locator('#zaehler').innerText()) === 'Aufgabe 1 / 20', `${S.ordner}: Klausur-Challenge startet auch offline (ohne sie vorher geöffnet zu haben)`);
     }
     await ctx.close();
   }

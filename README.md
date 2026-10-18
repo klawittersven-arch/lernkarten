@@ -152,8 +152,8 @@ Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challen
   `…/highscore/?liste=kb1-diabetes&art=challenge&klasse=3bfp2-1&zuruecksetzen=SCHLÜSSEL`.
 - **Aufgaben ändern:** `docs/<kartensatz>/fragen.js` – Anleitung oben in der Datei
   (bei Auswahlaufgaben ist immer die erste Antwort die richtige).
-- **Freischalten:** in `docs/app/einstellungen.js` `challengeAn: false` → `true`. Vorher ist die
-  Challenge für die SuS unsichtbar; zum Ausprobieren die Lernkarten oder die Challenge mit
+- **Ein-/Ausschalten:** in `docs/app/einstellungen.js` `challengeAn: true` (sichtbar, Stand jetzt)
+  bzw. `false` (für die SuS unsichtbar). Auch ausgeschaltet lässt sie sich zum Ausprobieren mit
   `?vorschau=1` öffnen (z. B. `…/kb1-diabetes/?vorschau=1`).
 
 ## Karten ändern

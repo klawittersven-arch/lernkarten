@@ -15,16 +15,16 @@ Zeit   Tempo     Sichtbar*  knappste Reaktionszeit (Muster)              alle ma
 
 Hindernisse je Minute (Mittel aus 20 Läufen)
 Abschnitt      Hindernisse  davon Lkw  Schlaglöcher  Kombinationen
-  0–30  s        41        0.0       0.0          0.0
- 30–60  s        43        2.4       3.7          2.8
- 60–90  s        46        3.9       5.4          3.5
- 90–120 s        49        5.4       7.8          4.7
-120–150 s        51        5.8       9.6          7.3
-150–180 s        54        6.7      14.5          8.8
-180–210 s        59        7.1      14.2          9.8
-210–240 s        62       10.3      15.6         13.2
-240–270 s        66       10.3      19.7         13.9
-270–300 s        66       10.2      19.3         13.0
+  0–30  s        42        0.0       0.0          0.0
+ 30–60  s        44        2.1       4.7          2.3
+ 60–90  s        46        2.5       5.4          4.2
+ 90–120 s        48        3.5       7.3          6.1
+120–150 s        52        6.1       9.3          6.5
+150–180 s        55        5.2      12.4          9.5
+180–210 s        58        7.1      12.9         10.6
+210–240 s        65        9.1      20.5          9.7
+240–270 s        66       10.2      22.0         13.0
+270–300 s        68       10.4      21.3         12.0
 
 Prüfungen
   ✓ bis 4 Minuten ist jedes Muster mit passender Eingabe machbar (kein absichtliches Ende)

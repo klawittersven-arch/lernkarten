@@ -25,9 +25,9 @@ var EINSTELLUNGEN = {
 
   // Klausur-Challenge: Knopf auf der Startseite der Lernkarten. Zufällige Aufgaben aus
   // fragen.js des Kartensatzes, mit Timer und eigener Highscore-Liste je Klasse.
-  // false = für die SuS noch unsichtbar; die Lehrkraft kann sie trotzdem ausprobieren:
+  // true = für die SuS sichtbar. false = unsichtbar; die Lehrkraft kann sie trotzdem ausprobieren:
   // Adresse der Lernkarten oder der Challenge mit ?vorschau=1 öffnen.
-  challengeAn: false,
+  challengeAn: true,
   challenge: {
     aufgaben: 20,                 // so viele Aufgaben je Challenge (aus jedem AB mindestens eine)
     punkteProAufgabe: 100,        // Teilpunkte beim Zuordnen und bei Reihenfolgen

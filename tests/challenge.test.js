@@ -106,7 +106,7 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
 (async () => {
   /* ---------- 1. Aufgabenpools ---------- */
   console.log('\n== Aufgabenpools (fragen.js)');
-  H.pruefe(EINSTELLUNGEN.challengeAn === false, 'Challenge für die SuS noch ausgeschaltet (challengeAn: false) – erst nach Freigabe der Aufgaben');
+  H.pruefe(EINSTELLUNGEN.challengeAn === true, 'Challenge für die SuS freigeschaltet (challengeAn: true)');
   H.pruefe(ANZAHL === 20 && EINSTELLUNGEN.challenge.punkteProAufgabe === 100 && EINSTELLUNGEN.challenge.zeitbonusMax === 500,
     '20 Aufgaben je 100 Punkte, Zeitbonus bis 500 (80 % Aufgaben / 20 % Zeit)');
   const POOLS = {};
@@ -137,14 +137,14 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
   const browser = await H.chromium.launch();
   const protokoll = { konsole: [], extern: [] };
 
-  // freigeschaltet = so, als stünde in einstellungen.js challengeAn: true
+  // freigeschaltet: false = so, als stünde in einstellungen.js challengeAn: false
   async function kontext({ freigeschaltet = true, optionen = {} } = {}) {
     const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce', serviceWorkers: 'block' }, optionen));
     await ctx.addInitScript((a) => { window.HIGHSCORE_TEST_ADRESSE = a; }, attrappeAdresse);
-    if (freigeschaltet) {
+    if (!freigeschaltet) {
       await ctx.route('**/app/einstellungen.js', async (route) => {
         const antwort = await route.fetch();
-        await route.fulfill({ response: antwort, body: (await antwort.text()).replace('challengeAn: false', 'challengeAn: true') });
+        await route.fulfill({ response: antwort, body: (await antwort.text()).replace('challengeAn: true', 'challengeAn: false') });
       });
     }
     return ctx;

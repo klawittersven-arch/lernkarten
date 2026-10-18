@@ -7,13 +7,13 @@
  * Nach größeren Änderungen VERSION erhöhen – dann wird der Speicher erneuert. */
 'use strict';
 
-var VERSION = 'v1';
+var VERSION = 'v2';
 // eigener Speicher je Ordner, z. B. „lernkarten-/lernkarten/kb1-diabetes/-v1“
 var PRAEFIX = 'lernkarten-' + new URL('./', self.location).pathname + '-';
 var CACHE = PRAEFIX + VERSION;
 var ZEITLIMIT_MS = 4000;
 
-// fragen.js der Kartensätze wird beim ersten Laden mitgespeichert
+// fragen.js der Kartensätze speichern die Kartensätze selbst mit (siehe ausCache)
 var DATEIEN = [
   './',
   'index.html',
@@ -54,6 +54,9 @@ self.addEventListener('fetch', function (e) {
     function ausCache() {
       return caches.open(CACHE).then(function (c) {
         return c.match(req, { ignoreSearch: true }).then(function (r) {
+          // fragen.js liegt auch im Speicher des Kartensatzes – dort nachsehen
+          return r || caches.match(req, { ignoreSearch: true });
+        }).then(function (r) {
           return r || (req.mode === 'navigate' ? c.match('index.html') : undefined);
         });
       });
