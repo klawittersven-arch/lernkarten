@@ -81,28 +81,28 @@ var LERNKARTEN = {
           vorne: 'Ich kann die **vier Formen der Patientenedukation** *nennen*.',
           hinten: ['Information', 'Anleitung', 'Schulung', 'Beratung'] },
         { nr: 1,
-          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die **Information**',
+          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„INFORMATION“**',
           hinten: [
             '**Vorgehen:** Wissen weitergeben (erklären)',
             '**Ziel:** Wissen',
             '**Beispiel (Diabetes):** Anzeichen einer Unterzuckerung erklären'
           ] },
         { nr: 1,
-          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die **Anleitung**',
+          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„ANLEITUNG“**',
           hinten: [
             '**Vorgehen:** eine Handlung zeigen und einüben lassen',
             '**Ziel:** Können',
             '**Beispiel (Diabetes):** BZ-Messung zeigen, dann misst die Patientin selbst'
           ] },
         { nr: 1,
-          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die **Schulung**',
+          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„SCHULUNG“**',
           hinten: [
             '**Vorgehen:** Wissen und Fertigkeiten geplant, strukturiert vermitteln',
             '**Ziel:** systematisches Lernen',
             '**Beispiel (Diabetes):** Programm zu Ernährung, Bewegung und Therapie'
           ] },
         { nr: 1,
-          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die **Beratung**',
+          vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„BERATUNG“**',
           hinten: [
             '**Vorgehen:** fragen, zuhören, gemeinsam klären; ergebnisoffen',
             '**Ziel:** Entscheidung unterstützen',
@@ -228,7 +228,7 @@ var LERNKARTEN = {
             'motivationsfördernd (MI)'
           ] },
         { nr: 2,
-          vorne: 'Ich kann die drei Beratungsansätze *vergleichen*: Leitfrage, Fokus, Rolle der PK und Gesprächselemente des **personenzentrierten Ansatzes (Rogers)**',
+          vorne: 'Ich kann die drei Beratungsansätze *vergleichen*: Leitfrage, Fokus, Rolle der PK und Gesprächselemente des Ansatzes: **PERSONENZENTRIERTER ANSATZ (ROGERS)**',
           hinten: [
             '**Leitfrage:** Wie erlebt die Person ihre Situation – was bedeutet sie für sie?',
             '**Fokus:** Erleben, Gedanken, Gefühle',
@@ -237,7 +237,7 @@ var LERNKARTEN = {
             '**Grundhaltung:** Empathie, Akzeptanz, Kongruenz'
           ] },
         { nr: 2,
-          vorne: 'Ich kann die drei Beratungsansätze *vergleichen*: Leitfrage, Fokus, Rolle der PK und Gesprächselemente des **ressourcen-/lösungsorientierten Ansatzes**',
+          vorne: 'Ich kann die drei Beratungsansätze *vergleichen*: Leitfrage, Fokus, Rolle der PK und Gesprächselemente des Ansatzes: **RESSOURCEN-/LÖSUNGSORIENTIERTER ANSATZ**',
           hinten: [
             '**Leitfrage:** Was gelingt schon? Was hilft? Was wäre ein kleiner nächster Schritt?',
             '**Fokus:** Fähigkeiten, Gelingendes, Ausnahmen',
@@ -245,7 +245,7 @@ var LERNKARTEN = {
             '**Gesprächselemente:** Ressourcen-, Ausnahme- und Skalierungsfragen'
           ] },
         { nr: 2,
-          vorne: 'Ich kann die drei Beratungsansätze *vergleichen*: Leitfrage, Fokus, Rolle der PK und Gesprächselemente des **motivationsfördernden Ansatzes (MI)**',
+          vorne: 'Ich kann die drei Beratungsansätze *vergleichen*: Leitfrage, Fokus, Rolle der PK und Gesprächselemente des Ansatzes: **MOTIVATIONSFÖRDERNDER ANSATZ (MI)**',
           hinten: [
             '**Leitfrage:** Was möchte die Person selbst verändern? Was spricht dafür, was dagegen?',
             '**Fokus:** Ambivalenz, eigene Gründe und Ziele',

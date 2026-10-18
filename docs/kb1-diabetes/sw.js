@@ -7,7 +7,7 @@
  * Nach größeren Änderungen VERSION erhöhen – dann wird der Speicher erneuert. */
 'use strict';
 
-var VERSION = 'v10';
+var VERSION = 'v11';
 // eigener Speicher je Ordner, z. B. „lernkarten-/lernkarten/kb1-diabetes/-v1“
 var PRAEFIX = 'lernkarten-' + new URL('./', self.location).pathname + '-';
 var CACHE = PRAEFIX + VERSION;
