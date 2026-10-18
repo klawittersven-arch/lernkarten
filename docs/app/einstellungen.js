@@ -19,6 +19,9 @@ var EINSTELLUNGEN = {
   // Je so viele angeschaute Lernkarten gibt es eine Spielrunde. Eine Karte zählt, wenn sie umgedreht
   // und dann mit „Gewusst“ oder „Noch nicht“ bewertet wurde – auch wiederholte Karten.
   kartenProSpiel: 100,
+  // So viele Sekunden muss die Vorderseite und danach die Rückseite mindestens zu sehen sein,
+  // damit die Karte zählt (verhindert, dass man nur superschnell durchwischt). 0 = keine Mindestzeit.
+  mindestSekundenJeSeite: 1,
 
   // Klausur-Challenge: Knopf auf der Startseite der Lernkarten. Zufällige Aufgaben aus
   // fragen.js des Kartensatzes, mit Timer und eigener Highscore-Liste je Klasse.

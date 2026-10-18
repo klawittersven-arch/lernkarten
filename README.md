@@ -29,9 +29,10 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 
 - **Freischalten:** Jede Karte zählt +1, wenn sie umgedreht und dann mit „Gewusst“ oder
   „Noch nicht“ bewertet wurde – auch wiederholte Karten, egal ob gewusst oder nicht (Fleiß zählt,
-  nicht Auswendiglernen). **Je 100 Karten gibt es eine Spielrunde** (`kartenProSpiel`). Wer eine
-  Karte ohne Umdrehen bewertet, sieht kurz den Hinweis, dass sie so nicht zählt. „Zurück“ nimmt
-  auch die Zählung zurück. KB I und KB II zählen getrennt.
+  nicht Auswendiglernen). **Je 100 Karten gibt es eine Spielrunde** (`kartenProSpiel`). Gegen
+  bloßes Durchwischen zählt eine Karte nur, wenn Vorder- und Rückseite jeweils mindestens 1 Sekunde
+  zu sehen waren (`mindestSekundenJeSeite`). Wer eine Karte ohne Umdrehen bewertet, sieht kurz den
+  Hinweis, dass sie so nicht zählt. „Zurück“ nimmt auch die Zählung zurück. KB I und KB II zählen getrennt.
 - **Nicht zu übersehen:** Sobald die 100. Karte bewertet ist, erscheint bildschirmfüllend
   „Super! … Zur Belohnung dürfen Sie jetzt eine Runde „Diabetes Run!“ spielen …“ mit den Knöpfen
   „🎮 Jetzt spielen“ und „Nein, danke – weiterlernen“. Wurde die App vorher geschlossen, erscheint die
@@ -122,6 +123,7 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
 - **Skript geändert?** *Bereitstellen → Bereitstellungen verwalten → Stift → Version: Neue Version →
   Bereitstellen* – die Adresse bleibt gleich.
 - **Einstellungen** in `docs/app/einstellungen.js`: Karten pro Spielrunde (`kartenProSpiel`),
+  Mindestzeit je Kartenseite (`mindestSekundenJeSeite`),
   Spiel aus-/einschalten (`spielAn`), Namensfilter (`sperrwoerter`), alle Texte rund ums Spiel und
   die „Wusstest du?“-Sätze.
 - **Grenzen:** Alles läuft auf dem Handy. Technisch versierte SuS könnten Freischaltung oder Punkte

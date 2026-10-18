@@ -190,6 +190,8 @@
   var SPIEL = !!(LK && LK.spielAn(SATZ));
   var ST = SPIEL ? LK.T : {};
   var KARTEN_PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.kartenProSpiel || 100)) : 100;
+  // so lange muss jede Seite einer Karte zu sehen sein, damit sie für die Spielrunden zählt (gegen bloßes Durchwischen)
+  var MINDEST_MS = SPIEL ? 1000 * Math.max(0, LK.E.mindestSekundenJeSeite === undefined ? 1 : Number(LK.E.mindestSekundenJeSeite) || 0) : 0;
   // Klausur-Challenge (eigene Seite ../challenge/), Texte wie beim Spiel aus einstellungen.js
   var CHALLENGE = !!(LK && LK.challengeAn(SATZ));
   var CT = CHALLENGE ? LK.T : {};
@@ -602,6 +604,13 @@
 
   var umgedreht = false;
   var gesehen = false; // Rückseite der aktuellen Karte schon angeschaut? (nur dann zählt sie)
+  var seitenZeit = { vorne: 0, hinten: 0 }; // so lange war jede Seite der aktuellen Karte zu sehen (ms)
+  var seiteSeit = 0;
+  function seitenZeitBuchen() {
+    var jetzt = Date.now();
+    seitenZeit[umgedreht ? 'hinten' : 'vorne'] += Math.max(0, jetzt - seiteSeit);
+    seiteSeit = jetzt;
+  }
   var neuFreigeschaltet = false;
   var sperre = false; // während der Wegflug-Animation keine weiteren Eingaben
 
@@ -618,6 +627,8 @@
     markenSetzen(0);
     umgedreht = false;
     gesehen = false;
+    seitenZeit = { vorne: 0, hinten: 0 };
+    seiteSeit = Date.now();
 
     $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '') + (k.afb ? ' · AFB ' + k.afb : '');
     $('vorne-text').innerHTML = formatieren(k.vorne);
@@ -695,6 +706,7 @@
 
   function umdrehen() {
     if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen') return;
+    seitenZeitBuchen();
     umgedreht = !umgedreht;
     if (umgedreht) gesehen = true;
     $('karte').classList.toggle('umgedreht', umgedreht);
@@ -706,15 +718,18 @@
     var r = zustand.runde;
     var id = r.ids[r.pos];
     // jede umgedrehte und bewertete Karte zählt für die Spielrunden; alle KARTEN_PRO_SPIEL Karten gibt es eine Runde
-    if (gesehen) zustand.angeschaut++;
-    var gratulation = SPIEL && gesehen && seitLetzterRunde() === 0;
+    // … und nur, wenn Vorder- und Rückseite jeweils mindestens MINDEST_MS zu sehen waren
+    seitenZeitBuchen();
+    var zaehlt = gesehen && seitenZeit.vorne >= MINDEST_MS && seitenZeit.hinten >= MINDEST_MS;
+    if (zaehlt) zustand.angeschaut++;
+    var gratulation = SPIEL && zaehlt && seitLetzterRunde() === 0;
     if (gratulation) {
       LK.Runden.verdientSetzen(SATZ, LK.Runden.verdient(SATZ) + 1);
       neuFreigeschaltet = true;
     }
     // ohne Umdrehen bleibt der Zähler stehen – der Hinweis erklärt jedes Mal, warum
     if (SPIEL && !gesehen) toastZeigen(ST.nichtGezaehlt);
-    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: gesehen, runde: gratulation });
+    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: zaehlt, runde: gratulation });
     zustand.stand[id] = wert;
     r.ergebnis[id] = wert;
     r.pos++;
