@@ -32,6 +32,15 @@
       <p class="spiel-regel" id="spiel-regel"></p>
     </section>
 
+    <section class="challenge-box" id="challenge-box" hidden>
+      <div class="spiel-kopf">
+        <span class="spiel-symbol" aria-hidden="true">🏁</span>
+        <h2 id="challenge-titel"></h2>
+      </div>
+      <p class="spiel-regel" id="challenge-text"></p>
+      <a class="knopf zweit challenge-los" id="challenge-los"></a>
+    </section>
+
     <p class="hinweis start-hinweis" id="start-hinweis" hidden></p>
 
     <label class="schalter">
@@ -181,6 +190,9 @@
   var SPIEL = !!(LK && LK.spielAn(SATZ));
   var ST = SPIEL ? LK.T : {};
   var PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.durchgaengeProSpiel || 1)) : 1;
+  // Klausur-Challenge (eigene Seite ../challenge/), Texte wie beim Spiel aus einstellungen.js
+  var CHALLENGE = !!(LK && LK.challengeAn(SATZ));
+  var CT = CHALLENGE ? LK.T : {};
 
   /* ---------- Hilfen ---------- */
   function $(id) { return document.getElementById(id); }
@@ -325,6 +337,15 @@
 
   function freiText(frei) {
     return frei === 1 ? ST.spielFreiEine : ersetzen(ST.spielFreiMehr, { x: frei });
+  }
+
+  function challengeBoxAktualisieren() {
+    if (!CHALLENGE) return;
+    $('challenge-box').hidden = false;
+    $('challenge-titel').textContent = CT.challengeTitel;
+    $('challenge-text').textContent = ersetzen(CT.challengeKasten, { n: (LK.E.challenge && LK.E.challenge.aufgaben) || 20 });
+    $('challenge-los').textContent = CT.challengeLos;
+    $('challenge-los').href = '../challenge/?satz=' + encodeURIComponent(SATZ);
   }
 
   function spielBoxAktualisieren() {
@@ -523,6 +544,7 @@
     $('gesamt-balken').style.width = (100 * g / alle.length) + '%';
     $('mischen').checked = zustand.mischen;
     spielBoxAktualisieren();
+    challengeBoxAktualisieren();
 
     var gewaehlt = gewaehlteKarten();
     var offen = gewaehlt.length - gewusst(gewaehlt);
@@ -906,13 +928,14 @@
   });
 
   // Punkte, die offline erspielt wurden, jetzt in die Highscore-Liste nachtragen
-  if (SPIEL) LK.ausstehendeSenden();
+  if (SPIEL || CHALLENGE) LK.ausstehendeSenden();
 
-  /* ---------- Offline-Speicher (Lernkarten und – damit eine Spielrunde auch ohne Netz startet – das Spiel) ---------- */
+  /* ---------- Offline-Speicher (Lernkarten und – damit sie auch ohne Netz starten – Spiel und Challenge) ---------- */
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').catch(function () { /* ohne Offline-Speicher weiter */ });
       if (SPIEL) navigator.serviceWorker.register('../spiel/sw.js', { scope: '../spiel/' }).catch(function () { /* egal */ });
+      if (CHALLENGE) navigator.serviceWorker.register('../challenge/sw.js', { scope: '../challenge/' }).catch(function () { /* egal */ });
     });
   }
 })();

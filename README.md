@@ -127,6 +127,32 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
   manipulieren; das Skript lehnt unplausible Werte ab (z. B. mehr als 20 000 Punkte, mehr als
   15 Einträge pro Stunde und Gerät), unpassende Einträge löschen Sie in der Tabelle.
 
+## Klausur-Challenge
+
+Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challenge starten“**
+(Seite `challenge/?satz=kb1-diabetes`). Wer sich fit fühlt, macht einen Abschlusstest am Handy:
+
+- **20 Aufgaben**, zufällig aus dem Aufgabenpool des Kartensatzes gezogen – aus jedem Arbeitsblatt
+  mindestens eine, in zufälliger Reihenfolge; auch die Antwortmöglichkeiten werden gemischt.
+- Aufgabenarten: eine richtige Antwort auswählen, richtig/falsch, zuordnen, Reihenfolge,
+  Zahl eingeben (z. B. mg/dl in mmol/l).
+- **Punkte:** 100 je richtig gelöster Aufgabe (beim Zuordnen und bei Reihenfolgen anteilig),
+  dazu ein **Zeitbonus** bis 500 Punkte: voll bis 4 Minuten, danach gleichmäßig weniger, ab
+  15 Minuten keiner mehr. Der Bonus zählt nur anteilig zu den richtigen Antworten (Raten lohnt
+  nicht). Höchstens 2 500 Punkte, davon 80 % aus den Aufgaben. Werte in `docs/app/einstellungen.js`
+  (`challenge: { … }`).
+- Der Timer läuft von der ersten bis zur letzten Aufgabe. Die **Lösungen** gibt es erst am Ende:
+  Übersicht aller Fehler mit der richtigen Lösung.
+- Danach Eintrag in eine **eigene Highscore-Liste je Klasse** (Tabellenblätter
+  `kb1-diabetes-challenge-3bfp2-1` usw.). Auf der Highscore-Seite wechseln die Reiter
+  „🎮 Diabetes Run!“ / „🏁 Klausur-Challenge“. Zurücksetzen mit
+  `…/highscore/?liste=kb1-diabetes&art=challenge&klasse=3bfp2-1&zuruecksetzen=SCHLÜSSEL`.
+- **Aufgaben ändern:** `docs/<kartensatz>/fragen.js` – Anleitung oben in der Datei
+  (bei Auswahlaufgaben ist immer die erste Antwort die richtige).
+- **Freischalten:** in `docs/app/einstellungen.js` `challengeAn: false` → `true`. Vorher ist die
+  Challenge für die SuS unsichtbar; zum Ausprobieren die Lernkarten oder die Challenge mit
+  `?vorschau=1` öffnen (z. B. `…/kb1-diabetes/?vorschau=1`).
+
 ## Karten ändern
 
 Alle Texte eines Kartensatzes stehen in **`docs/<kartensatz>/karten.js`**, also
@@ -189,9 +215,11 @@ docs/                       ← alles, was GitHub Pages veröffentlicht
     einstellungen.js        ← Spielrunden und Highscore: Einstellungen und Texte
     lernkarten.js, lernkarten.css, highscore.js, icon-192.png, icon-512.png
   spiel/                    ← „Diabetes Run!“ (spiel/?satz=kb1-diabetes)
+  challenge/                ← Klausur-Challenge (challenge/?satz=kb1-diabetes)
   highscore/                ← Highscore-Listen (highscore/?liste=kb1-diabetes)
   kb1-diabetes/             ← Kartensatz KB I – Diabetes mellitus
     karten.js               ← ALLE Kartentexte
+    fragen.js               ← Aufgabenpool der Klausur-Challenge
     index.html, manifest.json, sw.js (Offline-Speicher)
   kb2-beratung/             ← Kartensatz KB II – Beratung (gleicher Aufbau)
 qr/                         ← QR-Codes (PNG)

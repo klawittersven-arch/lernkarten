@@ -316,6 +316,12 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
   margin: -6px 0 20px; border: 2px solid transparent;
 }
 .spiel-box.ist-frei { border-color: var(--gruen); }
+.challenge-box {
+  background: var(--karte); border-radius: 14px; padding: 12px 16px 14px; box-shadow: var(--schatten);
+  margin: -6px 0 20px;
+}
+.challenge-box .spiel-regel { margin: 0 0 10px; }
+.challenge-los { display: flex; width: 100%; text-decoration: none; }
 .spiel-kopf { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
 .spiel-symbol { font-size: 22px; line-height: 1; }
 .spiel-kopf h2 { margin: 0; font-size: 18px; flex: 1; }

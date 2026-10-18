@@ -301,10 +301,11 @@ function kartenLaden(ordner) {
   console.log('\n== Datenschutz');
   H.pruefe(protokoll.extern.length === 0, 'keine Anfrage an fremde Adressen', protokoll.extern);
   H.pruefe(protokoll.konsole.length === 0, 'keine Fehler in der Konsole', protokoll.konsole);
-  const groesse = (o) => fs.readdirSync(o).reduce((t, d) => t + fs.statSync(path.join(o, d)).size, 0);
+  // fragen.js lädt nur die Klausur-Challenge, nicht die Lernkarten
+  const groesse = (o) => fs.readdirSync(o).filter((d) => d !== 'fragen.js').reduce((t, d) => t + fs.statSync(path.join(o, d)).size, 0);
   for (const S of SAETZE) {
     const kb = Math.round((groesse(APP) + groesse(path.join(H.DOCS, S.ordner))) / 1024);
-    H.pruefe(kb < 150, `${S.ordner}: alle Dateien zusammen ${kb} KB (< 150 KB)`);
+    H.pruefe(kb < 150, `${S.ordner}: alle Dateien der Lernkarten zusammen ${kb} KB (< 150 KB)`);
   }
 
   await browser.close();

@@ -21,6 +21,19 @@ var EINSTELLUNGEN = {
   // Bei einer Änderung auch die Texte spielRegel und gesperrt unten anpassen.
   durchgaengeProSpiel: 1,
 
+  // Klausur-Challenge: Knopf auf der Startseite der Lernkarten. Zufällige Aufgaben aus
+  // fragen.js des Kartensatzes, mit Timer und eigener Highscore-Liste je Klasse.
+  // false = für die SuS noch unsichtbar; die Lehrkraft kann sie trotzdem ausprobieren:
+  // Adresse der Lernkarten oder der Challenge mit ?vorschau=1 öffnen.
+  challengeAn: false,
+  challenge: {
+    aufgaben: 20,                 // so viele Aufgaben je Challenge (aus jedem AB mindestens eine)
+    punkteProAufgabe: 100,        // Teilpunkte beim Zuordnen und bei Reihenfolgen
+    zeitbonusMax: 500,            // höchstens so viele Bonuspunkte für Tempo – zählt anteilig zu den richtigen Antworten
+    zeitbonusVollBisMinuten: 4,   // bis hierhin gibt es den vollen Zeitbonus …
+    zeitbonusNullAbMinuten: 15    // … danach sinkt er gleichmäßig; ab hier gibt es keinen mehr
+  },
+
   // Klassen: Jede Klasse bekommt eigene QR-Codes (…/kb1-diabetes/?klasse=3bfp2-1) und damit
   // eigene Highscore-Listen. Das Handy merkt sich die Klasse beim ersten Scannen.
   // kennung: nur Kleinbuchstaben, Ziffern und Bindestrich · name: so erscheint sie in der App
@@ -115,9 +128,59 @@ var EINSTELLUNGEN = {
     abgelehnt: 'Der Eintrag wurde nicht angenommen.',
     nichtEingetragen: 'Nicht eingetragen.',
 
+    // Klausur-Challenge: Kasten auf der Startseite der Lernkarten
+    challengeTitel: 'Klausur-Challenge',
+    challengeKasten: 'Fit für die Klausur? {n} zufällige Aufgaben aus der Ich-kann-Liste – mit Timer und eigener Highscore-Liste.',
+    challengeLos: '🏁 Klausur-Challenge starten',
+
+    // Klausur-Challenge: Challenge-Seite
+    challengeIdee: 'Sind Sie fit für die Klausur? Testen Sie sich mit {n} zufälligen Aufgaben aus allen Arbeitsblättern der Ich-kann-Liste.',
+    challengeRegelPunkte: 'Pro richtig gelöster Aufgabe gibt es {p} Punkte – beim Zuordnen und bei Reihenfolgen auch Teilpunkte.',
+    challengeRegelZeit: 'Die Zeit läuft von der ersten bis zur letzten Aufgabe mit – auch, wenn Sie zwischendurch die App verlassen. Je schneller Sie sind, desto mehr Zeitbonus gibt es (bis zu {b} Punkte). Der Bonus zählt aber nur anteilig zu Ihren richtigen Antworten – Raten lohnt sich also nicht.',
+    challengeRegelEnde: 'Die Lösungen sehen Sie erst am Ende – wie in der Klausur. Danach können Sie sich in die Highscore-Liste Ihrer Klasse eintragen.',
+    challengeStart: 'Challenge starten',
+    challengeBest: 'Ihre Bestleistung: {x} Punkte',
+    challengeAus: 'Die Klausur-Challenge ist noch nicht freigeschaltet.',
+    challengeLaedtNicht: 'Die Aufgaben konnten nicht geladen werden. Bitte prüfen Sie die Internetverbindung und laden Sie die Seite neu.',
+    aufgabeZaehler: 'Aufgabe {x} / {y}',
+    uhrBeschriftung: 'Benötigte Zeit',
+    weiter: 'Weiter',
+    auswerten: 'Auswerten',
+    abbrechen: 'Challenge abbrechen',
+    abbrechenFrage: 'Challenge wirklich abbrechen? Ihre Antworten gehen verloren.',
+    anleitungAuswahl: 'Tippen Sie die richtige Antwort an.',
+    anleitungRichtigFalsch: 'Ist die Aussage richtig oder falsch?',
+    anleitungZuordnen: 'Ordnen Sie jeden Eintrag zu.',
+    anleitungReihenfolge: 'Tippen Sie die Schritte in der richtigen Reihenfolge an. Ein Tipp auf einen Schritt in Ihrer Reihenfolge nimmt ihn wieder heraus.',
+    anleitungZahl: 'Geben Sie das Ergebnis ein.',
+    knopfRichtig: 'Richtig',
+    knopfFalsch: 'Falsch',
+    bitteWaehlen: 'Bitte wählen …',
+    ihreReihenfolge: 'Ihre Reihenfolge',
+    schritteZurAuswahl: 'Schritte',
+    ihrErgebnis: 'Ihr Ergebnis',
+    endeTitel: 'Geschafft!',
+    zeileAufgaben: 'Aufgaben: {r} von {n} ganz richtig',
+    zeileZeit: 'Zeitbonus (Ihre Zeit: {t})',
+    zeileGesamt: 'Gesamtpunktzahl',
+    fehlerTitel: 'Ihre Fehler – mit Lösung',
+    fehlerKeine: 'Keine Fehler – alles richtig gelöst!',
+    fehlerKopf: 'Aufgabe {x} · {p} von {m} Punkten',
+    ihreAntwort: 'Ihre Antwort:',
+    richtigeLoesung: 'Richtig:',
+    richtigeReihenfolge: 'Richtige Reihenfolge:',
+    keineAntwort: '(keine Antwort)',
+    nochmalChallenge: 'Neue Challenge (neue Aufgaben)',
+    vorschauHinweis: 'Vorschau für die Lehrkraft – für die SuS ist die Challenge noch nicht sichtbar.',
+
     // Highscore-Seite
     highscoreTitel: 'Highscore',
     highscoreUntertitel: 'Diabetes Run! – Spielrunden aus den Lernkarten',
+    highscoreUntertitelChallenge: 'Klausur-Challenge – Aufgaben aus der Ich-kann-Liste',
+    reiterSpiel: '🎮 Diabetes Run!',
+    reiterChallenge: '🏁 Klausur-Challenge',
+    highscoreLeerChallenge: 'Noch keine Einträge – machen Sie die erste Challenge!',
+    highscoreHinweisChallenge: 'Je Name zählt die beste Challenge.',
     klasse: 'Klasse {x}',
     highscoreLeer: 'Noch keine Einträge – spielen Sie die erste Runde!',
     highscoreLaedt: 'Liste wird geladen …',

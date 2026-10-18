@@ -68,16 +68,36 @@
     return klasseFinden(lesen('lernkarten:klasse'));
   })();
 
-  // Name der Highscore-Liste für einen Kartensatz (mit Klasse, falls bekannt)
-  function listenKennung(satz) { return KLASSE ? satz + '-' + KLASSE.kennung : satz; }
-  // Kurzname für Texte, z. B. „KB I · 3BFP2/1“
-  function listenName(satz) {
+  /* Art der Liste: '' = Spiel „Diabetes Run!“, 'challenge' = Klausur-Challenge (eigene Listen) */
+  function artTeil(art) { return art === 'challenge' ? '-challenge' : ''; }
+
+  // Name der Highscore-Liste für einen Kartensatz (mit Klasse, falls bekannt),
+  // z. B. „kb1-diabetes-3bfp2-1“ oder „kb1-diabetes-challenge-3bfp2-1“
+  function listenKennung(satz, art) {
+    var n = satz + artTeil(art);
+    return KLASSE ? n + '-' + KLASSE.kennung : n;
+  }
+  // Kurzname für Texte, z. B. „KB I · 3BFP2/1“ oder „KB I – Klausur-Challenge · 3BFP2/1“
+  function listenName(satz, art) {
     var l = liste(satz);
     var n = l ? (l.kurz || l.titel) : satz;
+    if (art === 'challenge') n += ' – ' + (T.challengeTitel || 'Klausur-Challenge');
     return KLASSE ? n + ' · ' + KLASSE.name : n;
   }
 
   function spielAn(kennung) { return E.spielAn !== false && !!liste(kennung); }
+
+  /* Klausur-Challenge: erst sichtbar, wenn challengeAn: true – vorher nur als Vorschau für die
+     Lehrkraft (Adresse mit ?vorschau=1; gilt dann bis zum Schließen des Browsers) */
+  var VORSCHAU = (function () {
+    var an = false;
+    try {
+      if (new URLSearchParams(location.search).get('vorschau') === '1') sessionStorage.setItem('lernkarten-vorschau', '1');
+      an = sessionStorage.getItem('lernkarten-vorschau') === '1';
+    } catch (e) { /* alter Browser oder kein Speicher */ }
+    return an;
+  })();
+  function challengeAn(kennung) { return (E.challengeAn === true || VORSCHAU) && !!liste(kennung); }
 
   /* ---------- Spielrunden: „verdient“ schreibt nur die Lernkarten-App,
      „gespielt“ nur das Spiel – so kommen sich zwei offene Seiten nicht in die Quere ---------- */
@@ -163,13 +183,13 @@
   }
 
   // satz = Kennung des Kartensatzes; die Klasse wird automatisch ergänzt
-  function listeLaden(satz) {
+  function listeLaden(satz, art) {
     if (!eingerichtet()) return Promise.reject(new Error('nicht eingerichtet'));
-    return anfrageGet({ aktion: 'liste', liste: listenKennung(satz) });
+    return anfrageGet({ aktion: 'liste', liste: listenKennung(satz, art) });
   }
 
-  function zuruecksetzen(satz, schluessel) {
-    return anfrageGet({ aktion: 'zuruecksetzen', liste: listenKennung(satz), schluessel: schluessel });
+  function zuruecksetzen(satz, schluessel, art) {
+    return anfrageGet({ aktion: 'zuruecksetzen', liste: listenKennung(satz, art), schluessel: schluessel });
   }
 
   // Eintrag senden; als Text (nicht application/json), damit der Browser keine
@@ -183,13 +203,13 @@
   function warteschlange() { var w = lesen(WS); return Array.isArray(w) ? w : []; }
 
   // Lehrkraft-Test (Highscore-Seite): sofort senden, ohne Warteschlange
-  function testEintragen(satz) {
-    return senden({ aktion: 'eintragen', liste: listenKennung(satz), name: 'Test T.', punkte: 1, geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now() });
+  function testEintragen(satz, art) {
+    return senden({ aktion: 'eintragen', liste: listenKennung(satz, art), name: 'Test T.', punkte: 1, geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now() });
   }
 
-  function eintragen(satz, name, punkte) {
+  function eintragen(satz, name, punkte, art) {
     var eintrag = {
-      aktion: 'eintragen', liste: listenKennung(satz), name: name, punkte: Math.max(0, Math.floor(punkte)),
+      aktion: 'eintragen', liste: listenKennung(satz, art), name: name, punkte: Math.max(0, Math.floor(punkte)),
       geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now()
     };
     if (!eingerichtet()) {
@@ -240,6 +260,8 @@
     listenKennung: listenKennung,
     listenName: listenName,
     spielAn: spielAn,
+    challengeAn: challengeAn,
+    vorschau: function () { return VORSCHAU; },
     Runden: Runden,
     namePruefen: namePruefen,
     anzeigeName: anzeigeName,

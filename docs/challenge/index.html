@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#25434B">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Klausur-Challenge</title>
+<link rel="icon" href="../app/icon-192.png">
+<link rel="stylesheet" href="../app/lernkarten.css">
+<link rel="stylesheet" href="challenge.css">
+</head>
+<body>
+<!-- Die Seite wird von challenge.js aufgebaut; die Aufgaben stehen in ../<Kartensatz>/fragen.js -->
+
+<!-- ============ Start ============ -->
+<div id="ansicht-start" class="ansicht">
+  <header class="kopf">
+    <p class="kopf-klein" id="untertitel"></p>
+    <h1>🏁 <span id="titel"></span></h1>
+  </header>
+  <main class="start-inhalt uebersicht" id="start-inhalt"></main>
+</div>
+
+<!-- ============ Aufgaben ============ -->
+<div id="ansicht-aufgabe" class="ansicht" hidden>
+  <div class="lern-kopf">
+    <button type="button" class="symbol-knopf" id="knopf-abbrechen">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      <span class="nur-vorlesen" id="abbrechen-text"></span>
+    </button>
+    <p class="zaehler" id="zaehler"></p>
+    <p class="uhr" id="uhr" role="timer"></p>
+  </div>
+  <div class="balken duenn" aria-hidden="true"><span class="balken-fuellung" id="fortschritt"></span></div>
+  <main class="aufgabe-buehne">
+    <section class="aufgabe-karte" aria-labelledby="aufgabe-frage">
+      <p class="aufgabe-kopf" id="aufgabe-kopf"></p>
+      <h2 class="aufgabe-frage" id="aufgabe-frage" tabindex="-1"></h2>
+      <p class="fall" id="aufgabe-fall" hidden></p>
+      <p class="aufgabe-anleitung" id="aufgabe-anleitung"></p>
+      <div id="aufgabe-antwort"></div>
+    </section>
+  </main>
+  <div class="start-leiste">
+    <button type="button" class="knopf haupt" id="knopf-weiter" disabled></button>
+  </div>
+</div>
+
+<!-- ============ Auswertung ============ -->
+<div id="ansicht-ende" class="ansicht" hidden>
+  <header class="kopf">
+    <p class="kopf-klein" id="ende-untertitel"></p>
+    <h1 id="ende-titel" tabindex="-1"></h1>
+  </header>
+  <main class="start-inhalt uebersicht" id="ende-inhalt"></main>
+</div>
+
+<noscript><p style="padding:16px">Bitte JavaScript einschalten, um die Klausur-Challenge zu nutzen.</p></noscript>
+<script src="../app/einstellungen.js"></script>
+<script src="../app/highscore.js"></script>
+<script src="challenge.js"></script>
+</body>
+</html>
