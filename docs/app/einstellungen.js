@@ -16,8 +16,8 @@ var EINSTELLUNGEN = {
   // erreichte Punkte werden dann auf dem Handy aufbewahrt und später nachgetragen.
   highscoreAdresse: 'https://script.google.com/macros/s/AKfycbyZULtysjGijW52hK62WO2nJ4G0T1PjmzFE1ZCm6fIPKS9lwjl37M8jbkv5sHzyaTB7Cg/exec',
 
-  // Je so viele angeschaute Lernkarten gibt es eine Spielrunde. Jede Karte zählt, sobald sie mit
-  // „Gewusst“ oder „Noch nicht“ bewertet ist – auch wiederholte Karten, umdrehen ist nicht nötig.
+  // Je so viele angeschaute Lernkarten gibt es eine Spielrunde. Eine Karte zählt, wenn sie umgedreht
+  // und dann mit „Gewusst“ oder „Noch nicht“ bewertet wurde – auch wiederholte Karten.
   kartenProSpiel: 100,
 
   // Klausur-Challenge: Knopf auf der Startseite der Lernkarten. Zufällige Aufgaben aus
@@ -69,10 +69,11 @@ var EINSTELLUNGEN = {
     spielFreiMehr: '{x} Spielrunden frei!',
     spielLos: 'Jetzt spielen',
     spielFortschritt: 'Bis zur nächsten Runde: {x} von {y} Karten',
-    spielRegel: 'Für je {n} angeschaute Lernkarten dürfen Sie zur Belohnung eine Runde spielen und sich in die Highscore-Liste eintragen! Jede Karte zählt – auch wiederholte, egal ob gewusst oder nicht.',
+    spielRegel: 'Für je {n} angeschaute Lernkarten dürfen Sie zur Belohnung eine Runde spielen und sich in die Highscore-Liste eintragen! Jede umgedrehte Karte zählt – auch wiederholte, egal ob gewusst oder nicht.',
     spielNeu: '🎮 Neue Spielrunde freigeschaltet!',
     spielRestEine: '🎮 noch 1 Karte bis zur Spielrunde',
     spielRestMehr: '🎮 noch {x} Karten bis zur Spielrunde',
+    nichtGezaehlt: 'Tipp: Für die Spielrunde zählt eine Karte nur, wenn Sie sie vorher umgedreht haben.',
 
     // Gratulation (bildschirmfüllend), sobald alle Karten einmal durchgegangen sind
     belohnungTitel: 'Super!',
@@ -91,7 +92,7 @@ var EINSTELLUNGEN = {
     freiMehr: 'Sie haben {x} Spielrunden frei ({satz}).',
     losHinweis: '„Los geht’s!“ startet die Runde – danach ist sie verbraucht.',
     gesperrtTitel: 'Noch keine Spielrunde frei',
-    gesperrt: 'Für je {n} angeschaute Lernkarten von „{satz}“ dürfen Sie zur Belohnung eine Runde spielen. Jede Karte zählt – auch wiederholte, egal ob gewusst oder nicht.',
+    gesperrt: 'Für je {n} angeschaute Lernkarten von „{satz}“ dürfen Sie zur Belohnung eine Runde spielen. Jede umgedrehte Karte zählt – auch wiederholte, egal ob gewusst oder nicht.',
     unbekannt: 'Diesen Kartensatz gibt es nicht.',
     los: 'Los geht’s!',
     nochmal: 'Noch eine Runde ({x} frei)',

@@ -162,6 +162,7 @@
 </div>
 
 <p class="nur-vorlesen" id="ansage" aria-live="polite"></p>
+<p class="toast" id="toast" role="status" hidden></p>
 
 <!-- ============ Gratulation: Spielrunde freigeschaltet ============ -->
 <div class="belohnung" id="belohnung" role="dialog" aria-modal="true" aria-labelledby="belohnung-titel" hidden>
@@ -319,8 +320,8 @@
     return ids.filter(function (id) { return zustand.stand[id] === 'g'; }).length;
   }
 
-  /* ---------- Spielrunden: Jede angeschaute Karte zählt, sobald sie mit „Gewusst“ oder
-     „Noch nicht“ bewertet ist – auch wiederholte Karten. Je KARTEN_PRO_SPIEL Karten gibt es
+  /* ---------- Spielrunden: Jede Karte, die umgedreht und dann mit „Gewusst“ oder „Noch nicht“
+     bewertet wurde, zählt – auch wiederholte Karten. Je KARTEN_PRO_SPIEL Karten gibt es
      eine Runde. ---------- */
   function seitLetzterRunde() { return zustand.angeschaut % KARTEN_PRO_SPIEL; }
 
@@ -417,6 +418,15 @@
       s.style.transform = 'rotate(' + Math.round(Math.random() * 360) + 'deg)';
       k.appendChild(s);
     }
+  }
+
+  var toastZeit = null;
+  function toastZeigen(text) {
+    var t = $('toast');
+    t.textContent = text;
+    t.hidden = false;
+    clearTimeout(toastZeit);
+    toastZeit = setTimeout(function () { t.hidden = true; }, 3500);
   }
 
   /* ---------- Ansichten ---------- */
@@ -591,6 +601,7 @@
   }
 
   var umgedreht = false;
+  var gesehen = false; // Rückseite der aktuellen Karte schon angeschaut? (nur dann zählt sie)
   var neuFreigeschaltet = false;
   var sperre = false; // während der Wegflug-Animation keine weiteren Eingaben
 
@@ -606,6 +617,7 @@
     el.style.transform = '';
     markenSetzen(0);
     umgedreht = false;
+    gesehen = false;
 
     $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '') + (k.afb ? ' · AFB ' + k.afb : '');
     $('vorne-text').innerHTML = formatieren(k.vorne);
@@ -684,6 +696,7 @@
   function umdrehen() {
     if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen') return;
     umgedreht = !umgedreht;
+    if (umgedreht) gesehen = true;
     $('karte').classList.toggle('umgedreht', umgedreht);
     ansagen(seitenSichtbarkeit());
   }
@@ -692,14 +705,16 @@
     if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen' || !rundeLaeuft()) return;
     var r = zustand.runde;
     var id = r.ids[r.pos];
-    // jede bewertete Karte zählt für die Spielrunden; alle KARTEN_PRO_SPIEL Karten gibt es eine Runde
-    zustand.angeschaut++;
-    var gratulation = SPIEL && seitLetzterRunde() === 0;
+    // jede umgedrehte und bewertete Karte zählt für die Spielrunden; alle KARTEN_PRO_SPIEL Karten gibt es eine Runde
+    if (gesehen) zustand.angeschaut++;
+    var gratulation = SPIEL && gesehen && seitLetzterRunde() === 0;
     if (gratulation) {
       LK.Runden.verdientSetzen(SATZ, LK.Runden.verdient(SATZ) + 1);
       neuFreigeschaltet = true;
     }
-    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: true, runde: gratulation });
+    // ohne Umdrehen bleibt der Zähler stehen – der Hinweis erklärt jedes Mal, warum
+    if (SPIEL && !gesehen) toastZeigen(ST.nichtGezaehlt);
+    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: gesehen, runde: gratulation });
     zustand.stand[id] = wert;
     r.ergebnis[id] = wert;
     r.pos++;
