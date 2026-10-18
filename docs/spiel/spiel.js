@@ -116,7 +116,7 @@
     var p = panelLeeren();
     kopfZeile(p);
     p.appendChild(el('h2', null, T.gesperrtTitel));
-    p.appendChild(el('p', null, LK.ersetzen(T.gesperrt, { satz: L.titel, n: E.durchgaengeProSpiel || 1 })));
+    p.appendChild(el('p', null, LK.ersetzen(T.gesperrt, { satz: L.titel, n: E.kartenProSpiel || 100 })));
     p.appendChild(linkKnopf(T.zuDenLernkarten, '../' + L.ordner + '/'));
     var h = el('a', 'klein-link', T.highscoreAnsehen);
     h.href = '../highscore/?liste=' + encodeURIComponent(SATZ);

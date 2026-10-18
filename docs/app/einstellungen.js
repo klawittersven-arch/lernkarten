@@ -16,10 +16,9 @@ var EINSTELLUNGEN = {
   // erreichte Punkte werden dann auf dem Handy aufbewahrt und später nachgetragen.
   highscoreAdresse: 'https://script.google.com/macros/s/AKfycbyZULtysjGijW52hK62WO2nJ4G0T1PjmzFE1ZCm6fIPKS9lwjl37M8jbkv5sHzyaTB7Cg/exec',
 
-  // Nach so vielen vollständigen Durchgängen durch einen Kartensatz gibt es eine Spielrunde.
-  // Ein Durchgang ist vollständig, wenn jede Karte des Satzes einmal umgedreht und bewertet wurde.
-  // Bei einer Änderung auch die Texte spielRegel und gesperrt unten anpassen.
-  durchgaengeProSpiel: 1,
+  // Je so viele angeschaute Lernkarten gibt es eine Spielrunde. Jede Karte zählt, sobald sie mit
+  // „Gewusst“ oder „Noch nicht“ bewertet ist – auch wiederholte Karten, umdrehen ist nicht nötig.
+  kartenProSpiel: 100,
 
   // Klausur-Challenge: Knopf auf der Startseite der Lernkarten. Zufällige Aufgaben aus
   // fragen.js des Kartensatzes, mit Timer und eigener Highscore-Liste je Klasse.
@@ -70,16 +69,14 @@ var EINSTELLUNGEN = {
     spielFreiMehr: '{x} Spielrunden frei!',
     spielLos: 'Jetzt spielen',
     spielFortschritt: 'Bis zur nächsten Runde: {x} von {y} Karten',
-    spielFortschrittMehr: 'Bis zur nächsten Runde: Durchgang {d} von {n} · {x} von {y} Karten',  // wenn durchgaengeProSpiel > 1
-    spielRegel: 'Jedes Mal, wenn Sie alle Karten einmal durchgegangen sind, dürfen Sie zur Belohnung eine Runde spielen und sich in die Highscore-Liste eintragen! Es zählt jede umgedrehte Karte – egal, ob gewusst oder nicht.',
+    spielRegel: 'Für je {n} angeschaute Lernkarten dürfen Sie zur Belohnung eine Runde spielen und sich in die Highscore-Liste eintragen! Jede Karte zählt – auch wiederholte, egal ob gewusst oder nicht.',
     spielNeu: '🎮 Neue Spielrunde freigeschaltet!',
     spielRestEine: '🎮 noch 1 Karte bis zur Spielrunde',
     spielRestMehr: '🎮 noch {x} Karten bis zur Spielrunde',
-    nichtGezaehlt: 'Tipp: Für die Spielrunde zählt eine Karte nur, wenn Sie sie vorher umgedreht haben.',
 
     // Gratulation (bildschirmfüllend), sobald alle Karten einmal durchgegangen sind
     belohnungTitel: 'Super!',
-    belohnungText: 'Sie sind alle Lernkarten von „{satz}“ einmal durchgegangen. Zur Belohnung dürfen Sie jetzt eine Runde „Diabetes Run!“ spielen und sich in die Highscore-Liste eintragen!',
+    belohnungText: 'Sie haben {n} Lernkarten von „{satz}“ angeschaut. Zur Belohnung dürfen Sie jetzt eine Runde „Diabetes Run!“ spielen und sich in die Highscore-Liste eintragen!',
     belohnungMehr: 'Sie haben {x} Spielrunden frei.',
     belohnungStart: '🎮 Jetzt spielen',
     belohnungSpaeter: 'Nein, danke – weiterlernen',
@@ -94,7 +91,7 @@ var EINSTELLUNGEN = {
     freiMehr: 'Sie haben {x} Spielrunden frei ({satz}).',
     losHinweis: '„Los geht’s!“ startet die Runde – danach ist sie verbraucht.',
     gesperrtTitel: 'Noch keine Spielrunde frei',
-    gesperrt: 'Jedes Mal, wenn Sie alle Lernkarten von „{satz}“ einmal durchgegangen sind, dürfen Sie zur Belohnung eine Runde spielen. Es zählt jede umgedrehte Karte – egal, ob gewusst oder nicht.',
+    gesperrt: 'Für je {n} angeschaute Lernkarten von „{satz}“ dürfen Sie zur Belohnung eine Runde spielen. Jede Karte zählt – auch wiederholte, egal ob gewusst oder nicht.',
     unbekannt: 'Diesen Kartensatz gibt es nicht.',
     los: 'Los geht’s!',
     nochmal: 'Noch eine Runde ({x} frei)',

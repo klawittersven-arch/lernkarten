@@ -162,7 +162,6 @@
 </div>
 
 <p class="nur-vorlesen" id="ansage" aria-live="polite"></p>
-<p class="toast" id="toast" role="status" hidden></p>
 
 <!-- ============ Gratulation: Spielrunde freigeschaltet ============ -->
 <div class="belohnung" id="belohnung" role="dialog" aria-modal="true" aria-labelledby="belohnung-titel" hidden>
@@ -189,7 +188,7 @@
   var SATZ = D.speicherName || 'standard';
   var SPIEL = !!(LK && LK.spielAn(SATZ));
   var ST = SPIEL ? LK.T : {};
-  var PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.durchgaengeProSpiel || 1)) : 1;
+  var KARTEN_PRO_SPIEL = SPIEL ? Math.max(1, Math.floor(LK.E.kartenProSpiel || 100)) : 100;
   // Klausur-Challenge (eigene Seite ../challenge/), Texte wie beim Spiel aus einstellungen.js
   var CHALLENGE = !!(LK && LK.challengeAn(SATZ));
   var CT = CHALLENGE ? LK.T : {};
@@ -267,8 +266,8 @@
     lager.removeItem('__probe__');
   } catch (e) { lager = null; }
 
-  // zaehler: wie oft jede Karte umgedreht und bewertet wurde (für die Spielrunden)
-  var zustand = { stand: {}, abgewaehlt: [], mischen: false, runde: null, zaehler: {} };
+  // angeschaut: so viele Karten wurden insgesamt bewertet, auch wiederholte (für die Spielrunden)
+  var zustand = { stand: {}, abgewaehlt: [], mischen: false, runde: null, angeschaut: 0 };
   try {
     var roh = lager && lager.getItem(SCHLUESSEL);
     var gelesen = roh ? JSON.parse(roh) : null;
@@ -276,7 +275,14 @@
       if (gelesen.stand && typeof gelesen.stand === 'object') zustand.stand = gelesen.stand;
       if (Array.isArray(gelesen.abgewaehlt)) zustand.abgewaehlt = gelesen.abgewaehlt;
       zustand.mischen = !!gelesen.mischen;
-      if (gelesen.zaehler && typeof gelesen.zaehler === 'object') zustand.zaehler = gelesen.zaehler;
+      if (typeof gelesen.angeschaut === 'number' && gelesen.angeschaut >= 0) zustand.angeschaut = Math.floor(gelesen.angeschaut);
+      else if (gelesen.zaehler && typeof gelesen.zaehler === 'object') {
+        // ältere Fassung zählte je Karte: die bisher gezählten Karten übernehmen
+        zustand.angeschaut = Object.keys(gelesen.zaehler).reduce(function (s, k) {
+          var n = gelesen.zaehler[k];
+          return s + (typeof n === 'number' && n > 0 ? Math.floor(n) : 0);
+        }, 0);
+      }
       zustand.runde = rundePruefen(gelesen.runde);
     }
   } catch (e) { /* beschädigter Speicher → neu beginnen */ }
@@ -313,25 +319,10 @@
     return ids.filter(function (id) { return zustand.stand[id] === 'g'; }).length;
   }
 
-  /* ---------- Spielrunden: Jede Karte, die umgedreht und bewertet wurde, zählt –
-     egal ob „gewusst“ oder „noch nicht“. Ein Durchgang ist vollständig, wenn jede
-     Karte des Satzes einmal gezählt wurde. ---------- */
-  function durchgaenge() {
-    var min = Infinity;
-    for (var i = 0; i < REIHENFOLGE.length; i++) min = Math.min(min, zustand.zaehler[REIHENFOLGE[i]] || 0);
-    return REIHENFOLGE.length ? min : 0;
-  }
-
-  // neu verdiente Spielrunden merken; true, wenn gerade eine dazugekommen ist
-  function spielrundenPruefen() {
-    if (!SPIEL) return false;
-    var verdient = Math.floor(durchgaenge() / PRO_SPIEL);
-    if (verdient > LK.Runden.verdient(SATZ)) {
-      LK.Runden.verdientSetzen(SATZ, verdient);
-      return true;
-    }
-    return false;
-  }
+  /* ---------- Spielrunden: Jede angeschaute Karte zählt, sobald sie mit „Gewusst“ oder
+     „Noch nicht“ bewertet ist – auch wiederholte Karten. Je KARTEN_PRO_SPIEL Karten gibt es
+     eine Runde. ---------- */
+  function seitLetzterRunde() { return zustand.angeschaut % KARTEN_PRO_SPIEL; }
 
   function spielLink() { return '../spiel/?satz=' + encodeURIComponent(SATZ); }
 
@@ -350,12 +341,8 @@
 
   function spielBoxAktualisieren() {
     if (!SPIEL) return;
-    spielrundenPruefen();
     var frei = LK.Runden.frei(SATZ);
-    var d = durchgaenge();
-    var seit = d % PRO_SPIEL;
-    var imDurchgang = REIHENFOLGE.filter(function (id) { return (zustand.zaehler[id] || 0) > d; }).length;
-    var gesamt = REIHENFOLGE.length;
+    var seit = seitLetzterRunde();
     $('spiel-box').hidden = false;
     $('spiel-box').classList.toggle('ist-frei', frei > 0);
     $('spiel-titel').textContent = ST.spielTitel;
@@ -364,10 +351,9 @@
     los.hidden = frei <= 0;
     los.href = spielLink();
     los.textContent = ST.spielLos;
-    $('spiel-text').textContent = ersetzen(PRO_SPIEL > 1 ? ST.spielFortschrittMehr : ST.spielFortschritt,
-      { d: seit + 1, n: PRO_SPIEL, x: imDurchgang, y: gesamt });
-    $('spiel-balken').style.width = (gesamt ? 100 * (seit * gesamt + imDurchgang) / (PRO_SPIEL * gesamt) : 0) + '%';
-    $('spiel-regel').textContent = ersetzen(ST.spielRegel, { n: PRO_SPIEL });
+    $('spiel-text').textContent = ersetzen(ST.spielFortschritt, { x: seit, y: KARTEN_PRO_SPIEL });
+    $('spiel-balken').style.width = (100 * seit / KARTEN_PRO_SPIEL) + '%';
+    $('spiel-regel').textContent = ersetzen(ST.spielRegel, { n: KARTEN_PRO_SPIEL });
   }
 
   /* ---------- Gratulation (bildschirmfüllend) ---------- */
@@ -378,14 +364,17 @@
   function angeboten() {
     try { var n = lager && JSON.parse(lager.getItem(ANGEBOTEN)); return typeof n === 'number' ? n : 0; } catch (e) { return 0; }
   }
+  function angebotenSetzen(n) {
+    try { if (lager) lager.setItem(ANGEBOTEN, JSON.stringify(n)); } catch (e) { /* egal */ }
+  }
 
   function belohnungZeigen() {
     if (!SPIEL || belohnungOffen) return;
     var frei = LK.Runden.frei(SATZ);
     if (frei <= 0) return;
-    try { if (lager) lager.setItem(ANGEBOTEN, JSON.stringify(LK.Runden.verdient(SATZ))); } catch (e) { /* egal */ }
+    angebotenSetzen(LK.Runden.verdient(SATZ));
     $('belohnung-titel').textContent = ST.belohnungTitel;
-    $('belohnung-text').textContent = ersetzen(ST.belohnungText, { satz: D.titel });
+    $('belohnung-text').textContent = ersetzen(ST.belohnungText, { satz: D.titel, n: KARTEN_PRO_SPIEL });
     $('belohnung-mehr').hidden = frei < 2;
     $('belohnung-mehr').textContent = ersetzen(ST.belohnungMehr, { x: frei });
     $('belohnung-start').textContent = ST.belohnungStart;
@@ -428,16 +417,6 @@
       s.style.transform = 'rotate(' + Math.round(Math.random() * 360) + 'deg)';
       k.appendChild(s);
     }
-  }
-
-  var toastZeit = null;
-  var tippGezeigt = false;
-  function toastZeigen(text) {
-    var t = $('toast');
-    t.textContent = text;
-    t.hidden = false;
-    clearTimeout(toastZeit);
-    toastZeit = setTimeout(function () { t.hidden = true; }, 3500);
   }
 
   /* ---------- Ansichten ---------- */
@@ -612,7 +591,6 @@
   }
 
   var umgedreht = false;
-  var gesehen = false; // Rückseite der aktuellen Karte schon angeschaut? (nur dann zählt sie)
   var neuFreigeschaltet = false;
   var sperre = false; // während der Wegflug-Animation keine weiteren Eingaben
 
@@ -628,7 +606,6 @@
     el.style.transform = '';
     markenSetzen(0);
     umgedreht = false;
-    gesehen = false;
 
     $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '') + (k.afb ? ' · AFB ' + k.afb : '');
     $('vorne-text').innerHTML = formatieren(k.vorne);
@@ -698,8 +675,7 @@
     $('anzahl-nochnicht').textContent = n;
     $('knopf-zurueck').disabled = !r.verlauf.length;
     if (SPIEL) {
-      var d = durchgaenge();
-      var rest = REIHENFOLGE.filter(function (id) { return (zustand.zaehler[id] || 0) <= d; }).length;
+      var rest = KARTEN_PRO_SPIEL - seitLetzterRunde();
       $('spiel-rest').hidden = false;
       $('spiel-rest').textContent = rest === 1 ? ST.spielRestEine : ersetzen(ST.spielRestMehr, { x: rest });
     }
@@ -708,7 +684,6 @@
   function umdrehen() {
     if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen') return;
     umgedreht = !umgedreht;
-    if (umgedreht) gesehen = true;
     $('karte').classList.toggle('umgedreht', umgedreht);
     ansagen(seitenSichtbarkeit());
   }
@@ -717,15 +692,18 @@
     if (sperre || belohnungOffen || aktuelleAnsicht !== 'lernen' || !rundeLaeuft()) return;
     var r = zustand.runde;
     var id = r.ids[r.pos];
-    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: gesehen });
-    if (gesehen) zustand.zaehler[id] = (zustand.zaehler[id] || 0) + 1;
+    // jede bewertete Karte zählt für die Spielrunden; alle KARTEN_PRO_SPIEL Karten gibt es eine Runde
+    zustand.angeschaut++;
+    var gratulation = SPIEL && seitLetzterRunde() === 0;
+    if (gratulation) {
+      LK.Runden.verdientSetzen(SATZ, LK.Runden.verdient(SATZ) + 1);
+      neuFreigeschaltet = true;
+    }
+    r.verlauf.push({ id: id, vorher: zustand.stand[id] || null, gezaehlt: true, runde: gratulation });
     zustand.stand[id] = wert;
     r.ergebnis[id] = wert;
     r.pos++;
     speichern();
-    var gratulation = spielrundenPruefen();
-    if (gratulation) neuFreigeschaltet = true;
-    else if (SPIEL && !gesehen && !tippGezeigt) { tippGezeigt = true; toastZeigen(ST.nichtGezaehlt); }
 
     var weiter = function () {
       sperre = false;
@@ -749,7 +727,14 @@
     if (sperre || belohnungOffen || !r || !r.verlauf.length) return;
     var v = r.verlauf.pop();
     if (v.vorher) zustand.stand[v.id] = v.vorher; else delete zustand.stand[v.id];
-    if (v.gezaehlt && zustand.zaehler[v.id] > 0) zustand.zaehler[v.id]--;
+    // zurückgenommene Karte zählt nicht mehr – und eine dadurch verdiente Runde auch nicht
+    if (v.gezaehlt && zustand.angeschaut > 0) zustand.angeschaut--;
+    if (v.runde && SPIEL) {
+      var verdient = Math.max(0, LK.Runden.verdient(SATZ) - 1);
+      LK.Runden.verdientSetzen(SATZ, verdient);
+      if (angeboten() > verdient) angebotenSetzen(verdient);
+      neuFreigeschaltet = false;
+    }
     delete r.ergebnis[v.id];
     r.pos = r.ids.indexOf(v.id);
     speichern();
