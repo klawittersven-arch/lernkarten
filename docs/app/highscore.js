@@ -251,6 +251,53 @@
       function () { sendetGerade = false; return gesendet; });
   }
 
+  /* ---------- Nutzung zählen (anonym, Blatt „Nutzung (anonym)“ in der Google-Tabelle):
+     gesendet werden nur Kartensatz, Klasse, Bereich und ob das Handy heute zum ersten Mal
+     zählt – kein Name, keine Gerätekennung. Dasselbe Handy zählt höchstens alle 30 Minuten
+     als „Aufruf“. Lehrkraft-Handy ausnehmen: eine Seite einmal mit ?nichtzaehlen=1 öffnen
+     (wieder zählen: ?nichtzaehlen=0) ---------- */
+  var NUTZUNG = 'lernkarten:nutzung';
+  var NICHT_ZAEHLEN = 'lernkarten:nicht-zaehlen';
+  var NUTZUNG_PAUSE_MS = 30 * 60 * 1000;
+  (function () {
+    try {
+      var n = new URLSearchParams(location.search).get('nichtzaehlen');
+      if (n === '1') schreiben(NICHT_ZAEHLEN, true);
+      else if (n === '0') schreiben(NICHT_ZAEHLEN, null);
+    } catch (e) { /* alter Browser */ }
+  })();
+
+  function heute() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+
+  function jetztZaehlen(satz, bereich) {
+    if (E.nutzungZaehlen === false || !eingerichtet() || lesen(NICHT_ZAEHLEN) === true) return;
+    if (navigator.onLine === false) return;
+    var alle = lesen(NUTZUNG);
+    if (!alle || typeof alle !== 'object') alle = {};
+    var k = satz + '|' + bereich;
+    var v = alle[k] || {};
+    var jetzt = Date.now();
+    var tag = heute();
+    if (v.tag === tag && typeof v.zeit === 'number' && jetzt >= v.zeit && jetzt - v.zeit < NUTZUNG_PAUSE_MS) return;
+    alle[k] = { tag: tag, zeit: jetzt };
+    schreiben(NUTZUNG, alle);
+    senden({ aktion: 'zaehlen', satz: satz, klasse: KLASSE ? KLASSE.kennung : '', bereich: bereich, neu: v.tag !== tag })
+      .catch(function () { /* geht ein Aufruf verloren, ist das egal */ });
+  }
+
+  // beim Öffnen der Seite und beim Zurückkehren in eine offen gebliebene Seite
+  // bereich: 'lernkarten', 'challenge' oder 'spiel'
+  function nutzungZaehlen(satz, bereich) {
+    if (!liste(satz)) return;
+    jetztZaehlen(satz, bereich);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') jetztZaehlen(satz, bereich);
+    });
+  }
+
   window.LK = {
     E: E,
     T: T,
@@ -274,6 +321,7 @@
     ausstehendeSenden: ausstehendeSenden,
     warteschlange: warteschlange,
     zuruecksetzen: zuruecksetzen,
-    geraeteId: geraeteId
+    geraeteId: geraeteId,
+    nutzungZaehlen: nutzungZaehlen
   };
 })();

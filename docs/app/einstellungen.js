@@ -16,6 +16,11 @@ var EINSTELLUNGEN = {
   // erreichte Punkte werden dann auf dem Handy aufbewahrt und später nachgetragen.
   highscoreAdresse: 'https://script.google.com/macros/s/AKfycbyZULtysjGijW52hK62WO2nJ4G0T1PjmzFE1ZCm6fIPKS9lwjl37M8jbkv5sHzyaTB7Cg/exec',
 
+  // Anonyme Nutzungszählung in derselben Google-Tabelle (Blatt „Nutzung (anonym)“): je Tag,
+  // Kartensatz, Klasse und Bereich (Lernkarten, Klausur-Challenge, Spiel) die Zahl der Aufrufe
+  // und der verschiedenen Handys – ohne Namen, ohne Gerätekennung. Ausschalten: false
+  nutzungZaehlen: true,
+
   // Je so viele angeschaute Lernkarten gibt es eine Spielrunde. Eine Karte zählt, wenn sie umgedreht
   // und dann mit „Gewusst“ oder „Noch nicht“ bewertet wurde – auch wiederholte Karten.
   kartenProSpiel: 100,

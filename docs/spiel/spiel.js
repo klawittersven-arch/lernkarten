@@ -913,7 +913,7 @@
   LK.ausstehendeSenden();
 
   if (!L || !LK.spielAn(SATZ)) zeigeUnbekannt();
-  else zeigeStart();
+  else { zeigeStart(); LK.nutzungZaehlen(SATZ, 'spiel'); }
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', function () {

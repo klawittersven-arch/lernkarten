@@ -1001,6 +1001,8 @@
 
   // Punkte, die offline erspielt wurden, jetzt in die Highscore-Liste nachtragen
   if (SPIEL || CHALLENGE) LK.ausstehendeSenden();
+  // anonym mitzählen, wie oft die Lernkarten geöffnet werden (Einstellung nutzungZaehlen)
+  if (LK) LK.nutzungZaehlen(SATZ, 'lernkarten');
 
   /* ---------- Offline-Speicher (Lernkarten und – damit sie auch ohne Netz starten – Spiel und Challenge) ---------- */
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {

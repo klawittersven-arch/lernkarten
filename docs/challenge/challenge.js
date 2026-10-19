@@ -687,6 +687,7 @@
   /* ---------- Laden ---------- */
   kopfSetzen();
   LK.ausstehendeSenden();
+  if (LK.challengeAn(SATZ)) LK.nutzungZaehlen(SATZ, 'challenge');
 
   function fragenLaden() {
     var s = document.createElement('script');

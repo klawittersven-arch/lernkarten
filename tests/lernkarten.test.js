@@ -77,10 +77,16 @@ function kartenLaden(ordner) {
   const { server, basis } = await H.serverStarten();
   const browser = await H.chromium.launch();
   const protokoll = { konsole: [], extern: [] };
+  // nie die echte Google-Adresse ansprechen (Nutzungszählung, Highscore) – das prüft spiel.test.js mit einer Attrappe
+  async function neuerKontext(optionen) {
+    const ctx = await browser.newContext(optionen);
+    await ctx.addInitScript(() => { window.HIGHSCORE_TEST_ADRESSE = 'keine'; });
+    return ctx;
+  }
 
   console.log('\n== Übersicht aller Kartensätze');
   {
-    const ctx = await browser.newContext(H.MOBIL);
+    const ctx = await neuerKontext(H.MOBIL);
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'uebersicht');
     for (const S of SAETZE) {
@@ -96,7 +102,7 @@ function kartenLaden(ordner) {
   const url = basis + 'kb1-diabetes/';
   const D = SAETZE[0].daten;
   {
-    const ctx = await browser.newContext(H.MOBIL);
+    const ctx = await neuerKontext(H.MOBIL);
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'bedienung');
     p.on('dialog', (d) => d.accept());
@@ -211,7 +217,7 @@ function kartenLaden(ordner) {
   /* ---------- 3. Besonderheiten KB II ---------- */
   console.log('\n== Besonderheiten KB II (Hinweis auf der Startseite, kurzer Thementitel)');
   {
-    const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
+    const ctx = await neuerKontext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'kb2');
     await p.goto(basis + 'kb1-diabetes/');
@@ -231,7 +237,7 @@ function kartenLaden(ordner) {
   /* ---------- 3b. Liste zum Nachschlagen (STOPP-Checkliste) ---------- */
   console.log('\n== Knopf „STOPP-Checkliste anzeigen“ (KB I)');
   {
-    const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
+    const ctx = await neuerKontext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' }));
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'hilfe');
     await p.goto(basis + 'kb1-diabetes/');
@@ -266,7 +272,7 @@ function kartenLaden(ordner) {
   for (const S of SAETZE) {
     for (const [breite, hoehe, schema] of [[390, 844, 'light'], [320, 568, 'dark']]) {
       console.log(`\n== ${S.ordner}: alle ${S.karten} Karten bei ${breite} × ${hoehe} (${schema === 'dark' ? 'dunkles' : 'helles'} Design)`);
-      const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { viewport: { width: breite, height: hoehe }, reducedMotion: 'reduce', colorScheme: schema }));
+      const ctx = await neuerKontext(Object.assign({}, H.MOBIL, { viewport: { width: breite, height: hoehe }, reducedMotion: 'reduce', colorScheme: schema }));
       const p = await ctx.newPage();
       H.beobachten(p, protokoll, `layout-${S.ordner}-${breite}`);
       await p.goto(basis + S.ordner + '/');
@@ -310,7 +316,7 @@ function kartenLaden(ordner) {
   /* ---------- 5. Offline ---------- */
   console.log('\n== Offline nach dem ersten Laden (beide Kartensätze auf demselben Handy)');
   {
-    const ctx = await browser.newContext(H.MOBIL);
+    const ctx = await neuerKontext(H.MOBIL);
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'offline');
     for (const S of SAETZE) {

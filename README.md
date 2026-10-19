@@ -119,7 +119,8 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
   eigenes Tabellenblatt (`kb1-diabetes`, `kb2-beratung`), jede Zeile ist eine gespielte Runde.
   Versehentlich zurückgesetzt? *Datei → Versionsverlauf* in der Tabelle.
 - **Gespeichert** werden nur Zeitpunkt, Name („Mia S.“), Punkte und zwei Zufallskennungen
-  (Gerät, Runde – gegen doppelte Einträge und Massen-Einträge).
+  (Gerät, Runde – gegen doppelte Einträge und Massen-Einträge); dazu die anonyme Nutzungszählung
+  (siehe „Nutzung (anonym)“).
 - **Skript geändert?** *Bereitstellen → Bereitstellungen verwalten → Stift → Version: Neue Version →
   Bereitstellen* – die Adresse bleibt gleich.
 - **Einstellungen** in `docs/app/einstellungen.js`: Karten pro Spielrunde (`kartenProSpiel`),
@@ -129,6 +130,30 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
 - **Grenzen:** Alles läuft auf dem Handy. Technisch versierte SuS könnten Freischaltung oder Punkte
   manipulieren; das Skript lehnt unplausible Werte ab (z. B. mehr als 20 000 Punkte, mehr als
   15 Einträge pro Stunde und Gerät), unpassende Einträge löschen Sie in der Tabelle.
+
+### Nutzung (anonym)
+
+Damit Sie sehen, ob und wie viel die App genutzt wird, zählt sie anonym mit. In derselben
+Google-Tabelle legt das Skript beim ersten Aufruf das Blatt **„Nutzung (anonym)“** an:
+
+| Datum | Kartensatz | Klasse | Bereich | Aufrufe | Geräte |
+|---|---|---|---|---|---|
+| Mo, 19.10.2026 | kb1-diabetes | 3bfp2-1 | Lernkarten | 23 | 9 |
+
+- **Bereich:** Lernkarten, Klausur-Challenge oder Diabetes Run!
+- **Aufrufe:** wie oft die Seite geöffnet wurde; dasselbe Handy zählt höchstens alle 30 Minuten einmal.
+- **Geräte:** wie viele verschiedene Handys an diesem Tag – ungefähr die Zahl der SuS, die geübt haben.
+- **Gesendet** werden nur Kartensatz, Klasse, Bereich und ob das Handy heute zum ersten Mal zählt –
+  keine Namen, keine Gerätekennung, nichts über den Lernstand. Ohne Netz wird nichts nachgereicht;
+  die Zahlen sind deshalb Richtwerte.
+- **Eigenes Handy nicht mitzählen:** eine Seite einmal mit `?nichtzaehlen=1` öffnen, z. B.
+  `https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/?nichtzaehlen=1` (gilt für alle
+  Kartensätze auf diesem Handy; rückgängig mit `?nichtzaehlen=0`).
+- **Ausschalten:** in `docs/app/einstellungen.js` `nutzungZaehlen: false`.
+- Die Zeilen von heute stehen unten. Das Blatt bitte nicht sortieren (zum Auswerten lieber einen
+  Filter oder eine Kopie verwenden), sonst beginnt für den laufenden Tag eine zweite Zeile.
+- Dafür braucht die Tabelle die aktuelle Fassung von `werkzeuge/highscore-apps-script.gs`
+  (einfügen, eigenen Schlüssel wieder eintragen, dann wie unter „Skript geändert?“ neu bereitstellen).
 
 ## Klausur-Challenge
 

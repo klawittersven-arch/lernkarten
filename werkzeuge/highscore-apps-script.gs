@@ -11,6 +11,10 @@
  *
  * Zurücksetzen per Link (nur mit dem Schlüssel unten):
  *   https://klawittersven-arch.github.io/lernkarten/highscore/?liste=kb1-diabetes&zuruecksetzen=SCHLÜSSEL
+ *
+ * Außerdem zählt das Skript anonym, wie oft die App geöffnet wird (Blatt „Nutzung (anonym)“):
+ *   Datum | Kartensatz | Klasse | Bereich | Aufrufe | Geräte
+ * Die Handys senden dafür nur Kartensatz, Klasse und Bereich – keine Namen, keine Kennung.
  * ===================================================================== */
 
 // Geheimer Schlüssel für das Zurücksetzen – nur Buchstaben und Ziffern, mindestens 12 Zeichen.
@@ -32,6 +36,12 @@ var SPERRWOERTER = [
 ];
 
 var KOPFZEILE = ['Zeitpunkt', 'Name', 'Punkte', 'Gerät', 'Lauf'];
+// Nutzung: der Blattname enthält Großbuchstaben, Leerzeichen und Klammern – so kann ihn keine Highscore-Liste treffen
+var NUTZUNG_BLATT = 'Nutzung (anonym)';
+var NUTZUNG_KOPF = ['Datum', 'Kartensatz', 'Klasse', 'Bereich', 'Aufrufe', 'Geräte'];
+var BEREICHE = { lernkarten: 'Lernkarten', challenge: 'Klausur-Challenge', spiel: 'Diabetes Run!' };
+var MAX_NUTZUNG_ZEILEN_PRO_TAG = 60;
+var WOCHENTAGE = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 var LISTE_MUSTER = /^[a-z0-9-]{2,40}$/;
 var NAME_MUSTER = /^[A-Za-zÄÖÜäöüßÀ-ÖØ-öø-ÿ][A-Za-zÄÖÜäöüßÀ-ÖØ-öø-ÿ' -]{1,19} [A-ZÄÖÜ]\.$/;
 var KENNUNG_MUSTER = /^[a-z0-9]{6,20}$/;
@@ -53,6 +63,7 @@ function doPost(e) {
   try { d = JSON.parse(e.postData.contents); } catch (x) { return antwort({ ok: false, fehler: 'ungültige Anfrage' }); }
   try {
     if (d && d.aktion === 'eintragen') return antwort(eintragen(d));
+    if (d && d.aktion === 'zaehlen') return antwort(zaehlen(d));
     return antwort({ ok: false, fehler: 'unbekannte Aktion' });
   } catch (x) {
     return antwort({ ok: false, fehler: 'Fehler: ' + x.message });
@@ -159,6 +170,55 @@ function zuruecksetzen(liste, schluessel) {
   try {
     var b = blatt(liste, false);
     if (b && b.getLastRow() > 1) b.deleteRows(2, b.getLastRow() - 1);
+    return { ok: true };
+  } finally {
+    sperre.releaseLock();
+  }
+}
+
+/* ---------- Nutzung (anonym): eine Zeile je Tag, Kartensatz, Klasse und Bereich ---------- */
+function zaehlen(d) {
+  var satz = String(d.satz || '');
+  var klasse = String(d.klasse || '');
+  var bereich = BEREICHE.hasOwnProperty(String(d.bereich)) ? BEREICHE[d.bereich] : '';
+  if (!LISTE_MUSTER.test(satz) || (klasse && !LISTE_MUSTER.test(klasse)) || !bereich) return { ok: false, fehler: 'ungültig' };
+  var neu = d.neu === true ? 1 : 0;
+
+  var sperre = LockService.getScriptLock();
+  if (!sperre.tryLock(15000)) return { ok: false, fehler: 'beschäftigt' }; // dann zählt dieser Aufruf eben nicht
+  try {
+    var tabelle = SpreadsheetApp.getActiveSpreadsheet();
+    var b = tabelle.getSheetByName(NUTZUNG_BLATT);
+    if (!b) {
+      b = tabelle.insertSheet(NUTZUNG_BLATT);
+      b.getRange('A:A').setNumberFormat('@'); // Datum als Text, damit Google es nicht umdeutet
+      b.appendRow(NUTZUNG_KOPF);
+      b.setFrozenRows(1);
+      b.getRange(1, 5).setNote('Wie oft geöffnet – dasselbe Handy zählt höchstens alle 30 Minuten einmal.');
+      b.getRange(1, 6).setNote('Wie viele verschiedene Handys an diesem Tag (anonym, ohne Namen).');
+    }
+    var jetzt = new Date();
+    var zone = tabelle.getSpreadsheetTimeZone();
+    var datum = WOCHENTAGE[Number(Utilities.formatDate(jetzt, zone, 'u')) - 1] + ', ' + Utilities.formatDate(jetzt, zone, 'dd.MM.yyyy');
+    var klasseText = klasse || 'ohne Klasse';
+
+    // Die Zeilen von heute stehen ganz unten: von unten nach oben suchen, bis ein anderer Tag kommt
+    var letzte = b.getLastRow();
+    var heute = 0;
+    if (letzte >= 2) {
+      var von = Math.max(2, letzte - MAX_NUTZUNG_ZEILEN_PRO_TAG + 1);
+      var werte = b.getRange(von, 1, letzte - von + 1, 6).getValues();
+      for (var i = werte.length - 1; i >= 0; i--) {
+        if (String(werte[i][0]) !== datum) break;
+        heute++;
+        if (String(werte[i][1]) === satz && String(werte[i][2]) === klasseText && String(werte[i][3]) === bereich) {
+          b.getRange(von + i, 5, 1, 2).setValues([[(Number(werte[i][4]) || 0) + 1, (Number(werte[i][5]) || 0) + neu]]);
+          return { ok: true };
+        }
+      }
+    }
+    if (heute >= MAX_NUTZUNG_ZEILEN_PRO_TAG) return { ok: false, fehler: 'zu viele Zeilen' };
+    b.appendRow([datum, satz, klasseText, bereich, 1, neu]);
     return { ok: true };
   } finally {
     sperre.releaseLock();

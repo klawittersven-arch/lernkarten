@@ -66,6 +66,34 @@ function kartenIds(ordner) {
       'solange kein eigener Schlüssel eingetragen ist, geht Zurücksetzen gar nicht');
   }
 
+  console.log('\n== Nutzung zählen (Google-Apps-Script, anonym)');
+  {
+    const a = attrappeErstellen();
+    const z = (werte) => a.post(JSON.stringify(Object.assign({ aktion: 'zaehlen', satz: 'kb1-diabetes', klasse: '3bfp2-1', bereich: 'lernkarten', neu: false }, werte)));
+    const blatt = () => a.blaetter.get('Nutzung (anonym)');
+    H.pruefe(z({ neu: true }).ok && blatt() && JSON.stringify(blatt().zeilen[0]) === JSON.stringify(['Datum', 'Kartensatz', 'Klasse', 'Bereich', 'Aufrufe', 'Geräte']),
+      'erster Aufruf legt das Blatt „Nutzung (anonym)“ mit Kopfzeile an');
+    const datum = blatt().zeilen[1][0];
+    H.pruefe(/^(Mo|Di|Mi|Do|Fr|Sa|So), \d\d\.\d\d\.\d{4}$/.test(datum) && JSON.stringify(blatt().zeilen[1].slice(1)) === JSON.stringify(['kb1-diabetes', '3bfp2-1', 'Lernkarten', 1, 1]),
+      `Zeile „${datum} | kb1-diabetes | 3bfp2-1 | Lernkarten | 1 | 1“`, blatt().zeilen[1]);
+    z({}); z({ neu: true });
+    H.pruefe(blatt().zeilen.length === 2 && blatt().zeilen[1][4] === 3 && blatt().zeilen[1][5] === 2,
+      'gleicher Tag, Satz, Klasse, Bereich: Aufrufe 3, Geräte 2 (nur neue Handys zählen als Gerät)', blatt().zeilen[1]);
+    z({ bereich: 'challenge', neu: true }); z({ klasse: '', neu: true }); z({ satz: 'kb2-beratung', klasse: '3bfp2-2', bereich: 'spiel', neu: true });
+    H.pruefe(blatt().zeilen.length === 5 && blatt().zeilen[2][3] === 'Klausur-Challenge' && blatt().zeilen[3][2] === 'ohne Klasse' && blatt().zeilen[4][3] === 'Diabetes Run!',
+      'je Bereich und Klasse eine eigene Zeile („Klausur-Challenge“, „ohne Klasse“, „Diabetes Run!“)', blatt().zeilen);
+    const falsch = [{ bereich: 'hacken' }, { bereich: 'constructor' }, { satz: '../geheim' }, { klasse: 'A B' }, { satz: '' }];
+    H.pruefe(falsch.every((w) => z(w).ok === false) && blatt().zeilen.length === 5, 'ungültige Angaben abgelehnt, nichts gezählt');
+    a.uhr.versatz = 24 * 3600 * 1000;
+    z({});
+    H.pruefe(blatt().zeilen.length === 6 && blatt().zeilen[5][0] !== datum && blatt().zeilen[5][4] === 1 && blatt().zeilen[5][5] === 0,
+      'am nächsten Tag beginnt eine neue Zeile unten', blatt().zeilen[5]);
+    let angenommen = 0;
+    for (let i = 0; i < 70; i++) if (z({ klasse: 'k' + i }).ok) angenommen++;
+    H.pruefe(angenommen === 59 && blatt().zeilen.length === 65, 'höchstens 60 Zeilen pro Tag (Schutz gegen Massen-Anfragen)', angenommen);
+    H.pruefe(a.get({ aktion: 'liste', liste: 'nutzung (anonym)' }).ok === false, 'das Nutzungsblatt ist keine Highscore-Liste');
+  }
+
   /* ---------- 2. Im Browser ---------- */
   const attrappe = attrappeErstellen();
   const { server, basis, attrappeAdresse } = await H.serverStarten({ attrappe });
@@ -372,6 +400,54 @@ function kartenIds(ordner) {
     H.pruefe((await o.locator('#frei').innerText()).startsWith('Sie haben 1 Spielrunde frei'), 'Spielseite lädt ohne Netz (Offline-Speicher)');
     H.pruefe(await spielBisEnde(o), 'Runde läuft offline');
     await c3.close();
+  }
+
+  console.log('\n== Nutzung zählen in der App (anonym)');
+  {
+    attrappe.blaetter.delete('Nutzung (anonym)');
+    const zeile = (bereich) => {
+      const b = attrappe.blaetter.get('Nutzung (anonym)');
+      return b ? b.zeilen.find((z) => z[1] === 'kb1-diabetes' && z[2] === '3bfp2-1' && z[3] === bereich) : undefined;
+    };
+    const c4 = await kontext();
+    const n = await c4.newPage();
+    H.beobachten(n, protokoll, 'nutzung');
+    const gesendet = [];
+    n.on('request', (r) => { if (r.method() === 'POST') { try { const d = JSON.parse(r.postData()); if (d.aktion === 'zaehlen') gesendet.push(d); } catch (e) { /* anderes */ } } });
+    await n.goto(basis + 'kb1-diabetes/?klasse=3bfp2-1');
+    H.pruefe(await H.bis(() => { const z = zeile('Lernkarten'); return z && z[4] === 1 && z[5] === 1; }), 'Lernkarten geöffnet: Aufrufe 1, Geräte 1 (Klasse 3bfp2-1)', zeile('Lernkarten'));
+    H.pruefe(gesendet.length === 1 && JSON.stringify(Object.keys(gesendet[0]).sort()) === JSON.stringify(['aktion', 'bereich', 'klasse', 'neu', 'satz']),
+      'gesendet werden nur Kartensatz, Klasse, Bereich und „neu“ – kein Name, keine Gerätekennung', gesendet);
+    await n.reload();
+    await n.waitForTimeout(500);
+    H.pruefe(gesendet.length === 1 && zeile('Lernkarten')[4] === 1, 'nochmal geöffnet (unter 30 Minuten): zählt nicht doppelt');
+    await n.evaluate(() => {
+      const v = JSON.parse(localStorage.getItem('lernkarten:nutzung'));
+      v['kb1-diabetes|lernkarten'].zeit -= 31 * 60 * 1000;
+      localStorage.setItem('lernkarten:nutzung', JSON.stringify(v));
+    });
+    await n.reload();
+    H.pruefe(await H.bis(() => zeile('Lernkarten')[4] === 2) && zeile('Lernkarten')[5] === 1 && gesendet[1].neu === false,
+      'nach über 30 Minuten wieder geöffnet: Aufrufe 2, Geräte bleibt 1', zeile('Lernkarten'));
+    await n.goto(basis + 'challenge/?satz=kb1-diabetes');
+    H.pruefe(await H.bis(() => { const z = zeile('Klausur-Challenge'); return z && z[4] === 1 && z[5] === 1; }), 'Klausur-Challenge geöffnet: eigene Zeile');
+    await n.goto(basis + 'spiel/?satz=kb1-diabetes');
+    H.pruefe(await H.bis(() => { const z = zeile('Diabetes Run!'); return z && z[4] === 1; }), 'Spiel geöffnet: eigene Zeile');
+    await n.goto(basis + 'kb1-diabetes/?nichtzaehlen=1');
+    await n.evaluate(() => localStorage.removeItem('lernkarten:nutzung'));
+    await n.reload();
+    await n.waitForTimeout(500);
+    H.pruefe(gesendet.length === 4 && zeile('Lernkarten')[4] === 2, 'Lehrkraft-Handy mit ?nichtzaehlen=1: zählt nicht mehr');
+    await n.goto(basis + 'kb1-diabetes/?nichtzaehlen=0');
+    H.pruefe(await H.bis(() => zeile('Lernkarten')[4] === 3), '… mit ?nichtzaehlen=0 zählt es wieder');
+    await c4.close();
+    const c5 = await kontext(false);
+    const o = await c5.newPage();
+    H.beobachten(o, protokoll, 'nutzung-aus');
+    await o.goto(basis + 'kb1-diabetes/?klasse=3bfp2-1');
+    await o.waitForTimeout(500);
+    H.pruefe(zeile('Lernkarten')[4] === 3, 'ohne eingerichtete Adresse wird nichts gesendet');
+    await c5.close();
   }
 
   console.log('\n== Datenschutz');
