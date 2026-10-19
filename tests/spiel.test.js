@@ -73,9 +73,10 @@ function kartenIds(ordner) {
     const blatt = () => a.blaetter.get('Nutzung (anonym)');
     H.pruefe(z({ neu: true }).ok && blatt() && JSON.stringify(blatt().zeilen[0]) === JSON.stringify(['Datum', 'Kartensatz', 'Klasse', 'Bereich', 'Aufrufe', 'Geräte']),
       'erster Aufruf legt das Blatt „Nutzung (anonym)“ mit Kopfzeile an');
+    const tagIn = (d) => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(d);
     const datum = blatt().zeilen[1][0];
-    H.pruefe(/^(Mo|Di|Mi|Do|Fr|Sa|So), \d\d\.\d\d\.\d{4}$/.test(datum) && JSON.stringify(blatt().zeilen[1].slice(1)) === JSON.stringify(['kb1-diabetes', '3bfp2-1', 'Lernkarten', 1, 1]),
-      `Zeile „${datum} | kb1-diabetes | 3bfp2-1 | Lernkarten | 1 | 1“`, blatt().zeilen[1]);
+    H.pruefe(datum instanceof Date && tagIn(datum) === tagIn(new Date()) && JSON.stringify(blatt().zeilen[1].slice(1)) === JSON.stringify(['kb1-diabetes', '3bfp2-1', 'Lernkarten', 1, 1]),
+      'Zeile „heute (als Datum) | kb1-diabetes | 3bfp2-1 | Lernkarten | 1 | 1“', blatt().zeilen[1]);
     z({}); z({ neu: true });
     H.pruefe(blatt().zeilen.length === 2 && blatt().zeilen[1][4] === 3 && blatt().zeilen[1][5] === 2,
       'gleicher Tag, Satz, Klasse, Bereich: Aufrufe 3, Geräte 2 (nur neue Handys zählen als Gerät)', blatt().zeilen[1]);
@@ -86,12 +87,21 @@ function kartenIds(ordner) {
     H.pruefe(falsch.every((w) => z(w).ok === false) && blatt().zeilen.length === 5, 'ungültige Angaben abgelehnt, nichts gezählt');
     a.uhr.versatz = 24 * 3600 * 1000;
     z({});
-    H.pruefe(blatt().zeilen.length === 6 && blatt().zeilen[5][0] !== datum && blatt().zeilen[5][4] === 1 && blatt().zeilen[5][5] === 0,
+    H.pruefe(blatt().zeilen.length === 6 && tagIn(blatt().zeilen[5][0]) !== tagIn(datum) && blatt().zeilen[5][4] === 1 && blatt().zeilen[5][5] === 0,
       'am nächsten Tag beginnt eine neue Zeile unten', blatt().zeilen[5]);
+    // ältere Zeile mit Datum als Text (erste Fassung des Skripts): wird ebenfalls als „heute“ erkannt
+    const [j, m, t] = tagIn(new a.uhr.Uhrzeit()).split('-');
+    blatt().zeilen.push(['Di, ' + t + '.' + m + '.' + j, 'kb2-beratung', 'text', 'Lernkarten', 4, 2]);
+    z({ satz: 'kb2-beratung', klasse: 'text', neu: true });
+    H.pruefe(blatt().zeilen.length === 7 && blatt().zeilen[6][4] === 5 && blatt().zeilen[6][5] === 3,
+      'Zeile mit Datum als Text („Di, 20.10.2026“) wird weitergezählt, keine neue Zeile', blatt().zeilen[6]);
     let angenommen = 0;
     for (let i = 0; i < 70; i++) if (z({ klasse: 'k' + i }).ok) angenommen++;
-    H.pruefe(angenommen === 59 && blatt().zeilen.length === 65, 'höchstens 60 Zeilen pro Tag (Schutz gegen Massen-Anfragen)', angenommen);
+    H.pruefe(angenommen === 58 && blatt().zeilen.length === 65, 'höchstens 60 Zeilen pro Tag (Schutz gegen Massen-Anfragen)', angenommen);
     H.pruefe(a.get({ aktion: 'liste', liste: 'nutzung (anonym)' }).ok === false, 'das Nutzungsblatt ist keine Highscore-Liste');
+    a.uhr.versatz = 2 * 24 * 3600 * 1000;
+    blatt().groesse.zeilen = blatt().zeilen.length; // Blatt bis zur letzten Zeile voll
+    H.pruefe(z({}).ok && blatt().zeilen.length === 66 && blatt().groesse.zeilen > 66, 'Blatt voll (1000 Zeilen erreicht): Skript fügt Zeilen hinzu und zählt weiter');
   }
 
   /* ---------- 2. Im Browser ---------- */

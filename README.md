@@ -138,7 +138,7 @@ Google-Tabelle legt das Skript beim ersten Aufruf das Blatt **„Nutzung (anonym
 
 | Datum | Kartensatz | Klasse | Bereich | Aufrufe | Geräte |
 |---|---|---|---|---|---|
-| Mo, 19.10.2026 | kb1-diabetes | 3bfp2-1 | Lernkarten | 23 | 9 |
+| Mo., 19.10.2026 | kb1-diabetes | 3bfp2-1 | Lernkarten | 23 | 9 |
 
 - **Bereich:** Lernkarten, Klausur-Challenge oder Diabetes Run!
 - **Aufrufe:** wie oft die Seite geöffnet wurde; dasselbe Handy zählt höchstens alle 30 Minuten einmal.
