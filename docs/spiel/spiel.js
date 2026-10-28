@@ -316,8 +316,8 @@
   ctx.imageSmoothingEnabled = false;
 
   var bilder = {};
-  var figurBilder = { lauf1: null, lauf2: null, lauf3: null, sprung: null, ducken: null };
-  var LAUF_FOLGE = ['lauf1', 'lauf2', 'lauf3', 'lauf2'];
+  var figurBilder = { lauf1: null, lauf2: null, lauf3: null, lauf4: null, sprung: null, ducken: null };
+  var LAUF_FOLGE = ['lauf1', 'lauf2', 'lauf3', 'lauf4'];
   var laufBilder = [null, null, null, null];
 
   function figurenBauen() {
@@ -645,7 +645,8 @@
     if (!sp.amBoden) fb = figurBilder.sprung;
     else if (sp.duckt) fb = figurBilder.ducken;
     else fb = sparmodus ? figurBilder.lauf1 : laufBilder[Math.floor(sp.strecke / 12) & 3];
-    ctx.drawImage(fb, SPIELER_X, Math.round(sp.y) - 24);
+    // die Posen sind unterschiedlich hoch: unterste Zeile auf sp.y (die Trefferfläche hängt nicht davon ab)
+    ctx.drawImage(fb, SPIELER_X, Math.round(sp.y) - fb.height);
 
     // Punkte oben rechts
     ctx.fillStyle = '#EAF2F4';
@@ -665,7 +666,7 @@
     ctx.drawImage(bilder.hintergrund, 0, 0, B, 150, 0, 0, B, 150);
     ctx.drawImage(bilder.strasse, 0, 0, B, 30, 0, 150, B, 30);
     if (bildschirm === 'ende') { zeichnen(); return; }
-    ctx.drawImage(figurBilder.lauf2, SPIELER_X, BODEN - 24);
+    ctx.drawImage(figurBilder.lauf2, SPIELER_X, BODEN - figurBilder.lauf2.height);
     ctx.drawImage(bilder.kuchen, 150, BODEN - bilder.kuchen.height);
     ctx.drawImage(bilder.schwarm1, 262, BODEN - 19 - bilder.schwarm1.height);
   }
@@ -749,6 +750,8 @@
     pausiert = false;
     groesseAnpassen();
     try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { /* egal */ }
+    // eine vorher (z. B. im Menü) entstandene Textauswahl samt „Kopieren“-Menü nicht ins Spiel mitnehmen
+    try { var auswahl = window.getSelection(); if (auswahl && auswahl.rangeCount) auswahl.removeAllRanges(); } catch (e) { /* egal */ }
     var jetzt = performance.now();
     letzteZeit = jetzt; naechstesBild = jetzt; akku = 0;
     messStart = jetzt; messBilder = 0; messFenster = 0; schlechteFenster = 0;
@@ -880,6 +883,16 @@
   });
   document.addEventListener('dblclick', function (e) { if (bildschirm === 'lauf') e.preventDefault(); });
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+  // iPhone: zwei schnelle Berührungen nicht als Doppeltipp-Zoom werten, auch außerhalb des Laufs (etwa direkt nach
+  // dem Ende, wenn man noch tippt). Das CSS (touch-action) verhindert das meist schon; Knöpfe, Links und Felder
+  // sind ausgenommen, die sollen normal reagieren.
+  var letzteBeruehrung = 0;
+  document.addEventListener('touchend', function (e) {
+    var schnell = e.timeStamp - letzteBeruehrung < 450;
+    letzteBeruehrung = e.timeStamp;
+    var ziel = e.target;
+    if (schnell && e.cancelable && !(ziel && ziel.closest && ziel.closest('button, a, input, label, select, textarea'))) e.preventDefault();
+  }, { passive: false });
 
   /* =====================================================================
      Größe: Spielfeld im Seitenverhältnis 16:9 einpassen (Hoch- und Querformat)
