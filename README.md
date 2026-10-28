@@ -29,16 +29,17 @@ Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
 
 - **Freischalten:** Jede Karte zählt +1, wenn sie umgedreht und dann mit „Gewusst“ oder
   „Noch nicht“ bewertet wurde – auch wiederholte Karten, egal ob gewusst oder nicht (Fleiß zählt,
-  nicht Auswendiglernen). **Je 100 Karten gibt es eine Spielrunde** (`kartenProSpiel`). Gegen
+  nicht Auswendiglernen). **Je 50 Karten gibt es eine Spielrunde** (`kartenProSpiel`; wird der Wert verkleinert, bekommen
+  schon gezählte Karten ihre Runden beim nächsten Öffnen gutgeschrieben). Gegen
   bloßes Durchwischen zählt eine Karte nur, wenn Vorder- und Rückseite jeweils mindestens 1 Sekunde
   zu sehen waren (`mindestSekundenJeSeite`). Wer eine Karte ohne Umdrehen bewertet, sieht kurz den
   Hinweis, dass sie so nicht zählt. „Zurück“ nimmt auch die Zählung zurück. KB I und KB II zählen getrennt.
-- **Nicht zu übersehen:** Sobald die 100. Karte bewertet ist, erscheint bildschirmfüllend
+- **Nicht zu übersehen:** Sobald die 50. Karte bewertet ist, erscheint bildschirmfüllend
   „Super! … Zur Belohnung dürfen Sie jetzt eine Runde „Diabetes Run!“ spielen …“ mit den Knöpfen
   „🎮 Jetzt spielen“ und „Nein, danke – weiterlernen“. Wurde die App vorher geschlossen, erscheint die
   Gratulation beim nächsten Öffnen. Beim Lernen zeigt die Kopfzeile „🎮 noch x Karten bis zur
   Spielrunde“ – sie zählt mit jeder Karte eins herunter. Auf der Startseite zeigt der Kasten
-  „🎮 Belohnungsspiel: Diabetes Run!“ den Fortschritt („x von 100 Karten“) und freie Runden.
+  „🎮 Belohnungsspiel: Diabetes Run!“ den Fortschritt („x von 50 Karten“) und freie Runden.
 - **Spielen:** Jede freie Runde lässt sich genau einmal spielen. Danach tragen sich die SuS mit
   Vorname und erstem Buchstaben des Nachnamens ein („Mia S.“).
 - **Highscore:** eine Liste je Kartensatz, je Name zählt die beste Runde. Erreichbar über den

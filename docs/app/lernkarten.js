@@ -338,6 +338,11 @@
      eine Runde. ---------- */
   function seitLetzterRunde() { return zustand.angeschaut % KARTEN_PRO_SPIEL; }
 
+  // Wurde kartenProSpiel verkleinert, stehen den schon gezählten Karten ihre Runden sofort zu
+  if (SPIEL && LK.Runden.verdient(SATZ) < Math.floor(zustand.angeschaut / KARTEN_PRO_SPIEL)) {
+    LK.Runden.verdientSetzen(SATZ, Math.floor(zustand.angeschaut / KARTEN_PRO_SPIEL));
+  }
+
   function spielLink() { return '../spiel/?satz=' + encodeURIComponent(SATZ); }
 
   function freiText(frei) {
