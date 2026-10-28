@@ -35,9 +35,9 @@ var EINSTELLUNGEN = {
   challengeAn: true,
   challenge: {
     aufgaben: 20,                 // so viele Aufgaben je Challenge (aus jedem Thema mindestens eine)
-    punkteProAufgabe: 100,        // Teilpunkte beim Zuordnen und bei Reihenfolgen
-    zeitbonusMax: 500,            // höchstens so viele Bonuspunkte für Tempo – zählt anteilig zu den richtigen Antworten
-    zeitbonusVollBisMinuten: 4,   // bis hierhin gibt es den vollen Zeitbonus …
+    punkteProAufgabe: 150,        // Teilpunkte beim Zuordnen und bei Reihenfolgen
+    zeitbonusMax: 750,            // höchstens so viele Bonuspunkte für Tempo – zählt anteilig zu den richtigen Antworten
+    zeitbonusVollBisMinuten: 0,   // bis hierhin gibt es den vollen Zeitbonus (0 = er sinkt ab der ersten Sekunde) …
     zeitbonusNullAbMinuten: 15    // … danach sinkt er gleichmäßig; ab hier gibt es keinen mehr
   },
 

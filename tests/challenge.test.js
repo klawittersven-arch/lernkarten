@@ -142,8 +142,9 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
   /* ---------- 1. Aufgabenpools ---------- */
   console.log('\n== Aufgabenpools (fragen.js)');
   H.pruefe(EINSTELLUNGEN.challengeAn === true, 'Challenge für die SuS freigeschaltet (challengeAn: true)');
-  H.pruefe(ANZAHL === 20 && EINSTELLUNGEN.challenge.punkteProAufgabe === 100 && EINSTELLUNGEN.challenge.zeitbonusMax === 500,
-    '20 Aufgaben je 100 Punkte, Zeitbonus bis 500 (80 % Aufgaben / 20 % Zeit)');
+  H.pruefe(ANZAHL === 20 && EINSTELLUNGEN.challenge.punkteProAufgabe === 150 && EINSTELLUNGEN.challenge.zeitbonusMax === 750
+    && EINSTELLUNGEN.challenge.zeitbonusVollBisMinuten === 0 && EINSTELLUNGEN.challenge.zeitbonusNullAbMinuten === 15,
+    '20 Aufgaben je 150 Punkte, Zeitbonus bis 750 ab der ersten Sekunde sinkend (80 % Aufgaben / 20 % Zeit)');
   const POOLS = {};
   for (const satz of SAETZE) {
     const F = laden(path.join(H.DOCS, satz, 'fragen.js'), 'CHALLENGE_FRAGEN');
@@ -268,13 +269,14 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     });
     H.pruefe(leer.ok && leer.ohne === 3, 'Gewichtung: reichen die gewichteten Themen nicht, füllen die übrigen auf; ohne Gewicht zählt jedes Thema gleich', leer);
     const z = await p.evaluate(() => ({
-      voll: KlausurChallenge.zeitbonus(200, 1), grenze: KlausurChallenge.zeitbonus(240, 1), mitte: KlausurChallenge.zeitbonus(570, 1),
-      null15: KlausurChallenge.zeitbonus(900, 1), spaet: KlausurChallenge.zeitbonus(3000, 1), halb: KlausurChallenge.zeitbonus(200, 0.5),
+      start: KlausurChallenge.zeitbonus(0, 1), vier: KlausurChallenge.zeitbonus(240, 1), vierZehn: KlausurChallenge.zeitbonus(250, 1),
+      mitte: KlausurChallenge.zeitbonus(450, 1), null15: KlausurChallenge.zeitbonus(900, 1), spaet: KlausurChallenge.zeitbonus(3000, 1),
+      halb: KlausurChallenge.zeitbonus(450, 0.5),
       komma: KlausurChallenge.zahlLesen(' 11,9 mmol/l'), punkt: KlausurChallenge.zahlLesen('99'), leer: KlausurChallenge.zahlLesen('abc')
     }));
-    H.pruefe(z.voll === 500 && z.grenze === 500, 'Zeitbonus: bis 4 Minuten voll (500)');
-    H.pruefe(z.mitte === 250 && z.null15 === 0 && z.spaet === 0, 'Zeitbonus sinkt gleichmäßig: 9:30 min → 250, ab 15 min → 0');
-    H.pruefe(z.halb === 250, 'Zeitbonus zählt anteilig: halb richtig → halber Bonus');
+    H.pruefe(z.start === 750 && z.vier === 550 && z.vierZehn === 542, 'Zeitbonus sinkt ab der ersten Sekunde: 0 s → 750, 4:00 → 550, 4:10 → 542 (jede Sekunde zählt)', z);
+    H.pruefe(z.mitte === 375 && z.null15 === 0 && z.spaet === 0, 'Zeitbonus sinkt gleichmäßig: 7:30 min → 375, ab 15 min → 0');
+    H.pruefe(z.halb === 188, 'Zeitbonus zählt anteilig: halb richtig → halber Bonus');
     H.pruefe(z.komma === 11.9 && z.punkt === 99 && Number.isNaN(z.leer), 'Zahleneingabe: Komma, Einheit und Leerzeichen werden verstanden');
     const teil = await p.evaluate(() => {
       const zu = KlausurChallenge.vorbereiten({ thema: { ab: 'X' }, f: { typ: 'zuordnen', frage: 'F', zuordnung: { A: ['a1', 'a2'], B: ['b1', 'b2'] } } });
@@ -304,13 +306,13 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
       return { zu: KlausurChallenge.punkteFuer(zu), re: KlausurChallenge.punkteFuer(re), rf: KlausurChallenge.punkteFuer(rf),
         za: KlausurChallenge.punkteFuer(za), zb: KlausurChallenge.punkteFuer(zb), e, zl, mf };
     });
-    H.pruefe(teil.zu === 75 && teil.re === 50, 'Teilpunkte: Zuordnen 3 von 4 → 75, Reihenfolge 2 von 4 Plätzen → 50');
-    H.pruefe(teil.rf === 100 && teil.za === 100 && teil.zb === 0, 'Richtig/Falsch und Zahl (mit Toleranz) werden richtig bewertet');
-    H.pruefe(teil.zl.beide === 100 && teil.zl.eine === 50 && teil.zl.einsFalsch === 0 && teil.zl.alle === 0,
-      'Zeile finden: beide richtig → 100, eine von zwei → 50, falsch gewählte Zeile zieht ab, alles antippen → 0', teil.zl);
-    H.pruefe(teil.mf.alle === 100 && teil.mf.zwei === 67 && teil.mf.mitFalsch === 50 && teil.mf.halbHalb === 0 && teil.mf.allesAn === 0,
-      'Alle richtigen antippen: alle 3 → 100, 2 von 3 → 67, eine von 2 falschen dazu → 50, alles antippen → 0', teil.mf);
-    H.pruefe(teil.e.aufgabenPunkte === 325 && teil.e.ganzRichtig === 2 && teil.e.bonus === Math.round(500 * 0.5 * 325 / 500) && teil.e.gesamt === 325 + teil.e.bonus,
+    H.pruefe(teil.zu === 113 && teil.re === 75, 'Teilpunkte: Zuordnen 3 von 4 → 113, Reihenfolge 2 von 4 Plätzen → 75');
+    H.pruefe(teil.rf === 150 && teil.za === 150 && teil.zb === 0, 'Richtig/Falsch und Zahl (mit Toleranz) werden richtig bewertet');
+    H.pruefe(teil.zl.beide === 150 && teil.zl.eine === 75 && teil.zl.einsFalsch === 0 && teil.zl.alle === 0,
+      'Zeile finden: beide richtig → 150, eine von zwei → 75, falsch gewählte Zeile zieht ab, alles antippen → 0', teil.zl);
+    H.pruefe(teil.mf.alle === 150 && teil.mf.zwei === 100 && teil.mf.mitFalsch === 75 && teil.mf.halbHalb === 0 && teil.mf.allesAn === 0,
+      'Alle richtigen antippen: alle 3 → 150, 2 von 3 → 100, eine von 2 falschen dazu → 75, alles antippen → 0', teil.mf);
+    H.pruefe(teil.e.aufgabenPunkte === 488 && teil.e.ganzRichtig === 2 && teil.e.bonus === Math.round(750 * (330 / 900) * (488 / 750)) && teil.e.gesamt === 488 + teil.e.bonus,
       'Auswertung: Summe, ganz richtige Aufgaben, anteiliger Bonus', teil.e);
     await ctx.close();
   }
@@ -373,9 +375,9 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     await p.waitForSelector('#ergebnis-gesamt');
     const e = await p.evaluate(() => KlausurChallenge.ergebnis());
     ersteGesamt = e.gesamt;
-    H.pruefe(e.aufgabenPunkte === 2000 && e.ganzRichtig === 20 && e.sekunden === 570 && e.bonus === 250 && e.gesamt === 2250, 'alles richtig: 2000 + Zeitbonus 250 = 2250', e);
-    H.pruefe((await p.locator('#ergebnis-gesamt').innerText()).replace(/\s+/g, ' ') === '2.250 Punkte' && (await p.locator('#ergebnis-bonus').innerText()) === '250',
-      'Anzeige: „2.250 Punkte“, Zeitbonus 250');
+    H.pruefe(e.aufgabenPunkte === 3000 && e.ganzRichtig === 20 && e.sekunden === 570 && e.bonus === 275 && e.gesamt === 3275, 'alles richtig in 9:30 min: 3000 + Zeitbonus 275 = 3275', e);
+    H.pruefe((await p.locator('#ergebnis-gesamt').innerText()).replace(/\s+/g, ' ') === '3.275 Punkte' && (await p.locator('#ergebnis-bonus').innerText()) === '275',
+      'Anzeige: „3.275 Punkte“, Zeitbonus 275');
     H.pruefe((await p.locator('.ergebnis-tabelle').innerText()).includes('20 von 20 ganz richtig') && (await p.locator('.ergebnis-tabelle').innerText()).includes('09:30'),
       'Tabelle: 20 von 20 ganz richtig, Zeit 09:30');
     H.pruefe((await p.locator('#fehler').innerText()).includes('Keine Fehler'), 'Fehlerübersicht: „Keine Fehler“');
@@ -412,8 +414,8 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe((await p.locator('#eintragen-meldung').innerText()) === 'Eingetragen: Platz 1 in der Liste KB I – Klausur-Challenge · 3BFP2/1!',
       'eingetragen: „Platz 1 in der Liste KB I – Klausur-Challenge · 3BFP2/1“');
     const blatt = attrappe.blaetter.get('kb1-diabetes-challenge-3bfp2-1');
-    H.pruefe(blatt && blatt.zeilen.length === 2 && blatt.zeilen[1][1] === 'Ben K.' && blatt.zeilen[1][2] === 2250,
-      'Google-Tabelle: eigenes Blatt „kb1-diabetes-challenge-3bfp2-1“ mit „Ben K.“, 2250');
+    H.pruefe(blatt && blatt.zeilen.length === 2 && blatt.zeilen[1][1] === 'Ben K.' && blatt.zeilen[1][2] === 3275,
+      'Google-Tabelle: eigenes Blatt „kb1-diabetes-challenge-3bfp2-1“ mit „Ben K.“, 3275');
     H.pruefe(!attrappe.blaetter.has('kb1-diabetes-3bfp2-1'), 'die Spiel-Liste der Klasse bleibt unberührt');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'challenge-ergebnis.png'), fullPage: true });
 
@@ -423,14 +425,14 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe(!lauf2.fehler, 'zweite Challenge beantwortet', lauf2.fehler);
     await p.waitForSelector('#ergebnis-gesamt');
     const e2 = await p.evaluate(() => KlausurChallenge.ergebnis());
-    const falsch = e2.punkte.filter((x) => x < 100).length;
-    H.pruefe(e2.ganzRichtig === 2 && e2.punkte[0] === 100 && e2.punkte[1] === 100 && falsch === 18, '2 richtig, 18 falsch (Reihenfolgen evtl. mit Teilpunkten)', e2.punkte);
+    const falsch = e2.punkte.filter((x) => x < 150).length;
+    H.pruefe(e2.ganzRichtig === 2 && e2.punkte[0] === 150 && e2.punkte[1] === 150 && falsch === 18, '2 richtig, 18 falsch (Reihenfolgen evtl. mit Teilpunkten)', e2.punkte);
     H.pruefe((await p.locator('#ergebnis-aufgaben').innerText()) === e2.aufgabenPunkte.toLocaleString('de-DE') && e2.sekunden === 600
-      && e2.bonus === Math.round(500 * (300 / 660) * e2.aufgabenPunkte / 2000), 'Punkte und anteiliger Zeitbonus stimmen (10:00 min)', e2);
+      && e2.bonus === Math.round(750 * (300 / 900) * (e2.aufgabenPunkte / 3000)), 'Punkte und anteiliger Zeitbonus stimmen (10:00 min)', e2);
     H.pruefe(await p.locator('.fehler-karte').count() === 18, 'Fehlerübersicht: 18 Aufgaben mit Lösung');
     const fehlerText = await p.locator('#fehler').innerText();
     H.pruefe(fehlerText.includes('Ihre Antwort:') || fehlerText.includes('Richtige Reihenfolge:') || fehlerText.includes('→'), 'Fehlerübersicht zeigt Ihre Antwort und die Lösung');
-    H.pruefe(!(await p.locator('.neu-best').count()) && (await p.locator('.challenge-best').innerText()).includes('2.250'), 'Bestleistung bleibt 2.250');
+    H.pruefe(!(await p.locator('.neu-best').count()) && (await p.locator('.challenge-best').innerText()).includes('3.275'), 'Bestleistung bleibt 3.275');
 
     console.log('\n== Themen-Auswertung mit Link zu den Lernkarten');
     const th = await p.evaluate(() => KlausurChallenge.themenAuswerten());
@@ -540,7 +542,7 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
         const punkte = await p.evaluate((nr) => KlausurChallenge.ergebnis().punkte[nr], m.nr);
         const karte = p.locator('.fehler-karte', { has: p.locator('.mehrfach-loesung') });
         const text = await karte.innerText();
-        H.pruefe(punkte === Math.round(100 * (1 - 1 / m.falsch)) && await karte.count() === 1
+        H.pruefe(punkte === Math.round(150 * (1 - 1 / m.falsch)) && await karte.count() === 1
           && await karte.locator('.mehrfach-loesung li.richtig').count() === m.richtig && await karte.locator('.mehrfach-loesung li.falsch').count() === 1
           && text.includes('(falsch gewählt)') && !text.includes('(nicht gewählt)'),
           `Alle richtigen antippen: eine falsche zu viel → ${punkte} Punkte, Auswertung markiert „(falsch gewählt)“`, text.slice(0, 300));
@@ -597,7 +599,8 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe(!lauf.fehler, 'alle 20 Aufgaben beantwortet', lauf.fehler);
     await p.waitForSelector('#ergebnis-gesamt');
     const e = await p.evaluate(() => KlausurChallenge.ergebnis());
-    H.pruefe(e.aufgabenPunkte === 2000 && e.bonus === 500, 'alles richtig und schnell: 2000 + 500 Bonus');
+    H.pruefe(e.aufgabenPunkte === 3000 && e.bonus === Math.round(750 * ((900 - e.sekunden) / 900)) && e.bonus > 700,
+      `alles richtig und schnell: 3000 + ${e.bonus} Bonus (${e.sekunden} s)`, e);
     await p.fill('#vorname', 'Ida');
     await p.fill('#initial', 'z');
     await p.click('#knopf-eintragen');

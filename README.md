@@ -172,12 +172,14 @@ Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challen
   richtig/falsch.
 - Start- und Auswertungsseite erinnern daran, dass in der Klausur selbst formuliert und begründet
   wird – das üben die Lernkarten.
-- **Punkte:** 100 je richtig gelöster Aufgabe (beim Zuordnen, bei Reihenfolgen, beim Zeilenfinden
+- **Punkte:** 150 je richtig gelöster Aufgabe (beim Zuordnen, bei Reihenfolgen, beim Zeilenfinden
   und bei „Alle richtigen antippen“ anteilig; falsch gewählte Zeilen bzw. Antworten ziehen ab –
   wer einfach alles antippt, bekommt 0 Punkte),
-  dazu ein **Zeitbonus** bis 500 Punkte: voll bis 4 Minuten, danach gleichmäßig weniger, ab
-  15 Minuten keiner mehr. Der Bonus zählt nur anteilig zu den richtigen Antworten (Raten lohnt
-  nicht). Höchstens 2 500 Punkte, davon 80 % aus den Aufgaben. Werte in `docs/app/einstellungen.js`
+  dazu ein **Zeitbonus** bis 750 Punkte: Er sinkt ab der ersten Sekunde gleichmäßig, ab
+  15 Minuten gibt es keinen mehr – jede Sekunde zählt, Gleichstand an der Spitze ist kaum möglich.
+  Der Bonus zählt nur anteilig zu den richtigen Antworten (Raten lohnt nicht). Theoretisch höchstens
+  3 750 Punkte (nur bei 0 Sekunden), davon 80 % aus den Aufgaben; alles richtig in 4 Minuten ergibt
+  3 550. Werte in `docs/app/einstellungen.js`
   (`challenge: { … }`).
 - Der Timer läuft von der ersten bis zur letzten Aufgabe. Die **Lösungen** gibt es erst am Ende:
   Übersicht aller Fehler mit der richtigen Lösung.

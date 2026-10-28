@@ -11,7 +11,7 @@
   var ANZAHL = Math.max(1, Math.floor(C.aufgaben || 20));
   var PUNKTE = Math.max(1, Math.floor(C.punkteProAufgabe || 100));
   var BONUS_MAX = Math.max(0, Math.floor(C.zeitbonusMax || 0));
-  var VOLL_BIS = 60 * (C.zeitbonusVollBisMinuten || 4);
+  var VOLL_BIS = 60 * (typeof C.zeitbonusVollBisMinuten === 'number' && C.zeitbonusVollBisMinuten >= 0 ? C.zeitbonusVollBisMinuten : 4);
   var NULL_AB = Math.max(VOLL_BIS + 1, 60 * (C.zeitbonusNullAbMinuten || 15));
   var ART = 'challenge';
 
