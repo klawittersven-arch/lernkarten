@@ -268,12 +268,6 @@ var LERNKARTEN = {
             'kurz und länger wirksamer Anteil, z. B. 30/70 oder 50/50',
             'trüb → vor der Gabe durchmischen'
           ] },
-        { nr: 1,
-          vorne: 'Ich kann *nennen*, welche Insuline vor der Gabe **durchmischt** werden müssen – und welches nicht.',
-          hinten: [
-            '**trüb → vor der Gabe durchmischen:** NPH-/Intermediärinsulin (Protamin), Mischinsulin',
-            '**klar → nicht durchmischen:** langwirksames Insulinanalogon'
-          ] },
         { nr: 2,
           vorne: 'Ich kann **Basal- und Bolusinsulin** *vergleichen*.',
           hinten: [
@@ -330,9 +324,6 @@ var LERNKARTEN = {
             '**Vorgehen:** Mahlzeiteninsulin nicht eigenmächtig geben oder verschieben; Rücksprache mit dem ärztlichen Dienst (auch zur Basaldosis); BZ engmaschig kontrollieren, dokumentieren.'
           ],
           hinweis: 'Sind zwei Insuline fällig, jedes einzeln mit der Checkliste prüfen.' },
-        { nr: 2,
-          vorne: 'Ich kann die **vier Bereiche** *nennen*, zu denen es Wenn-dann-Regeln zum sicheren Umgang mit Insulin gibt.',
-          hinten: ['Lagerung', 'Rotation', 'Lipohypertrophie', 'Entsorgung'] },
         { nr: 2,
           vorne: 'Ich kann die Regel zur **Lagerung** von Insulin als Wenn-dann-Regel *erklären*.',
           hinten: 'Wenn Insulin ungeöffnet ist, dann im Kühlschrank lagern (meist 2–8 °C), nicht einfrieren.' },
@@ -527,17 +518,8 @@ var LERNKARTEN = {
           vorne: 'Ich kann *begründen*, warum ich für die Blutzuckermessung den **Mittel- oder Ringfinger** wähle.',
           hinten: '…, weil Daumen und Zeigefinger im Alltag geschont werden sollen.' },
         { nr: 1,
-          vorne: 'Ich kann *begründen*, warum ich das **Desinfektionsmittel vollständig trocknen** lasse.',
-          hinten: '…, weil es den Messwert verfälscht.' },
-        { nr: 1,
-          vorne: 'Ich kann *begründen*, warum ich die **seitliche Fingerbeere** punktiere.',
-          hinten: '…, weil das weniger schmerzhaft ist.' },
-        { nr: 1,
           vorne: 'Ich kann *begründen*, warum ich den **ersten Tropfen** abwische.',
-          hinten: '…, weil er Gewebsflüssigkeit enthält; den zweiten Tropfen aufnehmen.' },
-        { nr: 1,
-          vorne: 'Ich kann *begründen*, warum ich der Patientin nach der Messung einen **Tupfer zum Komprimieren** gebe.',
-          hinten: '…, weil die Stelle nachbluten kann.' }
+          hinten: '…, weil er Gewebsflüssigkeit enthält; den zweiten Tropfen aufnehmen.' }
       ]
     },
 

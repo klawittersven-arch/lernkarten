@@ -11,8 +11,8 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 
 // Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
 const SAETZE = [
-  { ordner: 'kb1-diabetes', themen: 11, karten: 82, hinweis: true },
-  { ordner: 'kb2-beratung', themen: 7, karten: 90, hinweis: true }
+  { ordner: 'kb1-diabetes', themen: 11, karten: 77, hinweis: true },
+  { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true }
 ];
 
 function kartenLaden(ordner) {
@@ -107,7 +107,7 @@ function kartenLaden(ordner) {
     H.beobachten(p, protokoll, 'bedienung');
     p.on('dialog', (d) => d.accept());
     await p.goto(url);
-    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 82 Karten lernen', 'Start: „Alle 82 Karten lernen“');
+    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 77 Karten lernen', 'Start: „Alle 77 Karten lernen“');
     H.pruefe(await p.locator('.thema').count() === 11, 'Start: 11 Themen zur Auswahl');
 
     await p.click('#keine-themen');
@@ -207,7 +207,7 @@ function kartenLaden(ordner) {
 
     await p.click('#knopf-schliessen');
     await p.click('#zuruecksetzen');
-    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 82 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
+    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 77 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
     const cookies = await ctx.cookies();
     H.pruefe(cookies.length === 0, 'keine Cookies');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'lernkarten-start.png') });
@@ -225,7 +225,7 @@ function kartenLaden(ordner) {
     await p.goto(basis + 'kb2-beratung/');
     H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB II: Hinweis „anderer Fall“ auf der Startseite');
     await p.click('#knopf-start');
-    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 90', 'KB II: Runde mit 90 Karten');
+    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 81', 'KB II: Runde mit 81 Karten');
     H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'Wittener Werkzeuge · Nr. 1', 'Kopfzeile mit Thema und Nummer (ohne AFB)', await p.locator('#vorne-kopf').innerText());
     await p.click('#knopf-schliessen');
     const titel = await p.locator('.thema-titel').allInnerTexts();
@@ -255,7 +255,7 @@ function kartenLaden(ordner) {
     H.pruefe(!(await p.locator('#karte').getAttribute('class')).includes('umgedreht'), 'die Karte dreht sich dabei nicht um');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'stopp-checkliste.png') });
     await p.keyboard.press('ArrowRight');
-    H.pruefe((await p.locator('#zaehler').innerText()) === '1 / 9', 'solange die Liste offen ist, geht das Lernen nicht versehentlich weiter');
+    H.pruefe((await p.locator('#zaehler').innerText()) === '1 / 8', 'solange die Liste offen ist, geht das Lernen nicht versehentlich weiter');
     await p.click('#hilfe-schliessen');
     H.pruefe(await p.locator('#hilfe-dialog').isHidden(), '„Schließen“ schließt die Liste');
     await p.click('#karte');
@@ -264,7 +264,7 @@ function kartenLaden(ordner) {
     await p.keyboard.press('Escape');
     H.pruefe(await p.locator('#hilfe-dialog').isHidden() && await p.locator('#ansicht-lernen').isVisible(), 'Esc schließt nur die Liste, nicht die Lernrunde');
     for (let i = 0; i < 4; i++) await p.click('#knopf-gewusst');
-    H.pruefe((await p.locator('#zaehler').innerText()) === '5 / 9' && await p.locator('#hilfe-knopf').isHidden(), 'Karte ohne Liste (Wenn-dann-Regeln): kein Knopf');
+    H.pruefe((await p.locator('#zaehler').innerText()) === '5 / 8' && await p.locator('#hilfe-knopf').isHidden(), 'Karte ohne Liste (Wenn-dann-Regeln): kein Knopf');
     await ctx.close();
   }
 

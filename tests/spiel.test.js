@@ -308,12 +308,12 @@ function kartenIds(ordner) {
     const lesen1s = async (knopf) => { await d.clock.fastForward(1100); await d.click('#karte'); await d.clock.fastForward(1100); await d.click(knopf); };
     await d.goto(basis + 'kb2-beratung/');
     await d.click('#knopf-start');
-    for (let i = 0; i < 90; i++) await lesen1s(i % 3 ? '#knopf-gewusst' : '#knopf-nochnicht');
-    H.pruefe(await d.locator('#ansicht-ergebnis').isVisible() && await d.locator('#belohnung').isHidden(), 'alle 90 Karten bewertet: Ergebnis der Runde, noch keine Gratulation');
+    for (let i = 0; i < 81; i++) await lesen1s(i % 3 ? '#knopf-gewusst' : '#knopf-nochnicht');
+    H.pruefe(await d.locator('#ansicht-ergebnis').isVisible() && await d.locator('#belohnung').isHidden(), 'alle 81 Karten bewertet: Ergebnis der Runde, noch keine Gratulation');
     await d.click('#ergebnis-schliessen');
-    H.pruefe((await d.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 90 von 100 Karten', 'Startseite: „90 von 100 Karten“');
+    H.pruefe((await d.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 81 von 100 Karten', 'Startseite: „81 von 100 Karten“');
     await d.click('#knopf-start');
-    for (let i = 0; i < 9; i++) await lesen1s('#knopf-gewusst');
+    for (let i = 0; i < 18; i++) await lesen1s('#knopf-gewusst');
     H.pruefe(await d.locator('#belohnung').isHidden() && (await d.locator('#spiel-rest').innerText()) === '🎮 noch 1 Karte bis zur Spielrunde', 'nach 99 Karten: noch keine Gratulation, „noch 1 Karte“');
     await d.click('#knopf-gewusst');   // ohne Umdrehen: zählt nicht
     H.pruefe(await d.locator('#belohnung').isHidden() && (await d.locator('#spiel-rest').innerText()) === '🎮 noch 1 Karte bis zur Spielrunde', 'ohne Umdrehen: weiterhin „noch 1 Karte“');
@@ -321,7 +321,7 @@ function kartenIds(ordner) {
     await H.bis(() => d.locator('#belohnung').isVisible());
     H.pruefe(await d.locator('#belohnung').isVisible(), 'nach der 100. umgedrehten Karte: Gratulation bildschirmfüllend');
     await d.click('#belohnung-spaeter');
-    H.pruefe(await d.locator('#ansicht-lernen').isVisible() && (await d.locator('#zaehler').innerText()).startsWith('12 / '), 'danach geht das Lernen weiter (Karte 12)');
+    H.pruefe(await d.locator('#ansicht-lernen').isVisible() && (await d.locator('#zaehler').innerText()).startsWith('21 / '), 'danach geht das Lernen weiter (Karte 21)');
     await c4.close();
   }
 
