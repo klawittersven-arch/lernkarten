@@ -114,6 +114,8 @@
       var nr = f.schritte.map(function (text, i) { return i; });
       do { a.angezeigt = mischen(nr); } while (nr.length > 1 && a.angezeigt.join() === nr.join());
       a.antwort = [];
+    } else if (f.typ === 'zeile') {
+      a.antwort = []; // gewählte Zeilennummern (ab 1)
     }
     return a;
   }
@@ -126,6 +128,7 @@
   function beantwortet(a) {
     if (a.typ === 'zuordnen') return a.antwort.every(function (g) { return g !== null; });
     if (a.typ === 'reihenfolge') return a.antwort.length === a.f.schritte.length;
+    if (a.typ === 'zeile') return a.antwort.length > 0;
     if (a.typ === 'zahl') return isFinite(zahlLesen(a.antwort));
     return a.antwort !== null;
   }
@@ -148,6 +151,12 @@
       var p = 0;
       a.antwort.forEach(function (schritt, platz) { if (schritt === platz) p++; });
       return f.schritte.length ? p / f.schritte.length : 0;
+    }
+    if (a.typ === 'zeile') {
+      // Teilpunkte: richtige Zeilen zählen, falsch gewählte ziehen ab (Raten lohnt sich nicht)
+      var treffer = 0, daneben = 0;
+      a.antwort.forEach(function (z) { if (f.richtig.indexOf(z) !== -1) treffer++; else daneben++; });
+      return f.richtig.length ? Math.max(0, treffer - daneben) / f.richtig.length : 0;
     }
     return 0;
   }
@@ -237,6 +246,7 @@
     ul.appendChild(el('li', null, LK.ersetzen(T.challengeRegelPunkte, { p: PUNKTE })));
     if (BONUS_MAX > 0) ul.appendChild(el('li', null, LK.ersetzen(T.challengeRegelZeit, { b: BONUS_MAX })));
     ul.appendChild(el('li', null, T.challengeRegelEnde));
+    if (T.challengeRegelFormulieren) ul.appendChild(el('li', null, T.challengeRegelFormulieren));
     k.appendChild(ul);
     if (bestLesen() > 0) k.appendChild(el('p', 'challenge-best', LK.ersetzen(T.challengeBest, { x: zahlText(bestLesen()) })));
     var los = el('button', 'knopf haupt challenge-start', T.challengeStart);
@@ -290,7 +300,7 @@
     $('aufgabe-fall').innerHTML = fall ? formatieren(fall) : '';
     var anleitung = {
       auswahl: T.anleitungAuswahl, richtigfalsch: '', zuordnen: T.anleitungZuordnen,
-      reihenfolge: T.anleitungReihenfolge, zahl: T.anleitungZahl
+      reihenfolge: T.anleitungReihenfolge, zahl: T.anleitungZahl, zeile: T.anleitungZeile
     }[a.typ] || '';
     $('aufgabe-anleitung').textContent = anleitung;
     $('aufgabe-anleitung').hidden = !anleitung;
@@ -301,6 +311,7 @@
     else if (a.typ === 'zuordnen') bauZuordnen(a, bereich);
     else if (a.typ === 'reihenfolge') bauReihenfolge(a, bereich);
     else if (a.typ === 'zahl') bauZahl(a, bereich);
+    else if (a.typ === 'zeile') bauZeile(a, bereich);
     $('knopf-weiter').textContent = nr === aufgaben.length - 1 ? T.auswerten : T.weiter;
     weiterPruefen();
     window.scrollTo(0, 0);
@@ -402,6 +413,36 @@
         li.appendChild(chips);
       }
       li.classList.toggle('erledigt', a.antwort[i] !== null);
+      ol.appendChild(li);
+    });
+    bereich.appendChild(ol);
+  }
+
+  // Falltext mit Zeilennummern: passende Zeilen antippen (noch ein Tipp nimmt die Wahl zurück)
+  function bauZeile(a, bereich) {
+    var ol = el('ol', 'zeilen-wahl');
+    a.f.zeilen.forEach(function (text, i) {
+      var nr = i + 1;
+      var li = el('li');
+      var b = el('button', 'zeile-knopf');
+      b.type = 'button';
+      b.appendChild(el('span', 'zeilen-nr', String(nr)));
+      b.appendChild(document.createTextNode(' '));
+      b.appendChild(formatiert('span', 'zeile-text', text));
+      function zeigen() {
+        var an = a.antwort.indexOf(nr) !== -1;
+        b.setAttribute('aria-pressed', an ? 'true' : 'false');
+        b.classList.toggle('gewaehlt', an);
+      }
+      b.addEventListener('click', function () {
+        var pos = a.antwort.indexOf(nr);
+        if (pos === -1) a.antwort.push(nr); else a.antwort.splice(pos, 1);
+        a.antwort.sort(function (x, y) { return x - y; });
+        zeigen();
+        weiterPruefen();
+      });
+      zeigen();
+      li.appendChild(b);
       ol.appendChild(li);
     });
     bereich.appendChild(ol);
@@ -517,6 +558,11 @@
     k.appendChild(tab);
     if (!neu || vorher === 0) k.appendChild(el('p', 'challenge-best', LK.ersetzen(T.challengeBest, { x: zahlText(Math.max(vorher, e.gesamt)) })));
     m.appendChild(k);
+    if (T.challengeTippFormulieren) {
+      var tipp = el('p', 'hinweis challenge-tipp', T.challengeTippFormulieren);
+      tipp.id = 'tipp-formulieren';
+      m.appendChild(tipp);
+    }
 
     eintragenBereich(m, e.gesamt);
     fehlerBereich(m);
@@ -620,6 +666,10 @@
     return '';
   }
 
+  function zeilenText(liste) {
+    return liste.length ? 'Z. ' + liste.slice().sort(function (x, y) { return x - y; }).join(', ') : T.keineAntwort;
+  }
+
   function zweiZeilen(karte, ihre, richtig) {
     var p1 = el('p', 'antwort-zeile falsch');
     p1.appendChild(el('span', 'marke', '✗ ' + T.ihreAntwort + ' '));
@@ -676,6 +726,21 @@
           olR.appendChild(z);
         });
         li.appendChild(olR);
+      } else if (a.typ === 'zeile') {
+        zweiZeilen(li, zeilenText(a.antwort), zeilenText(f.richtig));
+        var olZ = el('ol', 'zeilen-loesung');
+        f.zeilen.forEach(function (text, j) {
+          var nrZ = j + 1;
+          var soll = f.richtig.indexOf(nrZ) !== -1;
+          var gewaehlt = a.antwort.indexOf(nrZ) !== -1;
+          var z = el('li', soll ? 'richtig' : (gewaehlt ? 'falsch' : ''));
+          z.appendChild(el('span', 'marke', soll ? '✓' : (gewaehlt ? '✗' : '')));
+          z.appendChild(el('span', 'zeilen-nr', String(nrZ)));
+          z.appendChild(document.createTextNode(' '));
+          z.appendChild(formatiert('span', null, text));
+          olZ.appendChild(z);
+        });
+        li.appendChild(olZ);
       }
       if (f.erklaerung) li.appendChild(formatiert('p', 'erklaerung', f.erklaerung));
       ol.appendChild(li);

@@ -42,6 +42,22 @@
 .option.gewaehlt::before { border: 6px solid var(--petrol); }
 .nebeneinander .option { flex: 1; padding-left: 44px; font-weight: 700; }
 
+/* Zeile finden: nummerierter Falltext, Zeilen zum Antippen */
+.zeilen-wahl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.zeile-knopf {
+  display: grid; grid-template-columns: 1.7em 1fr; column-gap: 8px; width: 100%; min-height: 44px;
+  padding: 9px 12px 9px 6px; text-align: left; font: inherit; font-size: 16px; line-height: 1.35;
+  background: var(--karte); color: var(--text);
+  border: 2px solid var(--rand); border-radius: 10px; cursor: pointer; touch-action: manipulation;
+}
+.zeile-knopf .zeilen-nr { padding-top: 2px; }
+.zeile-knopf.gewaehlt { border-color: var(--petrol); background: var(--hellblau); font-weight: 600; }
+.zeilen-loesung { list-style: none; margin: 8px 0 4px; padding: 0; font-size: 15px; }
+.zeilen-loesung li { display: grid; grid-template-columns: 1.2em 1.7em 1fr; column-gap: 4px; margin: 0 0 4px; color: var(--leise); }
+.zeilen-loesung li.richtig, .zeilen-loesung li.falsch { color: var(--text); }
+.zeilen-loesung li.richtig { font-weight: 600; }
+.zeilen-loesung .marke { font-weight: 800; }
+
 .zuordnen-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .zuordnen-eintrag { padding: 12px; border: 2px solid var(--rand); border-radius: 12px; }
 .zuordnen-eintrag.erledigt { border-color: var(--petrol); }
@@ -130,3 +146,6 @@
 .zuordnen-loesung li, .reihe-loesung li { margin: 0 0 6px; }
 .zuordnen-loesung .ihre { color: var(--leise); font-size: 14px; }
 .erklaerung { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--hellblau); font-size: 15px; }
+
+/* Hinweis in der Auswertung: In der Klausur selbst formulieren */
+.challenge-tipp { margin: 14px 0 0; font-size: 15.5px; }

@@ -141,9 +141,11 @@ var EINSTELLUNGEN = {
 
     // Klausur-Challenge: Challenge-Seite
     challengeIdee: 'Sind Sie fit für die Klausur? Testen Sie sich mit {n} zufälligen Aufgaben aus allen Themen der Ich-kann-Liste.',
-    challengeRegelPunkte: 'Pro richtig gelöster Aufgabe gibt es {p} Punkte – beim Zuordnen und bei Reihenfolgen auch Teilpunkte.',
+    challengeRegelPunkte: 'Pro richtig gelöster Aufgabe gibt es {p} Punkte – beim Zuordnen, bei Reihenfolgen und beim Finden von Zeilen auch Teilpunkte.',
     challengeRegelZeit: 'Die Zeit läuft von der ersten bis zur letzten Aufgabe mit – auch, wenn Sie zwischendurch die App verlassen. Je schneller Sie sind, desto mehr Zeitbonus gibt es (bis zu {b} Punkte). Der Bonus zählt aber nur anteilig zu Ihren richtigen Antworten – Raten lohnt sich also nicht.',
     challengeRegelEnde: 'Die Lösungen sehen Sie erst am Ende – wie in der Klausur. Danach können Sie sich in die Highscore-Liste Ihrer Klasse eintragen.',
+    challengeRegelFormulieren: 'Die Challenge prüft, ob Sie das Richtige erkennen. In der Klausur formulieren und begründen Sie Ihre Antworten selbst – das üben Sie mit den Lernkarten.',
+    challengeTippFormulieren: 'Tipp für die Klausur: Dort wählen Sie nichts aus, sondern schreiben Ihre Antworten selbst – mit Begründung und, wo verlangt, mit Zeilenangabe. Üben Sie das Formulieren mit den Lernkarten.',
     challengeStart: 'Challenge starten',
     challengeBest: 'Ihre Bestleistung: {x} Punkte',
     challengeAus: 'Die Klausur-Challenge ist noch nicht freigeschaltet.',
@@ -159,6 +161,7 @@ var EINSTELLUNGEN = {
     anleitungZuordnen: 'Ordnen Sie jeden Eintrag zu.',
     anleitungReihenfolge: 'Tippen Sie die Schritte in der richtigen Reihenfolge an. Ein Tipp auf einen Schritt in Ihrer Reihenfolge nimmt ihn wieder heraus.',
     anleitungZahl: 'Geben Sie das Ergebnis ein.',
+    anleitungZeile: 'Tippen Sie alle passenden Zeilen an. Ein zweiter Tipp nimmt die Auswahl zurück.',
     knopfRichtig: 'Richtig',
     knopfFalsch: 'Falsch',
     bitteWaehlen: 'Bitte wählen …',

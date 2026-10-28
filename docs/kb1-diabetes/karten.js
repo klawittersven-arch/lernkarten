@@ -16,6 +16,7 @@
  *     nr: 2,                        ← Nummer der Kompetenz in der Ich-kann-Liste (optional)
  *     vorne: 'Ich kann …',          ← Vorderseite (die Kompetenz)
  *     fall: 'Jana ist …',           ← (optional) Fall oder Aussage, eingerahmt unter der Kompetenz
+ *     zeilen: ['…', '…'],           ← (optional) statt fall: Falltext mit Zeilennummern wie in der Klausur
  *     hinten: ['Punkt 1', 'Punkt 2'],  ← Rückseite: jeder Eintrag wird ein Stichpunkt
  *     nummeriert: true,             ← (optional) 1., 2., 3. statt Punkten; start: 4 beginnt bei 4.
  *     hinweis: '…',                 ← (optional) kleiner Kasten unten auf der Rückseite
@@ -65,7 +66,8 @@ var LERNKARTEN = {
           vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*: **Wie gehe ich beim Falltext vor?**',
           hinten: [
             'In der Klausur gibt es einen längeren Fließtext. Die wichtigen Informationen stehen nicht als Liste, sondern verteilt im Text: selbst herauslesen und ordnen.',
-            'Text zweimal lesen und mit drei Farben markieren: **Informationen**, **Ressourcen**, **Veränderungen**.'
+            'Text zweimal lesen und mit drei Farben markieren: **Informationen**, **Ressourcen**, **Veränderungen**.',
+            'Zu jeder Angabe die **Zeile** notieren (z. B. „Z. 4“) – ohne Zeilenangabe gibt es Punktabzug.'
           ] },
         { nr: 1,
           vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*:',
@@ -75,7 +77,8 @@ var LERNKARTEN = {
             '„… isst seit einigen Tagen kaum noch etwas und wirkt manchmal verwirrt.“ → **auffällige Veränderung**',
             '„Seine Tochter wohnt im selben Haus und schaut täglich nach ihm.“ → **Ressource**',
             '„Er hat seit 10 Jahren Diabetes mellitus Typ 2 und spritzt morgens Mischinsulin.“ → **pflegerelevante Information**'
-          ] },
+          ],
+          hinweis: 'In der Klausur hat der Fall Zeilennummern: Geben Sie zu jeder Angabe die Zeile an (z. B. „Z. 3“) – sonst gibt es Punktabzug.' },
         { nr: 1,
           vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*:',
           fall: 'Frau Yilmaz (72 J.) misst ihren Blutzucker seit Jahren selbstständig und zuverlässig. Sie hat Diabetes mellitus Typ 2 und eine arterielle Hypertonie. Seit zwei Wochen klagt sie über Kribbeln und Taubheit in beiden Füßen.',
@@ -84,7 +87,8 @@ var LERNKARTEN = {
             '„… misst ihren Blutzucker seit Jahren selbstständig und zuverlässig.“ → **Ressource**',
             '„Sie hat Diabetes mellitus Typ 2 und eine arterielle Hypertonie.“ → **pflegerelevante Information**',
             '„Seit zwei Wochen klagt sie über Kribbeln und Taubheit in beiden Füßen.“ → **auffällige Veränderung**'
-          ] },
+          ],
+          hinweis: 'In der Klausur hat der Fall Zeilennummern: Geben Sie zu jeder Angabe die Zeile an (z. B. „Z. 3“) – sonst gibt es Punktabzug.' },
         { nr: 1,
           vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren*:',
           fall: 'Herr Weber (80 J.) hat Diabetes mellitus Typ 2 und eine diabetische Polyneuropathie. In letzter Zeit vergisst er häufig seine Mahlzeiten. Er geht gern mit seinem Hund spazieren und ist so jeden Tag in Bewegung.',
@@ -93,7 +97,25 @@ var LERNKARTEN = {
             '„… hat Diabetes mellitus Typ 2 und eine diabetische Polyneuropathie.“ → **pflegerelevante Information**',
             '„In letzter Zeit vergisst er häufig seine Mahlzeiten.“ → **auffällige Veränderung**',
             '„Er geht gern mit seinem Hund spazieren und ist so jeden Tag in Bewegung.“ → **Ressource**'
-          ] }
+          ],
+          hinweis: 'In der Klausur hat der Fall Zeilennummern: Geben Sie zu jeder Angabe die Zeile an (z. B. „Z. 3“) – sonst gibt es Punktabzug.' },
+        { nr: 1,
+          vorne: 'Ich kann in einer Fallsituation pflegerelevante Informationen, Ressourcen und auffällige Veränderungen *identifizieren* und die **Zeile** angeben:',
+          zeilen: [
+            'Frau Albrecht (81 J.) wird zu Hause vom ambulanten Pflegedienst versorgt.',
+            'Sie hat seit 15 Jahren Diabetes mellitus Typ 2 und eine Arthrose in beiden Knien.',
+            'Morgens und abends spritzt ihr die Pflegefachkraft Mischinsulin.',
+            'Ihr Nachbar begleitet sie jeden Mittwoch zum Seniorentreff.',
+            'Sie kocht noch selbst und achtet auf regelmäßige Mahlzeiten.',
+            'Seit drei Tagen trinkt sie kaum noch, ihre Lippen sind trocken.',
+            'Heute wirkt sie ungewöhnlich schläfrig und antwortet verlangsamt.'
+          ],
+          hinten: [
+            '**Informationen:** ambulanter Pflegedienst (Z. 1) · Diabetes mellitus Typ 2, Arthrose (Z. 2) · Mischinsulin morgens und abends (Z. 3)',
+            '**Ressourcen:** Nachbar begleitet sie zum Seniorentreff (Z. 4) · kocht selbst, isst regelmäßig (Z. 5)',
+            '**auffällige Veränderungen:** trinkt kaum, trockene Lippen (Z. 6) · ungewöhnlich schläfrig, verlangsamt (Z. 7)'
+          ],
+          hinweis: 'Zu jeder Angabe die Zeile nennen – ohne Zeilenangabe gibt es Punktabzug.' }
       ]
     },
 
@@ -182,6 +204,11 @@ var LERNKARTEN = {
           vorne: 'Ich kann falsche Aussagen zu Typ 1 und Typ 2 *identifizieren* und die Korrektur fachlich *begründen*:',
           fall: '„Wenn Insulin fehlt oder nicht wirkt, bleibt weniger Glukose im Blut.“',
           hinten: '**Falsch:** Die Zellen nehmen weniger Glukose auf, deshalb bleibt *mehr* Glukose im Blut.',
+          hinweis: 'Die Aussagen sind nur Beispiele – in der Klausur kommen sie NICHT wortgleich vor!' },
+        { nr: 1,
+          vorne: 'Ich kann falsche Aussagen zu Typ 1 und Typ 2 *identifizieren* und die Korrektur fachlich *begründen*:',
+          fall: '„Bei Typ 2 braucht man nie Insulin – der Körper bildet ja selbst welches.“',
+          hinten: '**Falsch:** Bei Typ 2 reagieren die Zellen vermindert auf Insulin (Insulinresistenz), und im Verlauf bildet der Körper oft immer weniger Insulin. Deshalb brauchen viele Menschen mit Typ 2 Insulin.',
           hinweis: 'Die Aussagen sind nur Beispiele – in der Klausur kommen sie NICHT wortgleich vor!' },
         { nr: 2,
           vorne: 'Ich kann einer Patientin mit Typ-2-Diabetes verständlich *erklären*, warum ihr Blutzucker trotz eigener Insulinbildung erhöht ist.',
@@ -273,17 +300,36 @@ var LERNKARTEN = {
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
           fall: 'Normalinsulin ist für 12:00 Uhr angeordnet, das Essen kommt erst um 12:45 Uhr.',
           hilfe: 'stopp',
-          hinten: '→ **nicht wie geplant** (Punkte 5, 7): Der Spritz-Ess-Abstand passt nicht; Zeitpunkt und Mahlzeit klären.' },
+          hinten: [
+            '→ **nicht wie geplant** (Punkte 5, 7, 8): Normalinsulin hat einen Mahlzeitenbezug (Spritz-Ess-Abstand 20–30 min). 45 min sind zu lang → Gefahr einer **Hypoglykämie**.',
+            '**Vorgehen:** Zeitpunkt und Mahlzeit klären, nicht eigenmächtig handeln; BZ kontrollieren und dokumentieren.'
+          ] },
         { nr: 1,
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
           fall: 'Es ist kein aktueller BZ-Wert dokumentiert.',
           hilfe: 'stopp',
-          hinten: '→ **erst klären** (Punkt 6): vor der Gabe den BZ messen.' },
+          hinten: [
+            '→ **erst klären** (Punkt 6): Ohne aktuellen Wert lässt sich nicht beurteilen, ob die Gabe passt – bei niedrigem BZ droht eine **Hypoglykämie**.',
+            '**Vorgehen:** vor der Gabe den BZ messen; bei Abweichungen von der Anordnung Rücksprache mit dem ärztlichen Dienst; dokumentieren.'
+          ] },
         { nr: 1,
           vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
           fall: 'Basalinsulin ist fällig, der Patient hat abends wenig gegessen.',
           hilfe: 'stopp',
-          hinten: '→ **Gabe möglich** (Punkte 2, 5, 7): Basalinsulin deckt den Grundbedarf.' },
+          hinten: [
+            '→ **Gabe möglich** (Punkte 2, 5, 7, 8): Basalinsulin deckt den Grundbedarf rund um die Uhr – es hat keinen direkten Mahlzeitenbezug.',
+            '**Vorgehen:** wie angeordnet geben; BZ kontrollieren und dokumentieren, bei niedrigen Werten Rücksprache mit dem ärztlichen Dienst.'
+          ] },
+        { nr: 1,
+          vorne: 'Ich kann mithilfe der STOPP-Checkliste *beurteilen*, ob die Insulingabe wie geplant durchgeführt werden kann, und meine Entscheidung *begründen*:',
+          fall: 'Um 7:30 Uhr sind bei Frau Kaya NPH-Insulin und ein kurzwirksames Insulinanalogon zum Frühstück angeordnet. Ihr ist übel, sie möchte nichts essen. BZ: 145 mg/dl.',
+          hilfe: 'stopp',
+          hinten: [
+            '**kurzwirksames Analogon → nicht wie geplant** (Punkte 7, 8): Es deckt den Bedarf zur Mahlzeit – ohne Frühstück droht eine **Hypoglykämie**.',
+            '**NPH-Insulin → Gabe grundsätzlich möglich:** Als Basalinsulin deckt es den Grundbedarf unabhängig von den Mahlzeiten (Punkt 8: trüb → vorher durchmischen).',
+            '**Vorgehen:** Mahlzeiteninsulin nicht eigenmächtig geben oder verschieben; Rücksprache mit dem ärztlichen Dienst (auch zur Basaldosis); BZ engmaschig kontrollieren, dokumentieren.'
+          ],
+          hinweis: 'Sind zwei Insuline fällig, jedes einzeln mit der Checkliste prüfen.' },
         { nr: 2,
           vorne: 'Ich kann die **vier Bereiche** *nennen*, zu denen es Wenn-dann-Regeln zum sicheren Umgang mit Insulin gibt.',
           hinten: ['Lagerung', 'Rotation', 'Lipohypertrophie', 'Entsorgung'] },
@@ -386,7 +432,25 @@ var LERNKARTEN = {
           vorne: 'Ich kann die **Dringlichkeit** *begründen*:',
           fall: 'Jana ist sehr durstig, muss häufig auf Toilette und klagt über Kopfschmerzen.',
           hinten: '**zeitnah handeln** (BZ und Ketonkörper messen, Ärztin/Arzt informieren), weil durch den Flüssigkeitsverlust Bewusstseinsstörungen bis zum Koma drohen.',
-          hinweis: 'In der Klausur kommt ein anderer Fall: Auf BZ-Wert, Anzeichen und Ursachen achten!' }
+          hinweis: 'In der Klausur kommt ein anderer Fall: Auf BZ-Wert, Anzeichen und Ursachen achten!' },
+        { nr: 4,
+          vorne: 'Ich kann *identifizieren*, ob eine Hypo- oder eine Hyperglykämie vorliegt, und meine Zuordnung *begründen*:',
+          fall: 'Herr Lorenz (Typ 2, Insulin) hat seit dem Morgen Durchfall und Erbrechen. Am Nachmittag ist er blass, zittert und schwitzt. Das Messgerät zeigt 3,5 mmol/l.',
+          hinten: [
+            '**Hypoglykämie**, weil Blässe, Zittern und Schwitzen typische Anzeichen sind …',
+            '… und 3,5 mmol/l × 18 = 63 mg/dl unter 70 mg/dl liegen.',
+            '**Ursache:** Durch Durchfall und Erbrechen kommen kaum Kohlenhydrate an – das Insulin wirkt trotzdem.'
+          ],
+          hinweis: 'Zur Begründung gehören Anzeichen, BZ-Wert und – wenn erkennbar – die Ursache.' },
+        { nr: 4,
+          vorne: 'Ich kann *identifizieren*, ob eine Hypo- oder eine Hyperglykämie vorliegt, und meine Zuordnung *begründen*:',
+          fall: 'Frau Brückner (Typ 1) schreibt morgen eine Prüfung und ist seit Tagen sehr angespannt. Sie fühlt sich schlapp, hat starken Durst und muss ständig zur Toilette. BZ: 245 mg/dl.',
+          hinten: [
+            '**Hyperglykämie**, weil Abgeschlagenheit, starker Durst und häufiges Wasserlassen (Polyurie) typische Anzeichen sind …',
+            '… und 245 mg/dl über 180 mg/dl liegen.',
+            '**Ursache:** Stress – Stresshormone lassen den Blutzucker steigen.'
+          ],
+          hinweis: 'Zur Begründung gehören Anzeichen, BZ-Wert und – wenn erkennbar – die Ursache.' }
       ]
     },
 

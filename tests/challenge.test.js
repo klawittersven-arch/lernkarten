@@ -12,7 +12,7 @@ const { attrappeErstellen, TEST_SCHLUESSEL } = require('./apps-script-attrappe')
 
 const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 const SAETZE = ['kb1-diabetes', 'kb2-beratung'];
-const TYPEN = ['auswahl', 'richtigfalsch', 'zuordnen', 'reihenfolge', 'zahl'];
+const TYPEN = ['auswahl', 'richtigfalsch', 'zuordnen', 'reihenfolge', 'zahl', 'zeile'];
 
 function laden(datei, name) {
   const box = {};
@@ -51,6 +51,12 @@ function aufgabePruefen(f) {
     if (!Array.isArray(f.schritte) || f.schritte.length < 3 || !f.schritte.every(istText)) fehler.push('mindestens 3 Schritte');
     else if (new Set(f.schritte).size !== f.schritte.length) fehler.push('doppelter Schritt');
   }
+  if (f.typ === 'zeile') {
+    if (!Array.isArray(f.zeilen) || f.zeilen.length < 3 || !f.zeilen.every(istText)) fehler.push('mindestens 3 Zeilen');
+    else if (!Array.isArray(f.richtig) || !f.richtig.length || new Set(f.richtig).size !== f.richtig.length
+      || !f.richtig.every((z) => Number.isInteger(z) && z >= 1 && z <= f.zeilen.length)) fehler.push('richtig: Zeilennummern ab 1');
+    else if (f.richtig.length >= f.zeilen.length) fehler.push('nicht alle Zeilen dürfen richtig sein');
+  }
   if (f.typ === 'zahl') {
     if (typeof f.loesung !== 'number' || !isFinite(f.loesung)) fehler.push('loesung keine Zahl');
     if (typeof f.toleranz !== 'number' || f.toleranz < 0) fehler.push('toleranz fehlt');
@@ -80,6 +86,10 @@ async function beantworten(p, richtig) {
         const s = li.querySelector('select');
         if (s) { s.value = ziel; s.dispatchEvent(new Event('change')); } else [...li.querySelectorAll('.chip')].find((c) => c.textContent === ziel).click();
       });
+    } else if (a.typ === 'zeile') {
+      const knoepfe = document.querySelectorAll('.zeile-knopf');
+      if (richtig) f.richtig.forEach((z) => knoepfe[z - 1].click());
+      else knoepfe[f.zeilen.findIndex((t, i) => !f.richtig.includes(i + 1))].click();
     } else if (a.typ === 'reihenfolge') {
       const reihe = f.schritte.map((s, i) => i);
       (richtig ? reihe : reihe.reverse()).forEach((s) => {
@@ -196,12 +206,20 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
       za.antwort = '12';
       const zb = KlausurChallenge.vorbereiten({ thema: { ab: 'X' }, f: { typ: 'zahl', frage: 'F', loesung: 11.9, toleranz: 0.1, einheit: 'mmol/l' } });
       zb.antwort = '11,7';
+      const zeile = (antwort) => {
+        const a = KlausurChallenge.vorbereiten({ thema: { ab: 'X' }, f: { typ: 'zeile', frage: 'F', zeilen: ['1', '2', '3', '4', '5'], richtig: [2, 4] } });
+        a.antwort = antwort;
+        return KlausurChallenge.punkteFuer(a);
+      };
+      const zl = { beide: zeile([2, 4]), eine: zeile([2]), einsFalsch: zeile([2, 3]), alle: zeile([1, 2, 3, 4, 5]) };
       const e = KlausurChallenge.auswerten([zu, re, rf, za, zb], 570);
       return { zu: KlausurChallenge.punkteFuer(zu), re: KlausurChallenge.punkteFuer(re), rf: KlausurChallenge.punkteFuer(rf),
-        za: KlausurChallenge.punkteFuer(za), zb: KlausurChallenge.punkteFuer(zb), e };
+        za: KlausurChallenge.punkteFuer(za), zb: KlausurChallenge.punkteFuer(zb), e, zl };
     });
     H.pruefe(teil.zu === 75 && teil.re === 50, 'Teilpunkte: Zuordnen 3 von 4 → 75, Reihenfolge 2 von 4 Plätzen → 50');
     H.pruefe(teil.rf === 100 && teil.za === 100 && teil.zb === 0, 'Richtig/Falsch und Zahl (mit Toleranz) werden richtig bewertet');
+    H.pruefe(teil.zl.beide === 100 && teil.zl.eine === 50 && teil.zl.einsFalsch === 0 && teil.zl.alle === 0,
+      'Zeile finden: beide richtig → 100, eine von zwei → 50, falsch gewählte Zeile zieht ab, alles antippen → 0', teil.zl);
     H.pruefe(teil.e.aufgabenPunkte === 325 && teil.e.ganzRichtig === 2 && teil.e.bonus === Math.round(500 * 0.5 * 325 / 500) && teil.e.gesamt === 325 + teil.e.bonus,
       'Auswertung: Summe, ganz richtige Aufgaben, anteiliger Bonus', teil.e);
     await ctx.close();
@@ -247,6 +265,8 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     await p.waitForSelector('#knopf-challenge-start');
     H.pruefe((await p.locator('#untertitel').innerText()) === 'KB I – Diabetes mellitus · 3BFP2/1', 'Challenge-Seite nennt Kartensatz und Klasse');
     H.pruefe((await p.locator('#start-inhalt').innerText()).includes('20 zufälligen Aufgaben'), 'Startseite erklärt die Regeln');
+    H.pruefe((await p.locator('#start-inhalt').innerText()).includes('In der Klausur formulieren und begründen Sie Ihre Antworten selbst'),
+      'Startseite: In der Klausur selbst formulieren – das üben die Lernkarten');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'challenge-start.png'), fullPage: true });
     await p.clock.pauseAt(new Date('2026-11-01T10:05:00'));   // ab jetzt läuft die Zeit nur noch per fastForward
     await p.click('#knopf-challenge-start');
@@ -269,6 +289,8 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe((await p.locator('.ergebnis-tabelle').innerText()).includes('20 von 20 ganz richtig') && (await p.locator('.ergebnis-tabelle').innerText()).includes('09:30'),
       'Tabelle: 20 von 20 ganz richtig, Zeit 09:30');
     H.pruefe((await p.locator('#fehler').innerText()).includes('Keine Fehler'), 'Fehlerübersicht: „Keine Fehler“');
+    H.pruefe(await p.locator('#tipp-formulieren').isVisible() && (await p.locator('#tipp-formulieren').innerText()).startsWith('Tipp für die Klausur: Dort wählen Sie nichts aus'),
+      'Auswertung: „Tipp für die Klausur: … selbst formulieren … mit den Lernkarten“');
     await p.fill('#vorname', 'Ben');
     await p.fill('#initial', 'k');
     await p.click('#knopf-eintragen');
@@ -309,8 +331,8 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe(await p.locator('#knopf-challenge-start').isVisible(), 'Abbrechen (mit Rückfrage) → zurück zum Start');
 
     // Reihenfolge und Zuordnen mit echten Klicks (bis eine solche Aufgabe kommt)
-    let reiheGeprueft = false, zuordnenGeprueft = false;
-    for (let versuch = 0; versuch < 30 && !(reiheGeprueft && zuordnenGeprueft); versuch++) {
+    let reiheGeprueft = false, zuordnenGeprueft = false, zeileGeprueft = false;
+    for (let versuch = 0; versuch < 30 && !(reiheGeprueft && zuordnenGeprueft && zeileGeprueft); versuch++) {
       await p.click('#knopf-challenge-start');
       for (let i = 0; i < ANZAHL; i++) {
         const a = await p.evaluate(() => { const a = KlausurChallenge.aufgabe(); return { typ: a.typ, liste: a.liste }; });
@@ -330,14 +352,40 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
           H.pruefe(await p.locator('#knopf-weiter').isEnabled(), 'Zuordnen: alle Einträge zugeordnet → „Weiter“');
           zuordnenGeprueft = true;
         }
-        await beantworten(p, true);
+        let zeileHier = null;
+        if (a.typ === 'zeile' && !zeileGeprueft) {
+          const f = await p.evaluate(() => KlausurChallenge.aufgabe().f);
+          H.pruefe(await p.locator('.zeile-knopf').count() === f.zeilen.length && (await p.locator('.zeile-knopf').first().innerText()).startsWith('1'),
+            `Zeile finden: ${f.zeilen.length} nummerierte Zeilen zum Antippen`);
+          const falscheZeile = f.zeilen.findIndex((t, j) => !f.richtig.includes(j + 1));
+          const knopf = p.locator('.zeile-knopf').nth(falscheZeile);
+          H.pruefe(await p.locator('#knopf-weiter').isDisabled(), 'Zeile finden: „Weiter“ erst nach einer Auswahl');
+          await knopf.click();
+          H.pruefe((await knopf.getAttribute('aria-pressed')) === 'true' && await p.locator('#knopf-weiter').isEnabled(), 'Zeile finden: Tipp wählt die Zeile aus');
+          await knopf.click();
+          H.pruefe((await knopf.getAttribute('aria-pressed')) === 'false' && await p.locator('#knopf-weiter').isDisabled(), 'Zeile finden: zweiter Tipp nimmt die Auswahl zurück');
+          await knopf.click();   // bewusst falsch lassen – die Auswertung soll die Lösung zeigen
+          zeileHier = { nr: i, richtig: f.richtig, falsch: falscheZeile + 1 };
+          zeileGeprueft = true;
+        } else await beantworten(p, true);
         await p.click('#knopf-weiter');
+        if (zeileHier) zeileGeprueft = zeileHier;
       }
       await p.waitForSelector('#ergebnis-gesamt');
+      if (zeileGeprueft && zeileGeprueft !== true) {
+        const z = zeileGeprueft;
+        const karte = p.locator('.fehler-karte', { has: p.locator('.zeilen-loesung') });
+        const text = await karte.innerText();
+        H.pruefe(await karte.count() === 1 && text.includes('Ihre Antwort: Z. ' + z.falsch) && text.includes('Richtig: Z. ' + z.richtig.join(', '))
+          && await karte.locator('.zeilen-loesung li.richtig').count() === z.richtig.length && await karte.locator('.zeilen-loesung li.falsch').count() === 1,
+          'Zeile finden: Auswertung zeigt gewählte und richtige Zeilen im Falltext', text.slice(0, 300));
+        await karte.screenshot({ path: path.join(ERGEBNISSE, 'challenge-zeile-loesung.png') });
+        zeileGeprueft = true;
+      }
       await p.click('#knopf-nochmal');
       await p.click('#knopf-abbrechen');
     }
-    H.pruefe(reiheGeprueft && zuordnenGeprueft, 'Reihenfolge und Zuordnen mit echten Fingertipps geprüft');
+    H.pruefe(reiheGeprueft && zuordnenGeprueft && zeileGeprueft === true, 'Reihenfolge, Zuordnen und Zeile finden mit echten Fingertipps geprüft');
 
     console.log('\n== Highscore-Seite: Reiter Spiel / Challenge');
     await p.goto(basis + 'challenge/?satz=kb1-diabetes');

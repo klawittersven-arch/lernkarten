@@ -21,7 +21,7 @@ function kartenIds(ordner) {
   const box = {};
   vm.runInNewContext(fs.readFileSync(path.join(H.DOCS, ordner, 'karten.js'), 'utf8') + '\nthis.D = LERNKARTEN;', box);
   const ids = [];
-  box.D.themen.forEach((t) => t.karten.forEach((k) => ids.push('k' + kennung(k.vorne + '|' + (k.fall || '')))));
+  box.D.themen.forEach((t) => t.karten.forEach((k) => ids.push('k' + kennung(k.vorne + '|' + (k.fall || '') + (Array.isArray(k.zeilen) ? '|' + k.zeilen.join('\n') : '')))));
   return ids;
 }
 
@@ -200,7 +200,7 @@ function kartenIds(ordner) {
     'Knöpfe „🎮 Jetzt spielen“ und „Nein, danke – weiterlernen“');
   await p.screenshot({ path: path.join(ERGEBNISSE, 'gratulation.png') });
   await p.keyboard.press('ArrowRight');
-  H.pruefe((await p.locator('#zaehler').innerText()) === '2 / 4', 'solange die Gratulation offen ist, geht das Lernen nicht versehentlich weiter');
+  H.pruefe((await p.locator('#zaehler').innerText()) === '2 / 5', 'solange die Gratulation offen ist, geht das Lernen nicht versehentlich weiter');
   await p.click('#belohnung-spaeter');
   H.pruefe(await p.locator('#belohnung').isHidden(), '„Nein, danke“ schließt die Gratulation, Lernen geht weiter');
   H.pruefe((await p.locator('#spiel-rest').innerText()) === '🎮 noch 100 Karten bis zur Spielrunde', 'Zählung beginnt von vorn: „noch 100 Karten“');
@@ -211,7 +211,7 @@ function kartenIds(ordner) {
   await H.bis(() => p.locator('#belohnung').isVisible());
   H.pruefe(await lesen(p, 'lernkarten:kb1-diabetes:spiel-verdient') === 1, 'erneut bewertet: wieder genau 1 Spielrunde mit Gratulation');
   await p.click('#belohnung-spaeter');
-  for (let i = 0; i < 3; i++) await p.click('#knopf-gewusst');
+  for (let i = 0; i < 4; i++) await p.click('#knopf-gewusst');
   H.pruefe(await p.locator('#ergebnis-spiel').isVisible() && (await p.locator('#ergebnis-spiel-los').getAttribute('href')) === '../spiel/?satz=kb1-diabetes',
     'Ergebnis der Runde: Kasten mit „Jetzt spielen“');
   await p.click('#ergebnis-schliessen');
@@ -308,12 +308,12 @@ function kartenIds(ordner) {
     const lesen1s = async (knopf) => { await d.clock.fastForward(1100); await d.click('#karte'); await d.clock.fastForward(1100); await d.click(knopf); };
     await d.goto(basis + 'kb2-beratung/');
     await d.click('#knopf-start');
-    for (let i = 0; i < 81; i++) await lesen1s(i % 3 ? '#knopf-gewusst' : '#knopf-nochnicht');
-    H.pruefe(await d.locator('#ansicht-ergebnis').isVisible() && await d.locator('#belohnung').isHidden(), 'alle 81 Karten bewertet: Ergebnis der Runde, noch keine Gratulation');
+    for (let i = 0; i < 90; i++) await lesen1s(i % 3 ? '#knopf-gewusst' : '#knopf-nochnicht');
+    H.pruefe(await d.locator('#ansicht-ergebnis').isVisible() && await d.locator('#belohnung').isHidden(), 'alle 90 Karten bewertet: Ergebnis der Runde, noch keine Gratulation');
     await d.click('#ergebnis-schliessen');
-    H.pruefe((await d.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 81 von 100 Karten', 'Startseite: „81 von 100 Karten“');
+    H.pruefe((await d.locator('#spiel-text').innerText()) === 'Bis zur nächsten Runde: 90 von 100 Karten', 'Startseite: „90 von 100 Karten“');
     await d.click('#knopf-start');
-    for (let i = 0; i < 18; i++) await lesen1s('#knopf-gewusst');
+    for (let i = 0; i < 9; i++) await lesen1s('#knopf-gewusst');
     H.pruefe(await d.locator('#belohnung').isHidden() && (await d.locator('#spiel-rest').innerText()) === '🎮 noch 1 Karte bis zur Spielrunde', 'nach 99 Karten: noch keine Gratulation, „noch 1 Karte“');
     await d.click('#knopf-gewusst');   // ohne Umdrehen: zählt nicht
     H.pruefe(await d.locator('#belohnung').isHidden() && (await d.locator('#spiel-rest').innerText()) === '🎮 noch 1 Karte bis zur Spielrunde', 'ohne Umdrehen: weiterhin „noch 1 Karte“');
@@ -321,7 +321,7 @@ function kartenIds(ordner) {
     await H.bis(() => d.locator('#belohnung').isVisible());
     H.pruefe(await d.locator('#belohnung').isVisible(), 'nach der 100. umgedrehten Karte: Gratulation bildschirmfüllend');
     await d.click('#belohnung-spaeter');
-    H.pruefe(await d.locator('#ansicht-lernen').isVisible() && (await d.locator('#zaehler').innerText()).startsWith('21 / '), 'danach geht das Lernen weiter (Karte 21)');
+    H.pruefe(await d.locator('#ansicht-lernen').isVisible() && (await d.locator('#zaehler').innerText()).startsWith('12 / '), 'danach geht das Lernen weiter (Karte 12)');
     await c4.close();
   }
 

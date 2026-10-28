@@ -245,6 +245,13 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
   background: var(--hellblau); border-left: 5px solid var(--petrol); border-radius: 10px;
   font-size: 18.5px; font-weight: 600; line-height: 1.4;
 }
+/* Falltext mit Zeilennummern (wie in der Klausur) */
+.fall.mit-zeilen { padding: 10px 12px 10px 8px; font-size: 15.5px; font-weight: 500; line-height: 1.35; }
+.zeilen { list-style: none; margin: 0; padding: 0; }
+.zeilen li { display: grid; grid-template-columns: 1.7em 1fr; column-gap: 6px; margin: 0 0 3px; }
+.zeilen li:last-child { margin-bottom: 0; }
+.zeilen-nr { text-align: right; font-size: 12.5px; font-weight: 800; color: var(--petrol); padding-top: 2px; font-variant-numeric: tabular-nums; }
+@media (prefers-color-scheme: dark) { .zeilen-nr { color: var(--akzent); } }
 .umdreh-hinweis {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   margin: 0; font-size: 14px; color: var(--leise);

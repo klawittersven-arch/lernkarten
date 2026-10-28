@@ -21,6 +21,9 @@
  *       → Schritte in der richtigen Reihenfolge eintragen; die App mischt sie.
  *   { typ: 'zahl', frage: '…', loesung: 11.9, toleranz: 0.1, einheit: 'mmol/l' }
  *       → Zahlen mit Punkt schreiben (11.9); als richtig gilt loesung ± toleranz.
+ *   { typ: 'zeile', frage: '…', zeilen: ['Zeile 1', 'Zeile 2', '…'], richtig: [2, 4] }
+ *       → Falltext mit Zeilennummern; die SuS tippen die passenden Zeilen an
+ *         (richtig = Nummern ab 1; Teilpunkte, falsch gewählte Zeilen ziehen ab).
  * Optional bei jeder Aufgabe: fall: '…' (eingerahmter Fall) und
  * erklaerung: '…' (erscheint in der Auswertung bei den Lösungen).
  * ===================================================================== */
@@ -55,7 +58,31 @@ var CHALLENGE_FRAGEN = {
             'Nur den letzten Absatz lesen – dort stehen die wichtigen Informationen als Liste.',
             'Nur die auffälligen Veränderungen herausschreiben, Ressourcen spielen keine Rolle.',
             'Den Text einmal überfliegen und die Antworten aus dem Unterricht wortgleich übernehmen.'
-          ] }
+          ] },
+        { typ: 'zeile',
+          frage: 'Tippen Sie **alle** Zeilen an, in denen eine **Ressource** von Herrn Hoffmann steht.',
+          zeilen: [
+            'Herr Hoffmann (77 J.) wird nach einem Sturz auf der chirurgischen Station versorgt.',
+            'Er hat Diabetes mellitus Typ 2 und erhält morgens und abends Mischinsulin.',
+            'Seine Frau besucht ihn jeden Nachmittag und bringt frische Wäsche mit.',
+            'Er ist geistig fit und möchte möglichst bald wieder selbstständig laufen.',
+            'Seit gestern ist der Verband an seinem Knie durchgeblutet.',
+            'Heute Morgen lag sein Blutzucker bei 52 mg/dl.'
+          ],
+          richtig: [3, 4],
+          erklaerung: 'Ressourcen: Seine Frau unterstützt ihn täglich (Z. 3); er ist geistig fit und motiviert (Z. 4). Z. 1–2 sind pflegerelevante Informationen, Z. 5–6 auffällige Veränderungen.' },
+        { typ: 'zeile',
+          frage: 'Tippen Sie **alle** Zeilen an, in denen eine **auffällige Veränderung** bei Herrn Hoffmann steht.',
+          zeilen: [
+            'Herr Hoffmann (77 J.) wird nach einem Sturz auf der chirurgischen Station versorgt.',
+            'Er hat Diabetes mellitus Typ 2 und erhält morgens und abends Mischinsulin.',
+            'Seine Frau besucht ihn jeden Nachmittag und bringt frische Wäsche mit.',
+            'Er ist geistig fit und möchte möglichst bald wieder selbstständig laufen.',
+            'Seit gestern ist der Verband an seinem Knie durchgeblutet.',
+            'Heute Morgen lag sein Blutzucker bei 52 mg/dl.'
+          ],
+          richtig: [5, 6],
+          erklaerung: 'Auffällige Veränderungen: durchgebluteter Verband (Z. 5) und ein BZ von 52 mg/dl – unter 70 mg/dl, also eine Hypoglykämie (Z. 6).' }
       ]
     },
 
@@ -160,7 +187,11 @@ var CHALLENGE_FRAGEN = {
             'Möglichst viele Fachbegriffe verwenden, damit es professionell klingt.',
             'Nur die Laborwerte nennen, die Patientin kann sie selbst nachlesen.',
             'Schnell sprechen, damit die Erklärung nicht zu lange dauert.'
-          ] }
+          ] },
+        { typ: 'richtigfalsch',
+          aussage: '„Bei Typ 2 braucht man nie Insulin – der Körper bildet ja selbst welches.“',
+          richtig: false,
+          erklaerung: 'Falsch: Bei Typ 2 reagieren die Zellen vermindert auf Insulin (Insulinresistenz), und im Verlauf bildet der Körper oft immer weniger Insulin. Deshalb brauchen viele Menschen mit Typ 2 Insulin.' }
       ]
     },
 
@@ -267,7 +298,25 @@ var CHALLENGE_FRAGEN = {
             '… dann die Einstichstellen planmäßig wechseln.': ['Wenn Insulin regelmäßig gespritzt wird, …'],
             '… dann dort nicht spritzen, dokumentieren und weitergeben.': ['Wenn die Unterhaut verdickt ist, …'],
             '… dann sofort im stichfesten Abwurfbehälter entsorgen.': ['Wenn eine Kanüle benutzt wurde, …']
-          } }
+          } },
+        { typ: 'auswahl',
+          frage: 'Kann die Insulingabe wie geplant durchgeführt werden?',
+          fall: 'Um 7:30 Uhr sind bei Frau Kaya NPH-Insulin und ein kurzwirksames Insulinanalogon zum Frühstück angeordnet. Ihr ist übel, sie möchte nichts essen. BZ: 145 mg/dl.',
+          antworten: [
+            'NPH-Insulin grundsätzlich geben (Basalinsulin, unabhängig von den Mahlzeiten); das kurzwirksame Analogon nicht wie geplant – Rücksprache mit dem ärztlichen Dienst.',
+            'Beide Insuline wie geplant geben – der BZ ist ja nicht niedrig, also besteht keine Gefahr.',
+            'Beide Insuline weglassen – ohne Frühstück darf grundsätzlich gar kein Insulin gegeben werden.',
+            'Nur das kurzwirksame Analogon geben, weil es schnell wirkt; das NPH-Insulin auf morgen verschieben.'
+          ],
+          erklaerung: 'Mahlzeiteninsulin ohne Mahlzeit (Punkte 7, 8) → Gefahr einer Hypoglykämie. Basalinsulin deckt den Grundbedarf. Sind zwei Insuline fällig, jedes einzeln prüfen.' },
+        { typ: 'auswahl',
+          frage: 'Ein Mahlzeiteninsulin kann nicht wie geplant gegeben werden. Wie gehen Sie vor?',
+          antworten: [
+            'Rücksprache mit dem ärztlichen Dienst halten, nicht eigenmächtig handeln, BZ kontrollieren und dokumentieren.',
+            'Die Dosis selbst halbieren und trotzdem spritzen, damit der BZ nicht steigt.',
+            'Das Insulin einfach zur nächsten Mahlzeit zusätzlich zur geplanten Dosis spritzen.',
+            'Die Gabe weglassen, ohne es weiterzugeben – der Blutzucker regelt sich von selbst.'
+          ] }
       ]
     },
 
@@ -360,6 +409,24 @@ var CHALLENGE_FRAGEN = {
             'Durch den Glukosemangel im Gehirn entsteht ein Durstgefühl.',
             'Insulin entzieht den Zellen Wasser.',
             'Der Zucker trocknet die Mundschleimhaut direkt aus.'
+          ] },
+        { typ: 'auswahl',
+          frage: 'Was liegt vor – und welche Begründung passt?',
+          fall: 'Herr Lorenz (Typ 2, Insulin) hat seit dem Morgen Durchfall und Erbrechen. Am Nachmittag ist er blass, zittert und schwitzt. Das Messgerät zeigt 3,5 mmol/l.',
+          antworten: [
+            'Hypoglykämie: Blässe, Zittern, Schwitzen; 3,5 mmol/l = 63 mg/dl, also unter 70 mg/dl. Ursache: kaum Kohlenhydrate durch Durchfall und Erbrechen, das Insulin wirkt trotzdem.',
+            'Hyperglykämie: 3,5 mmol/l liegen über 180 mg/dl. Ursache: Der Infekt mit Durchfall lässt den Blutzucker steigen.',
+            'Hypoglykämie: 3,5 mmol/l = 35 mg/dl. Ursache: Er hat zu viele Kohlenhydrate gegessen.',
+            'Kein Notfall: 3,5 mmol/l liegen im Normbereich, die Anzeichen kommen vom Durchfall.'
+          ] },
+        { typ: 'auswahl',
+          frage: 'Was liegt vor – und welche Begründung passt?',
+          fall: 'Frau Brückner (Typ 1) schreibt morgen eine Prüfung und ist seit Tagen sehr angespannt. Sie fühlt sich schlapp, hat starken Durst und muss ständig zur Toilette. BZ: 245 mg/dl.',
+          antworten: [
+            'Hyperglykämie: Abgeschlagenheit, starker Durst, häufiges Wasserlassen; 245 mg/dl liegen über 180 mg/dl. Ursache: Stress.',
+            'Hypoglykämie: Die Schlappheit zeigt einen Glukosemangel. Ursache: Sie isst vor Aufregung zu wenig.',
+            'Keine Stoffwechselentgleisung: Durst und häufiges Wasserlassen kommen nur von der Aufregung.',
+            'Hypoglykämie: Der Durst entsteht, weil den Gehirnzellen Glukose fehlt. Ursache: Stress.'
           ] }
       ]
     },
@@ -404,7 +471,11 @@ var CHALLENGE_FRAGEN = {
             'Nichts unternehmen – 215 mg/dl liegen unter 10 mmol/l.',
             'Selbst Insulin nach eigenem Ermessen geben.',
             'Die Messung erst am nächsten Tag wiederholen.'
-          ] }
+          ] },
+        { typ: 'zahl',
+          frage: 'Das Messgerät zeigt **3,5 mmol/l**. Wie viel **mg/dl** sind das?',
+          loesung: 63, toleranz: 1, einheit: 'mg/dl',
+          erklaerung: '3,5 × 18 = 63 mg/dl – unter 70 mg/dl, also eine Hypoglykämie.' }
       ]
     },
 
@@ -478,7 +549,19 @@ var CHALLENGE_FRAGEN = {
             'Es wird zu wenig Insulin gegeben → Gefahr einer Ketoazidose.',
             'Keine Folge, weil der Wert ohnehin dokumentiert wird.',
             'Die Patientin bekommt zu viele Kohlenhydrate → Hyperglykämie.'
-          ] }
+          ] },
+        { typ: 'zeile',
+          frage: 'Tippen Sie **alle** Zeilen an, in denen Mia bei der Blutzuckermessung einen **Fehler** macht.',
+          zeilen: [
+            'Pflegeschülerin Mia misst bei Frau Roth (69 J.) vor dem Mittagessen den Blutzucker.',
+            'Sie prüft das Verfallsdatum der Teststreifen und zieht Handschuhe an.',
+            'Mia desinfiziert die Fingerkuppe und sticht sofort danach ein.',
+            'Sie wählt den Ringfinger und punktiert seitlich an der Fingerbeere.',
+            'Weil kaum Blut kommt, drückt sie den Finger kräftig aus.',
+            'Danach gibt sie Frau Roth einen Tupfer zum Komprimieren.'
+          ],
+          richtig: [3, 5],
+          erklaerung: 'Z. 3: Das Desinfektionsmittel muss vollständig trocknen, sonst verfälscht es den Wert. Z. 5: Den Finger nicht „ausmelken“ – Gewebsflüssigkeit verfälscht den Wert; besser die Hände vorher erwärmen.' }
       ]
     },
 

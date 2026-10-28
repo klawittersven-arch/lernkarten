@@ -6,8 +6,8 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 
 | Kartensatz | Adresse (QR-Code) |
 |---|---|
-| KB I – Diabetes mellitus (Klausur 09.11.2026), 77 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
-| KB II – Beratung (Klausur 09.11.2026), 81 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
+| KB I – Diabetes mellitus (Klausur 09.11.2026), 82 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
+| KB II – Beratung (Klausur 09.11.2026), 90 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/ ·
 Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
@@ -163,8 +163,12 @@ Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challen
 - **20 Aufgaben**, zufällig aus dem Aufgabenpool des Kartensatzes gezogen – aus jedem Thema
   mindestens eine, in zufälliger Reihenfolge; auch die Antwortmöglichkeiten werden gemischt.
 - Aufgabenarten: eine richtige Antwort auswählen, richtig/falsch, zuordnen, Reihenfolge,
-  Zahl eingeben (z. B. mg/dl in mmol/l).
-- **Punkte:** 100 je richtig gelöster Aufgabe (beim Zuordnen und bei Reihenfolgen anteilig),
+  Zahl eingeben (z. B. mg/dl in mmol/l) und **Zeile finden** (in einem Falltext mit
+  Zeilennummern die passenden Zeilen antippen – übt die Zeilenangaben der Klausur).
+- Start- und Auswertungsseite erinnern daran, dass in der Klausur selbst formuliert und begründet
+  wird – das üben die Lernkarten.
+- **Punkte:** 100 je richtig gelöster Aufgabe (beim Zuordnen, bei Reihenfolgen und beim Zeilenfinden
+  anteilig; beim Zeilenfinden zieht jede falsch gewählte Zeile ab),
   dazu ein **Zeitbonus** bis 500 Punkte: voll bis 4 Minuten, danach gleichmäßig weniger, ab
   15 Minuten keiner mehr. Der Bonus zählt nur anteilig zu den richtigen Antworten (Raten lohnt
   nicht). Höchstens 2 500 Punkte, davon 80 % aus den Aufgaben. Werte in `docs/app/einstellungen.js`
@@ -191,7 +195,8 @@ Nach 1–2 Minuten ist die Änderung online.
 - Nur den Text **zwischen den einfachen Hochkommas** `' … '` ändern; Hochkommas, Kommas und
   Klammern `{ } [ ]` stehen lassen. Ein einfaches Hochkomma im Text schreiben Sie als `\'`.
 - `**fett**` und `*kursiv*` funktionieren wie in der Ich-kann-Liste.
-- Eine Karte hat `vorne` (Kompetenz), optional `fall` (Kasten mit Fall oder Aussage),
+- Eine Karte hat `vorne` (Kompetenz), optional `fall` (Kasten mit Fall oder Aussage) oder
+  `zeilen: ['…', '…']` (Falltext mit Zeilennummern wie in der Klausur),
   `hinten` (ein Text oder eine Liste von Stichpunkten) und optional `hinweis` (Kasten unten).
   `nr` (Nummer in der Ich-kann-Liste) und `afb` (z. B. `'I + II'`) erscheinen oben auf der Karte.
   Die genaue Anleitung steht oben in der Datei.

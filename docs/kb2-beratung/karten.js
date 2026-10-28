@@ -17,6 +17,7 @@
  *     afb: 'II',                    ← Anforderungsbereich (optional), erscheint oben auf der Karte
  *     vorne: 'Ich kann …',          ← Vorderseite (die Kompetenz)
  *     fall: 'Herr Müller …',        ← (optional) Fall oder Aussage, eingerahmt unter der Kompetenz
+ *     zeilen: ['…', '…'],           ← (optional) statt fall: Falltext mit Zeilennummern wie in der Klausur
  *     hinten: ['Punkt 1', 'Punkt 2'],  ← Rückseite: jeder Eintrag wird ein Stichpunkt
  *     nummeriert: true,             ← (optional) 1., 2., 3. statt Punkten; start: 4 beginnt bei 4.
  *     hinweis: '…'                  ← (optional) kleiner Kasten unten auf der Rückseite
@@ -86,28 +87,39 @@ var LERNKARTEN = {
             '**Vorgehen:** Wissen weitergeben (erklären)',
             '**Ziel:** Wissen',
             '**Beispiel (Diabetes):** Anzeichen einer Unterzuckerung erklären'
-          ] },
+          ],
+          hinweis: 'In der Klausur in ganzen Sätzen vergleichen und den Unterschied ausdrücklich benennen – Stichworte allein geben nur wenige Punkte.' },
         { nr: 1,
           vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„ANLEITUNG“**',
           hinten: [
             '**Vorgehen:** eine Handlung zeigen und einüben lassen',
             '**Ziel:** Können',
             '**Beispiel (Diabetes):** BZ-Messung zeigen, dann misst die Patientin selbst'
-          ] },
+          ],
+          hinweis: 'In der Klausur in ganzen Sätzen vergleichen und den Unterschied ausdrücklich benennen – Stichworte allein geben nur wenige Punkte.' },
         { nr: 1,
           vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„SCHULUNG“**',
           hinten: [
             '**Vorgehen:** Wissen und Fertigkeiten geplant, strukturiert vermitteln',
             '**Ziel:** systematisches Lernen',
             '**Beispiel (Diabetes):** Programm zu Ernährung, Bewegung und Therapie'
-          ] },
+          ],
+          hinweis: 'In der Klausur in ganzen Sätzen vergleichen und den Unterschied ausdrücklich benennen – Stichworte allein geben nur wenige Punkte.' },
         { nr: 1,
           vorne: 'Ich kann die vier Formen der Patientenedukation *vergleichen*: Vorgehen, Ziel und ein Beispiel für die Form: **„BERATUNG“**',
           hinten: [
             '**Vorgehen:** fragen, zuhören, gemeinsam klären; ergebnisoffen',
             '**Ziel:** Entscheidung unterstützen',
             '**Beispiel (Diabetes):** „Wie möchten Sie die gemeinsamen Mahlzeiten mit Ihrer Familie gestalten?“'
-          ] },
+          ],
+          hinweis: 'In der Klausur in ganzen Sätzen vergleichen und den Unterschied ausdrücklich benennen – Stichworte allein geben nur wenige Punkte.' },
+        { nr: 1,
+          vorne: 'Ich kann zwei Formen der Patientenedukation in ganzen Sätzen *vergleichen*: **Information und Anleitung** (Vorgehen und Ziel)',
+          hinten: [
+            '**Vorgehen:** Bei der Information gibt die Pflegefachperson Wissen weiter, indem sie etwas erklärt. Bei der Anleitung zeigt sie eine Handlung, und die Person übt sie selbst ein. **Unterschied:** Bei der Anleitung handelt die Person selbst, bei der Information nicht.',
+            '**Ziel:** Die Information zielt auf Wissen, die Anleitung auf Können. **Unterschied:** etwas verstehen gegenüber etwas selbst tun können.'
+          ],
+          hinweis: 'So geht ein Vergleich: je Kriterium beide Seiten in ganzen Sätzen beschreiben und den Unterschied ausdrücklich benennen.' },
         { nr: 2,
           vorne: 'Ich kann eine Pflegesituation einer der vier Formen der Patientenedukation *zuordnen* und die Zuordnung *begründen*:',
           fall: 'Ein Patient sagt nach einem Herzinfarkt: „Ich weiß gar nicht, womit ich anfangen soll.“ Die PK stellt Rückfragen und erkundet mit ihm Prioritäten sowie erste Schritte.',
@@ -125,27 +137,51 @@ var LERNKARTEN = {
         { nr: 3,
           vorne: 'Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schneider) eine Regel für eine gute Beratung *ableiten*:',
           fall: 'Die PK bleibt an der Tür stehen.',
-          hinten: 'zugewandt und auf Augenhöhe sprechen' },
+          hinten: 'zugewandt und auf Augenhöhe sprechen',
+          hinweis: 'In der Klausur zu jedem hinderlichen Faktor die Zeile angeben (z. B. „Z. 12“) – sonst gibt es Punktabzug.' },
         { nr: 3,
           vorne: 'Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schneider) eine Regel für eine gute Beratung *ableiten*:',
           fall: 'Müdigkeit und Unwohlsein werden übergangen.',
-          hinten: 'Befinden beachten, Gespräch ggf. verschieben' },
+          hinten: 'Befinden beachten, Gespräch ggf. verschieben',
+          hinweis: 'In der Klausur zu jedem hinderlichen Faktor die Zeile angeben (z. B. „Z. 12“) – sonst gibt es Punktabzug.' },
         { nr: 3,
           vorne: 'Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schneider) eine Regel für eine gute Beratung *ableiten*:',
           fall: 'Der Fernseher läuft, Besuch und Reinigungskraft sind im Zimmer.',
-          hinten: 'für Ruhe und Privatsphäre sorgen' },
+          hinten: 'für Ruhe und Privatsphäre sorgen',
+          hinweis: 'In der Klausur zu jedem hinderlichen Faktor die Zeile angeben (z. B. „Z. 12“) – sonst gibt es Punktabzug.' },
         { nr: 3,
           vorne: 'Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schneider) eine Regel für eine gute Beratung *ableiten*:',
           fall: '„Ich habe ungefähr fünf Minuten.“ – Das Diensttelefon klingelt.',
-          hinten: 'genügend Zeit einplanen, Störungen vermeiden' },
+          hinten: 'genügend Zeit einplanen, Störungen vermeiden',
+          hinweis: 'In der Klausur zu jedem hinderlichen Faktor die Zeile angeben (z. B. „Z. 12“) – sonst gibt es Punktabzug.' },
         { nr: 3,
           vorne: 'Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schneider) eine Regel für eine gute Beratung *ableiten*:',
           fall: 'Fachsprache („Kohlenhydratzufuhr“, „HbA1c“)',
-          hinten: 'verständliche Sprache verwenden' },
+          hinten: 'verständliche Sprache verwenden',
+          hinweis: 'In der Klausur zu jedem hinderlichen Faktor die Zeile angeben (z. B. „Z. 12“) – sonst gibt es Punktabzug.' },
         { nr: 3,
           vorne: 'Ich kann aus einem hinderlichen Faktor (Beispiel Frau Schneider) eine Regel für eine gute Beratung *ableiten*:',
           fall: 'unterbrechen, Sorgen herunterspielen („Das bekommen Sie schon hin.“)',
-          hinten: 'ausreden lassen, Sorgen ernst nehmen' },
+          hinten: 'ausreden lassen, Sorgen ernst nehmen',
+          hinweis: 'In der Klausur zu jedem hinderlichen Faktor die Zeile angeben (z. B. „Z. 12“) – sonst gibt es Punktabzug.' },
+        { nr: 3,
+          vorne: 'Ich kann hinderliche Faktoren in einem Gespräch mit **Zeilenangabe** *identifizieren* und daraus Regeln für eine gute Beratung *ableiten*:',
+          zeilen: [
+            'Pfleger Tim möchte Frau Becker (68 J.) zu ihren neuen Blutdrucktabletten beraten.',
+            'Er spricht sie dazu auf dem Flur an, wo andere Patienten vorbeigehen.',
+            'Frau Becker hat starke Kopfschmerzen und hält sich die Stirn.',
+            'Tim sagt: „Die Antihypertensiva nehmen Sie ab jetzt morgens.“',
+            'Als sie von ihrer Angst vor Nebenwirkungen erzählt, unterbricht er sie:',
+            '„Das passt schon. Ich muss gleich weiter.“'
+          ],
+          hinten: [
+            'Flur, andere Patienten (Z. 2) → für Ruhe und Privatsphäre sorgen',
+            'Kopfschmerzen werden übergangen (Z. 3) → Befinden beachten, Gespräch ggf. verschieben',
+            'Fachsprache „Antihypertensiva“ (Z. 4) → verständliche Sprache verwenden',
+            'unterbricht, spielt die Angst herunter (Z. 5–6) → ausreden lassen, Sorgen ernst nehmen',
+            'Zeitdruck (Z. 6) → genügend Zeit einplanen, Störungen vermeiden'
+          ],
+          hinweis: 'Zu jedem Faktor die Zeile angeben – ohne Zeilenangabe gibt es Punktabzug.' },
         { nr: 4,
           vorne: 'Ich kann **gesprächshemmende Verhaltensweisen** *nennen*.',
           hinten: [
@@ -319,7 +355,40 @@ var LERNKARTEN = {
         { nr: 2,
           vorne: 'Ich kann für diese Situation einen passenden **Gesprächseinstieg** *formulieren*:',
           fall: 'Eine Patientin sagt mit Tränen in den Augen: „Alle sagen mir ständig, was ich anders machen soll. Mir wird das zu viel!“',
-          hinten: '„Das klingt, als ob Ihnen das gerade zu viel wird. Was belastet Sie am meisten?“' }
+          hinten: '„Das klingt, als ob Ihnen das gerade zu viel wird. Was belastet Sie am meisten?“' },
+        { nr: 2,
+          vorne: 'Ich kann *beurteilen*, welcher Beratungsansatz besonders geeignet ist: **Woran erkenne ich den passenden Ansatz?**',
+          hinten: [
+            '**personenzentriert (Rogers):** Die Person ist emotional belastet oder überfordert (z. B. Tränen, „Mir wird alles zu viel“) → sie muss sich zuerst verstanden fühlen.',
+            '**motivationsfördernd (MI):** Die Person ist hin- und hergerissen (Ambivalenz: „Eigentlich sollte ich …, aber …“) → eigene Gründe für eine Veränderung stärken.',
+            '**ressourcen-/lösungsorientiert:** Etwas gelingt schon oder ist schon einmal gelungen, und die Person sucht einen nächsten Schritt → an Gelingendem anknüpfen.'
+          ],
+          hinweis: 'Begründen Sie Ihre Wahl immer mit Hinweisen aus dem Fall – und gern kurz, warum die anderen Ansätze weniger passen.' },
+        { nr: 2,
+          vorne: 'Ich kann *beurteilen*, welcher Beratungsansatz in dieser Situation besonders geeignet ist:',
+          fall: 'Herr Kraus (58 J., COPD) sagt: „Eigentlich weiß ich, dass ich mit dem Rauchen aufhören sollte. Aber die Zigarette nach dem Essen ist meine einzige Pause am Tag.“',
+          hinten: [
+            'Geeignet ist der **motivationsfördernde Ansatz (MI)**, weil Herr Kraus hin- und hergerissen ist: Er möchte aufhören („Eigentlich … sollte“) und hängt zugleich an der Zigarette („meine einzige Pause“).',
+            'Er ist nicht emotional überfordert (personenzentriert), und es geht nicht um etwas, das schon gelingt (ressourcenorientiert).'
+          ] },
+        { nr: 2,
+          vorne: 'Ich kann für diese Situation einen passenden **Gesprächseinstieg** *formulieren*:',
+          fall: 'Herr Kraus (58 J., COPD) sagt: „Eigentlich weiß ich, dass ich mit dem Rauchen aufhören sollte. Aber die Zigarette nach dem Essen ist meine einzige Pause am Tag.“',
+          hinten: '„Einerseits möchten Sie aufhören, andererseits ist die Zigarette Ihre Pause. Was spricht für Sie selbst dafür, etwas zu verändern?“' },
+        { nr: 2,
+          vorne: 'Ich kann *beurteilen*, welcher Beratungsansatz in dieser Situation besonders geeignet ist:',
+          fall: 'Frau Peters (70 J.) hat nach einem Schlaganfall eine Schwäche in der rechten Hand. Sie erzählt: „Wenn meine Enkelin mit mir knetet, klappt das Knöpfen schon fast allein.“ Sie fragt, was sie selbst noch tun kann.',
+          hinten: [
+            'Geeignet ist der **ressourcen-/lösungsorientierte Ansatz**, weil schon etwas gelingt (Knöpfen klappt fast allein, wenn sie mit der Enkelin übt) und Frau Peters einen nächsten Schritt sucht.',
+            'Sie ist weder hin- und hergerissen (MI) noch emotional überfordert (personenzentriert).'
+          ] },
+        { nr: 2,
+          vorne: 'Ich kann für diese Situation einen passenden **Gesprächseinstieg** *formulieren*:',
+          fall: 'Frau Peters (70 J.) hat nach einem Schlaganfall eine Schwäche in der rechten Hand. Sie erzählt: „Wenn meine Enkelin mit mir knetet, klappt das Knöpfen schon fast allein.“ Sie fragt, was sie selbst noch tun kann.',
+          hinten: [
+            '„Das ist ein schöner Fortschritt! Was genau hilft Ihnen, wenn Sie mit Ihrer Enkelin üben?“',
+            'oder mit Skalierungsfrage: „Wie gut klappt das Knöpfen heute – von 0 bis 10? Was bräuchte es für einen Punkt mehr?“'
+          ] }
       ]
     },
 
@@ -391,7 +460,23 @@ var LERNKARTEN = {
           ] },
         { nr: 2,
           vorne: 'Ich kann ein SMARTes Beratungsziel *formulieren*: **Beispiel Herr Meier** (Herzinsuffizienz)',
-          hinten: '„Am Ende des ersten Gesprächs kann Herr Meier drei Warnzeichen einer Verschlechterung seiner Herzinsuffizienz nennen (z. B. Gewichtszunahme, geschwollene Beine, zunehmende Atemnot) und beschreiben, wann er seine Hausärztin anruft.“' }
+          hinten: '„Am Ende des ersten Gesprächs kann Herr Meier drei Warnzeichen einer Verschlechterung seiner Herzinsuffizienz nennen (z. B. Gewichtszunahme, geschwollene Beine, zunehmende Atemnot) und beschreiben, wann er seine Hausärztin anruft.“' },
+        { nr: 2,
+          vorne: 'Ich kann ein SMARTes Beratungsziel *formulieren*: **Beispiel Herr Meier** (Verhaltensziel)',
+          hinten: [
+            '„Herr Meier wiegt sich ab morgen eine Woche lang jeden Morgen vor dem Frühstück und notiert das Gewicht in seinem Tagebuch.“',
+            '**S** sich wiegen und notieren · **M** jeden Morgen, im Tagebuch · **A** mit Herrn Meier vereinbart · **R** passt in seinen Alltag · **T** ab morgen, eine Woche lang'
+          ],
+          hinweis: 'Das Ziel aus Sicht der Person formulieren – besonders auf **messbar** und **terminiert** achten.' },
+        { nr: 2,
+          vorne: 'Ich kann *beurteilen*, ob ein Beratungsziel SMART formuliert ist: **Was fehlt diesem Ziel?**',
+          fall: 'Frau Schulz (84 J.) trinkt zu wenig. Ziel: „Frau Schulz soll mehr trinken.“',
+          hinten: [
+            '**nicht spezifisch, nicht messbar:** Was und wie viel? Woran erkennt man, dass das Ziel erreicht ist?',
+            '**nicht terminiert:** ab wann, bis wann?',
+            '**nicht akzeptiert:** „soll“ – das Ziel wurde nicht mit Frau Schulz vereinbart.',
+            '**besser:** „Frau Schulz trinkt ab heute bis Sonntag jeden Tag 1,5 Liter und hakt jedes Glas auf ihrem Trinkplan ab.“'
+          ] }
       ]
     },
 

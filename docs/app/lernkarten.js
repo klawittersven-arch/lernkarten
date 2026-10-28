@@ -100,7 +100,7 @@
           <p class="seiten-kopf" id="vorne-kopf"></p>
           <div class="seiten-inhalt">
             <p class="kompetenz" id="vorne-text"></p>
-            <p class="fall" id="vorne-fall" hidden></p>
+            <div class="fall" id="vorne-fall" hidden></div>
           </div>
           <p class="umdreh-hinweis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg><span id="umdreh-text"></span></p>
         </section>
@@ -261,7 +261,8 @@
       karten: []
     };
     t.karten.forEach(function (k) {
-      var id = 'k' + kennung(k.vorne + '|' + (k.fall || ''));
+      // Fall mit Zeilennummern (zeilen) zählt mit – Karten ohne zeilen behalten ihre Kennung
+      var id = 'k' + kennung(k.vorne + '|' + (k.fall || '') + (Array.isArray(k.zeilen) ? '|' + k.zeilen.join('\n') : ''));
       if (KARTEN[id]) { id += '-' + REIHENFOLGE.length; } // gleiche Vorderseite doppelt: trotzdem eindeutig
       var karte = { id: id, thema: thema, daten: k };
       KARTEN[id] = karte;
@@ -644,8 +645,11 @@
     $('vorne-kopf').textContent = karte.thema.kopf + (k.nr ? ' · Nr. ' + k.nr : '') + (k.afb ? ' · AFB ' + k.afb : '');
     $('vorne-text').innerHTML = formatieren(k.vorne);
     var fall = $('vorne-fall');
-    fall.hidden = !k.fall;
+    var zeilen = Array.isArray(k.zeilen) ? k.zeilen : null;
+    fall.hidden = !k.fall && !zeilen;
+    fall.classList.toggle('mit-zeilen', !!zeilen);
     fall.innerHTML = k.fall ? formatieren(k.fall) : '';
+    if (zeilen) fall.appendChild(zeilenListe(zeilen));
 
     $('hinten-kopf').textContent = T.rueckseite;
     var hinten = $('hinten-text');
@@ -686,6 +690,25 @@
     ansagen($('zaehler').textContent + '. ' + sichtbarerText());
   }
 
+  // Falltext mit Zeilennummern wie in der Klausur (Karte mit zeilen: ['…', '…'])
+  function zeilenListe(zeilen) {
+    var ol = document.createElement('ol');
+    ol.className = 'zeilen';
+    zeilen.forEach(function (text, i) {
+      var li = document.createElement('li');
+      var nr = document.createElement('span');
+      nr.className = 'zeilen-nr';
+      nr.textContent = String(i + 1);
+      var inhalt = document.createElement('span');
+      inhalt.innerHTML = formatieren(text);
+      li.appendChild(nr);
+      li.appendChild(document.createTextNode(' '));
+      li.appendChild(inhalt);
+      ol.appendChild(li);
+    });
+    return ol;
+  }
+
   // Bildschirmleser: nur die sichtbare Seite vorlesen
   function seitenSichtbarkeit() {
     $('seite-vorne').setAttribute('aria-hidden', umgedreht ? 'true' : 'false');
@@ -698,7 +721,7 @@
   function sichtbarerText() {
     var seite = umgedreht ? $('seite-hinten') : $('seite-vorne');
     var teile = [];
-    seite.querySelectorAll('.kompetenz, .fall:not([hidden]), li, .antwort > p, .hinweis:not([hidden])').forEach(function (e) {
+    seite.querySelectorAll('.kompetenz, .fall:not([hidden]), .antwort li, .antwort > p, .hinweis:not([hidden])').forEach(function (e) {
       teile.push(e.textContent.replace(/\s+/g, ' ').trim());
     });
     return (umgedreht ? T.rueckseite : T.vorderseite) + ': ' + teile.join(' ');

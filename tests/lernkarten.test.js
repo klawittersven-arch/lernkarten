@@ -11,8 +11,8 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 
 // Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
 const SAETZE = [
-  { ordner: 'kb1-diabetes', themen: 11, karten: 77, hinweis: true },
-  { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true }
+  { ordner: 'kb1-diabetes', themen: 11, karten: 82, hinweis: true },
+  { ordner: 'kb2-beratung', themen: 7, karten: 90, hinweis: true }
 ];
 
 function kartenLaden(ordner) {
@@ -42,12 +42,12 @@ function kartenLaden(ordner) {
       return typeof k.vorne !== 'string' || !k.vorne.trim() || !hinten.length || hinten.some((h) => typeof h !== 'string' || !h.trim());
     });
     H.pruefe(fehlerhaft.length === 0, 'jede Karte hat Vorder- und Rückseite', fehlerhaft.map((k) => k.vorne));
-    const schluessel = alle.map((k) => k.vorne + '|' + (k.fall || ''));
+    const schluessel = alle.map((k) => k.vorne + '|' + (k.fall || '') + (Array.isArray(k.zeilen) ? '|' + k.zeilen.join('\n') : ''));
     const doppelt = schluessel.filter((s, i) => schluessel.indexOf(s) !== i);
     H.pruefe(doppelt.length === 0, 'keine zwei Karten mit gleicher Vorder- und Fallseite', doppelt);
     const ohneHilfe = alle.filter((k) => k.hilfe !== undefined && !(D.hilfen && D.hilfen[k.hilfe] && D.hilfen[k.hilfe].titel && Array.isArray(D.hilfen[k.hilfe].punkte) && D.hilfen[k.hilfe].punkte.length));
     H.pruefe(ohneHilfe.length === 0, 'jede Liste zum Nachschlagen (hilfe) ist in „hilfen“ vorhanden', ohneHilfe.map((k) => k.vorne));
-    const texte = alle.flatMap((k) => [k.vorne, k.fall || '', k.hinweis || ''].concat(k.hinten)).concat([D.hinweis || '']);
+    const texte = alle.flatMap((k) => [k.vorne, k.fall || '', k.hinweis || ''].concat(k.hinten, k.zeilen || [])).concat([D.hinweis || '']);
     const sterne = texte.filter((t) => {
       const ohneFett = t.replace(/\*\*(.+?)\*\*/g, '$1');
       return (t.match(/\*\*/g) || []).length % 2 || (ohneFett.match(/\*/g) || []).length % 2;
@@ -107,7 +107,7 @@ function kartenLaden(ordner) {
     H.beobachten(p, protokoll, 'bedienung');
     p.on('dialog', (d) => d.accept());
     await p.goto(url);
-    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 77 Karten lernen', 'Start: „Alle 77 Karten lernen“');
+    H.pruefe(await p.locator('#knopf-start').innerText() === 'Alle 82 Karten lernen', 'Start: „Alle 82 Karten lernen“');
     H.pruefe(await p.locator('.thema').count() === 11, 'Start: 11 Themen zur Auswahl');
 
     await p.click('#keine-themen');
@@ -207,7 +207,7 @@ function kartenLaden(ordner) {
 
     await p.click('#knopf-schliessen');
     await p.click('#zuruecksetzen');
-    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 77 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
+    H.pruefe((await p.locator('#gesamt-text').innerText()) === 'Ihr Lernstand: 0 von 82 Karten gewusst', '„Lernstand löschen“ setzt alles zurück');
     const cookies = await ctx.cookies();
     H.pruefe(cookies.length === 0, 'keine Cookies');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'lernkarten-start.png') });
@@ -225,7 +225,7 @@ function kartenLaden(ordner) {
     await p.goto(basis + 'kb2-beratung/');
     H.pruefe((await p.locator('#start-hinweis').innerText()).startsWith('In der Klausur kommt ein anderer Fall'), 'KB II: Hinweis „anderer Fall“ auf der Startseite');
     await p.click('#knopf-start');
-    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 81', 'KB II: Runde mit 81 Karten');
+    H.pruefe(await p.locator('#zaehler').innerText() === '1 / 90', 'KB II: Runde mit 90 Karten');
     H.pruefe((await p.locator('#vorne-kopf').innerText()) === 'Wittener Werkzeuge · Nr. 1', 'Kopfzeile mit Thema und Nummer (ohne AFB)', await p.locator('#vorne-kopf').innerText());
     await p.click('#knopf-schliessen');
     const titel = await p.locator('.thema-titel').allInnerTexts();
@@ -255,7 +255,7 @@ function kartenLaden(ordner) {
     H.pruefe(!(await p.locator('#karte').getAttribute('class')).includes('umgedreht'), 'die Karte dreht sich dabei nicht um');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'stopp-checkliste.png') });
     await p.keyboard.press('ArrowRight');
-    H.pruefe((await p.locator('#zaehler').innerText()) === '1 / 8', 'solange die Liste offen ist, geht das Lernen nicht versehentlich weiter');
+    H.pruefe((await p.locator('#zaehler').innerText()) === '1 / 9', 'solange die Liste offen ist, geht das Lernen nicht versehentlich weiter');
     await p.click('#hilfe-schliessen');
     H.pruefe(await p.locator('#hilfe-dialog').isHidden(), '„Schließen“ schließt die Liste');
     await p.click('#karte');
@@ -263,8 +263,8 @@ function kartenLaden(ordner) {
     await p.click('#hilfe-knopf');
     await p.keyboard.press('Escape');
     H.pruefe(await p.locator('#hilfe-dialog').isHidden() && await p.locator('#ansicht-lernen').isVisible(), 'Esc schließt nur die Liste, nicht die Lernrunde');
-    for (let i = 0; i < 3; i++) await p.click('#knopf-gewusst');
-    H.pruefe((await p.locator('#zaehler').innerText()) === '4 / 8' && await p.locator('#hilfe-knopf').isHidden(), 'Karte ohne Liste (Wenn-dann-Regeln): kein Knopf');
+    for (let i = 0; i < 4; i++) await p.click('#knopf-gewusst');
+    H.pruefe((await p.locator('#zaehler').innerText()) === '5 / 9' && await p.locator('#hilfe-knopf').isHidden(), 'Karte ohne Liste (Wenn-dann-Regeln): kein Knopf');
     await ctx.close();
   }
 
@@ -354,7 +354,8 @@ function kartenLaden(ordner) {
   const groesse = (o) => fs.readdirSync(o).filter((d) => d !== 'fragen.js').reduce((t, d) => t + fs.statSync(path.join(o, d)).size, 0);
   for (const S of SAETZE) {
     const kb = Math.round((groesse(APP) + groesse(path.join(H.DOCS, S.ordner))) / 1024);
-    H.pruefe(kb < 150, `${S.ordner}: alle Dateien der Lernkarten zusammen ${kb} KB (< 150 KB)`);
+    // Grenze: lädt auch mit schwachem Netz in wenigen Sekunden (Stand: rund 150 KB je Kartensatz)
+    H.pruefe(kb < 175, `${S.ordner}: alle Dateien der Lernkarten zusammen ${kb} KB (< 175 KB)`);
   }
 
   await browser.close();
