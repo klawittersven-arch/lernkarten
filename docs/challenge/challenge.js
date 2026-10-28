@@ -72,23 +72,35 @@
   }
   function bestSetzen(n) { try { localStorage.setItem(BEST, JSON.stringify(n)); } catch (e) { /* egal */ } }
 
-  /* ---------- Aufgaben ziehen: aus jedem Thema reihum, dann mischen ---------- */
+  /* ---------- Aufgaben ziehen: aus jedem Thema eine, die übrigen Plätze zufällig nach
+     „gewicht“ (Klausurrelevanz, in fragen.js je Thema); 0 = nur die eine Pflichtaufgabe ---------- */
   function themaTitel(t) {
     if (t.titel) return t.titel;
     return Array.isArray(t.ab) ? t.ab.join(' · ') : t.ab;
   }
 
+  function gewicht(t) { return typeof t.gewicht === 'number' && t.gewicht >= 0 ? t.gewicht : 1; }
+
   function ziehen(themen, anzahl) {
     var toepfe = mischen(themen.map(function (t) {
-      return mischen(t.fragen.map(function (f) { return { thema: t, f: f }; }));
+      return { t: t, rest: mischen(t.fragen.map(function (f) { return { thema: t, f: f }; })) };
     }));
     var aus = [];
-    var weiter = true;
-    while (aus.length < anzahl && weiter) {
-      weiter = false;
-      for (var i = 0; i < toepfe.length && aus.length < anzahl; i++) {
-        if (toepfe[i].length) { aus.push(toepfe[i].pop()); weiter = true; }
+    toepfe.forEach(function (p) { if (aus.length < anzahl && p.rest.length) aus.push(p.rest.pop()); });
+    while (aus.length < anzahl) {
+      var offen = toepfe.filter(function (p) { return p.rest.length; });
+      if (!offen.length) break;
+      // sind alle gewichteten Themen leer, kommen die übrigen gleichmäßig dran
+      var gewichtet = offen.filter(function (p) { return gewicht(p.t) > 0; });
+      var wahl = gewichtet.length ? gewichtet : offen;
+      var summe = wahl.reduce(function (s, p) { return s + (gewichtet.length ? gewicht(p.t) : 1); }, 0);
+      var z = Math.random() * summe;
+      var p = wahl[wahl.length - 1];
+      for (var i = 0; i < wahl.length; i++) {
+        z -= gewichtet.length ? gewicht(wahl[i].t) : 1;
+        if (z < 0) { p = wahl[i]; break; }
       }
+      aus.push(p.rest.pop());
     }
     return mischen(aus);
   }
@@ -116,6 +128,10 @@
       a.antwort = [];
     } else if (f.typ === 'zeile') {
       a.antwort = []; // gewählte Zeilennummern (ab 1)
+    } else if (f.typ === 'mehrfach') {
+      a.optionen = mischen(f.richtig.map(function (text) { return { text: text, richtig: true }; })
+        .concat(f.falsch.map(function (text) { return { text: text, richtig: false }; })));
+      a.antwort = []; // gewählte Optionen (Nummer in a.optionen)
     }
     return a;
   }
@@ -128,7 +144,7 @@
   function beantwortet(a) {
     if (a.typ === 'zuordnen') return a.antwort.every(function (g) { return g !== null; });
     if (a.typ === 'reihenfolge') return a.antwort.length === a.f.schritte.length;
-    if (a.typ === 'zeile') return a.antwort.length > 0;
+    if (a.typ === 'zeile' || a.typ === 'mehrfach') return a.antwort.length > 0;
     if (a.typ === 'zahl') return isFinite(zahlLesen(a.antwort));
     return a.antwort !== null;
   }
@@ -157,6 +173,12 @@
       var treffer = 0, daneben = 0;
       a.antwort.forEach(function (z) { if (f.richtig.indexOf(z) !== -1) treffer++; else daneben++; });
       return f.richtig.length ? Math.max(0, treffer - daneben) / f.richtig.length : 0;
+    }
+    if (a.typ === 'mehrfach') {
+      // Anteil der gefundenen richtigen minus Anteil der gewählten falschen – wer alles antippt, bekommt 0
+      var gut = 0, schlecht = 0;
+      a.antwort.forEach(function (o) { if (a.optionen[o].richtig) gut++; else schlecht++; });
+      return f.richtig.length ? Math.max(0, gut / f.richtig.length - (f.falsch.length ? schlecht / f.falsch.length : 0)) : 0;
     }
     return 0;
   }
@@ -300,7 +322,7 @@
     $('aufgabe-fall').innerHTML = fall ? formatieren(fall) : '';
     var anleitung = {
       auswahl: T.anleitungAuswahl, richtigfalsch: '', zuordnen: T.anleitungZuordnen,
-      reihenfolge: T.anleitungReihenfolge, zahl: T.anleitungZahl, zeile: T.anleitungZeile
+      reihenfolge: T.anleitungReihenfolge, zahl: T.anleitungZahl, zeile: T.anleitungZeile, mehrfach: T.anleitungMehrfach
     }[a.typ] || '';
     $('aufgabe-anleitung').textContent = anleitung;
     $('aufgabe-anleitung').hidden = !anleitung;
@@ -312,6 +334,7 @@
     else if (a.typ === 'reihenfolge') bauReihenfolge(a, bereich);
     else if (a.typ === 'zahl') bauZahl(a, bereich);
     else if (a.typ === 'zeile') bauZeile(a, bereich);
+    else if (a.typ === 'mehrfach') bauMehrfach(a, bereich);
     $('knopf-weiter').textContent = nr === aufgaben.length - 1 ? T.auswerten : T.weiter;
     weiterPruefen();
     window.scrollTo(0, 0);
@@ -448,6 +471,31 @@
     bereich.appendChild(ol);
   }
 
+  // Alle richtigen antippen (noch ein Tipp nimmt die Wahl zurück)
+  function bauMehrfach(a, bereich) {
+    var gruppe = el('div', 'optionen mehrfach');
+    gruppe.setAttribute('role', 'group');
+    gruppe.setAttribute('aria-labelledby', 'aufgabe-frage');
+    a.optionen.forEach(function (o, i) {
+      var b = formatiert('button', 'option mehrfach-knopf', o.text);
+      b.type = 'button';
+      function zeigen() {
+        var an = a.antwort.indexOf(i) !== -1;
+        b.setAttribute('aria-pressed', an ? 'true' : 'false');
+        b.classList.toggle('gewaehlt', an);
+      }
+      b.addEventListener('click', function () {
+        var pos = a.antwort.indexOf(i);
+        if (pos === -1) a.antwort.push(i); else a.antwort.splice(pos, 1);
+        zeigen();
+        weiterPruefen();
+      });
+      zeigen();
+      gruppe.appendChild(b);
+    });
+    bereich.appendChild(gruppe);
+  }
+
   function bauReihenfolge(a, bereich) {
     var schritte = a.f.schritte;
     bereich.appendChild(el('p', 'klein-titel', T.ihreReihenfolge));
@@ -558,13 +606,15 @@
     k.appendChild(tab);
     if (!neu || vorher === 0) k.appendChild(el('p', 'challenge-best', LK.ersetzen(T.challengeBest, { x: zahlText(Math.max(vorher, e.gesamt)) })));
     m.appendChild(k);
+
+    eintragenBereich(m, e.gesamt);
+    themenBereich(m);
     if (T.challengeTippFormulieren) {
       var tipp = el('p', 'hinweis challenge-tipp', T.challengeTippFormulieren);
       tipp.id = 'tipp-formulieren';
       m.appendChild(tipp);
     }
-
-    eintragenBereich(m, e.gesamt);
+    schreibBereich(m);
     fehlerBereich(m);
 
     var knoepfe = el('div', 'ergebnis-knoepfe');
@@ -649,6 +699,136 @@
       });
     });
     m.appendChild(box);
+  }
+
+  /* ---------- Auswertung je Thema, mit Link zum Thema in den Lernkarten ---------- */
+  function themenAuswerten() {
+    var je = {};
+    var reihe = [];
+    aufgaben.forEach(function (a, i) {
+      if (!je[a.thema]) { je[a.thema] = { thema: a.thema, punkte: 0, max: 0 }; reihe.push(je[a.thema]); }
+      je[a.thema].punkte += ergebnis.punkte[i];
+      je[a.thema].max += PUNKTE;
+    });
+    // schwächste Themen zuerst; bei Gleichstand wie in der Ich-kann-Liste
+    var ordnung = DATEN.themen.map(themaTitel);
+    return reihe.sort(function (x, y) {
+      return x.punkte / x.max - y.punkte / y.max || ordnung.indexOf(x.thema) - ordnung.indexOf(y.thema);
+    });
+  }
+
+  function themenBereich(m) {
+    var box = el('section', 'challenge-karte themen-bereich');
+    box.id = 'themen';
+    box.appendChild(el('h2', null, T.themenTitel));
+    box.appendChild(el('p', 'klein', T.themenText));
+    var ul = el('ul', 'themen-liste');
+    themenAuswerten().forEach(function (t) {
+      var li = el('li', t.punkte === t.max ? 'voll' : '');
+      var kopf = el('p', 'thema-punkte-kopf');
+      kopf.appendChild(el('span', 'themen-name', t.thema));
+      kopf.appendChild(el('span', 'themen-zahl', zahlText(t.punkte) + ' / ' + zahlText(t.max)));
+      li.appendChild(kopf);
+      var balken = el('span', 'balken');
+      balken.setAttribute('aria-hidden', 'true');
+      var fuell = el('span', 'balken-fuellung');
+      fuell.style.width = (100 * t.punkte / t.max) + '%';
+      balken.appendChild(fuell);
+      li.appendChild(balken);
+      if (t.punkte < t.max && L) {
+        var link = el('a', 'themen-link', T.themaUeben);
+        link.href = '../' + L.ordner + '/?thema=' + encodeURIComponent(t.thema);
+        li.appendChild(link);
+      }
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    m.appendChild(box);
+  }
+
+  /* ---------- Schreibübung: frei formulieren, Musterantwort und Checkliste zur Selbstkontrolle.
+     Zählt nicht für die Punkte; der Text bleibt nur auf dieser Seite ---------- */
+  function schreibAufgaben() {
+    var alle = [];
+    DATEN.themen.forEach(function (t) {
+      (t.schreiben || []).forEach(function (s) { alle.push({ thema: themaTitel(t), s: s }); });
+    });
+    return alle;
+  }
+  var schreibNr = -1;
+
+  function schreibBereich(m) {
+    var alle = schreibAufgaben();
+    if (!alle.length) return;
+    var box = el('section', 'challenge-karte schreib-bereich');
+    box.id = 'schreiben';
+    m.appendChild(box);
+    // zuerst eine Übung zu einem Thema mit Fehlern, sonst eine zufällige
+    var schwach = themenAuswerten().filter(function (t) { return t.punkte < t.max; }).map(function (t) { return t.thema; });
+    var passend = alle.map(function (x, i) { return schwach.indexOf(x.thema) !== -1 ? i : -1; }).filter(function (i) { return i !== -1; });
+    schreibNr = passend.length ? passend[Math.floor(Math.random() * passend.length)] : Math.floor(Math.random() * alle.length);
+    schreibZeigen(box, alle);
+  }
+
+  function schreibZeigen(box, alle) {
+    var x = alle[schreibNr];
+    box.textContent = '';
+    box.appendChild(el('h2', null, T.schreibenTitel));
+    box.appendChild(el('p', 'klein', T.schreibenText));
+    box.appendChild(el('p', 'schreib-thema', x.thema));
+    var frageZeile = formatiert('p', 'schreib-frage', x.s.frage);
+    frageZeile.tabIndex = -1;
+    box.appendChild(frageZeile);
+    if (x.s.fall) box.appendChild(formatiert('p', 'fall klein-fall', x.s.fall));
+    var feld = el('textarea', 'schreib-feld');
+    feld.id = 'schreib-feld';
+    feld.rows = 6;
+    feld.setAttribute('aria-label', T.schreibenFeld);
+    feld.placeholder = T.schreibenFeld;
+    box.appendChild(feld);
+    var zeigen = el('button', 'knopf zweit', T.schreibenMuster);
+    zeigen.type = 'button';
+    zeigen.id = 'knopf-muster';
+    box.appendChild(zeigen);
+    var loesung = el('div', 'schreib-loesung');
+    loesung.id = 'schreib-loesung';
+    loesung.hidden = true;
+    loesung.appendChild(el('p', 'klein-titel', T.schreibenMusterTitel));
+    var ul = el('ul', 'schreib-muster');
+    x.s.muster.forEach(function (t) { ul.appendChild(formatiert('li', null, t)); });
+    loesung.appendChild(ul);
+    loesung.appendChild(el('p', 'klein-titel', T.schreibenCheck));
+    var check = el('ul', 'schreib-check');
+    x.s.checkliste.forEach(function (t, i) {
+      var li = el('li');
+      var l = el('label');
+      var c = el('input');
+      c.type = 'checkbox';
+      c.id = 'schreib-check-' + i;
+      l.appendChild(c);
+      l.appendChild(document.createTextNode(' ' + t));
+      li.appendChild(l);
+      check.appendChild(li);
+    });
+    loesung.appendChild(check);
+    box.appendChild(loesung);
+    zeigen.addEventListener('click', function () {
+      loesung.hidden = false;
+      zeigen.hidden = true;
+    });
+    if (alle.length > 1) {
+      var andere = el('button', 'text-knopf', T.schreibenAndere);
+      andere.type = 'button';
+      andere.id = 'knopf-andere-schreibuebung';
+      andere.addEventListener('click', function () {
+        var neu = schreibNr;
+        while (neu === schreibNr) neu = Math.floor(Math.random() * alle.length);
+        schreibNr = neu;
+        schreibZeigen(box, alle);
+        try { box.querySelector('.schreib-frage').focus(); } catch (e) { /* egal */ }
+      });
+      box.appendChild(andere);
+    }
   }
 
   /* ---------- Fehlerübersicht mit Lösungen ---------- */
@@ -741,6 +921,18 @@
           olZ.appendChild(z);
         });
         li.appendChild(olZ);
+      } else if (a.typ === 'mehrfach') {
+        var ulM = el('ul', 'mehrfach-loesung');
+        a.optionen.forEach(function (o, j) {
+          var gewaehlt = a.antwort.indexOf(j) !== -1;
+          var z = el('li', o.richtig ? 'richtig' : (gewaehlt ? 'falsch' : ''));
+          z.appendChild(el('span', 'marke', o.richtig ? '✓' : (gewaehlt ? '✗' : '')));
+          z.appendChild(formatiert('span', null, o.text));
+          if (o.richtig && !gewaehlt) z.appendChild(el('span', 'ihre', ' ' + T.nichtGewaehlt));
+          if (!o.richtig && gewaehlt) z.appendChild(el('span', 'ihre', ' ' + T.falschGewaehlt));
+          ulM.appendChild(z);
+        });
+        li.appendChild(ulM);
       }
       if (f.erklaerung) li.appendChild(formatiert('p', 'erklaerung', f.erklaerung));
       ol.appendChild(li);
@@ -788,6 +980,7 @@
     aufgabe: function () { return aufgaben[nr]; },
     aufgaben: function () { return aufgaben; },
     ergebnis: function () { return ergebnis; },
-    daten: function () { return DATEN; }
+    daten: function () { return DATEN; },
+    themenAuswerten: function () { return themenAuswerten(); }
   };
 })();

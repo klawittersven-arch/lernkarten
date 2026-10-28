@@ -1013,6 +1013,17 @@
     }
   });
 
+  // Aus der Auswertung der Klausur-Challenge: ?thema=… wählt nur dieses Thema aus
+  (function () {
+    var name = '';
+    try { name = new URLSearchParams(location.search).get('thema') || ''; } catch (e) { return; }
+    var thema = THEMEN.filter(function (t) { return t.name === name; })[0];
+    if (!thema) return;
+    zustand.abgewaehlt = THEMEN.filter(function (t) { return t !== thema; }).map(function (t) { return t.id; });
+    speichern();
+    try { history.replaceState(null, '', location.pathname); } catch (e) { /* egal */ }
+  })();
+
   zeigeStart();
   if (offeneBelohnung()) belohnungZeigen();
 

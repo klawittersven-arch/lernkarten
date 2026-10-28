@@ -12,7 +12,7 @@ const { attrappeErstellen, TEST_SCHLUESSEL } = require('./apps-script-attrappe')
 
 const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 const SAETZE = ['kb1-diabetes', 'kb2-beratung'];
-const TYPEN = ['auswahl', 'richtigfalsch', 'zuordnen', 'reihenfolge', 'zahl', 'zeile'];
+const TYPEN = ['auswahl', 'richtigfalsch', 'zuordnen', 'reihenfolge', 'zahl', 'zeile', 'mehrfach'];
 
 function laden(datei, name) {
   const box = {};
@@ -57,6 +57,11 @@ function aufgabePruefen(f) {
       || !f.richtig.every((z) => Number.isInteger(z) && z >= 1 && z <= f.zeilen.length)) fehler.push('richtig: Zeilennummern ab 1');
     else if (f.richtig.length >= f.zeilen.length) fehler.push('nicht alle Zeilen dürfen richtig sein');
   }
+  if (f.typ === 'mehrfach') {
+    if (!Array.isArray(f.richtig) || f.richtig.length < 2 || !f.richtig.every(istText)) fehler.push('mindestens 2 richtige Antworten');
+    if (!Array.isArray(f.falsch) || f.falsch.length < 1 || !f.falsch.every(istText)) fehler.push('mindestens 1 falsche Antwort');
+    else if (Array.isArray(f.richtig) && new Set(f.richtig.concat(f.falsch)).size !== f.richtig.length + f.falsch.length) fehler.push('doppelte Antwort');
+  }
   if (f.typ === 'zahl') {
     if (typeof f.loesung !== 'number' || !isFinite(f.loesung)) fehler.push('loesung keine Zahl');
     if (typeof f.toleranz !== 'number' || f.toleranz < 0) fehler.push('toleranz fehlt');
@@ -64,6 +69,22 @@ function aufgabePruefen(f) {
   }
   return fehler;
 }
+
+// Fehler eines Themas: Gewicht (Klausurrelevanz) und Schreibübungen
+function themaPruefen(t) {
+  const fehler = [];
+  if (t.gewicht !== undefined && !(Number.isInteger(t.gewicht) && t.gewicht >= 0 && t.gewicht <= 3)) fehler.push('gewicht 0 bis 3');
+  (t.schreiben || []).forEach((s, i) => {
+    if (s.typ !== 'schreiben' || !istText(s.frage)) fehler.push(`schreiben ${i + 1}: frage fehlt`);
+    if (s.fall !== undefined && !istText(s.fall)) fehler.push(`schreiben ${i + 1}: fall leer`);
+    if (!Array.isArray(s.muster) || !s.muster.length || !s.muster.every(istText)) fehler.push(`schreiben ${i + 1}: muster fehlt`);
+    if (!Array.isArray(s.checkliste) || s.checkliste.length < 2 || !s.checkliste.every(istText)) fehler.push(`schreiben ${i + 1}: mindestens 2 Punkte in der checkliste`);
+  });
+  return fehler;
+}
+
+// Länge ohne Formatierung (**fett**) – so, wie die SuS den Text sehen
+const sichtbar = (t) => t.replace(/\*\*/g, '').trim().length;
 
 // Beantwortet die aktuelle Aufgabe über die Oberfläche – richtig oder (so weit möglich) falsch
 async function beantworten(p, richtig) {
@@ -86,6 +107,10 @@ async function beantworten(p, richtig) {
         const s = li.querySelector('select');
         if (s) { s.value = ziel; s.dispatchEvent(new Event('change')); } else [...li.querySelectorAll('.chip')].find((c) => c.textContent === ziel).click();
       });
+    } else if (a.typ === 'mehrfach') {
+      const knoepfe = document.querySelectorAll('#aufgabe-antwort .mehrfach-knopf');
+      if (richtig) a.optionen.forEach((o, i) => { if (o.richtig) knoepfe[i].click(); });
+      else knoepfe[a.optionen.findIndex((o) => !o.richtig)].click();
     } else if (a.typ === 'zeile') {
       const knoepfe = document.querySelectorAll('.zeile-knopf');
       if (richtig) f.richtig.forEach((z) => knoepfe[z - 1].click());
@@ -138,7 +163,23 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     const ohne = abKarten.filter((ab) => !F.themen.some((t) => abTitel(t) === ab));
     H.pruefe(fremd.length === 0 && ohne.length === 0, `${satz}: dieselben Themen wie die Lernkarten (jedes Thema kommt vor)`, { fremd, ohne });
     const typen = new Set(alle.map((f) => f.typ));
-    H.pruefe(['auswahl', 'zuordnen', 'reihenfolge', 'richtigfalsch'].every((t) => typen.has(t)), `${satz}: verschiedene Aufgabenarten (${[...typen].join(', ')})`);
+    H.pruefe(['auswahl', 'zuordnen', 'reihenfolge', 'mehrfach'].every((t) => typen.has(t)), `${satz}: verschiedene Aufgabenarten (${[...typen].join(', ')})`);
+    const rf = alle.filter((f) => f.typ === 'richtigfalsch').length;
+    H.pruefe(rf <= 2, `${satz}: kaum noch reines Richtig/Falsch (${rf}) – Aussagen werden mit Begründung beurteilt`);
+    const themaFehler = F.themen.map((t) => [abTitel(t), themaPruefen(t)]).filter((x) => x[1].length);
+    H.pruefe(themaFehler.length === 0, `${satz}: Gewichte und Schreibübungen gültig`, themaFehler);
+    H.pruefe(F.themen.every((t) => typeof t.gewicht === 'number') && F.themen.some((t) => t.gewicht === 0) && F.themen.some((t) => t.gewicht === 3),
+      `${satz}: jedes Thema hat ein Gewicht (${F.themen.map((t) => t.gewicht).join(', ')})`);
+    const schreiben = F.themen.flatMap((t) => t.schreiben || []);
+    H.pruefe(schreiben.length >= 4, `${satz}: ${schreiben.length} Schreibübungen ohne Punkte`);
+
+    // Die richtige Antwort darf sich nicht durch ihre Länge verraten
+    const auswahl = alle.filter((f) => f.typ === 'auswahl');
+    const zuLang = auswahl.filter((f) => sichtbar(f.antworten[0]) > 1.2 * Math.max(...f.antworten.slice(1).map(sichtbar)))
+      .map((f) => (f.frage || '').slice(0, 60));
+    H.pruefe(zuLang.length === 0, `${satz}: keine richtige Antwort mehr als 20 % länger als die längste falsche`, zuLang);
+    const laengste = auswahl.filter((f) => sichtbar(f.antworten[0]) > Math.max(...f.antworten.slice(1).map(sichtbar))).length;
+    H.pruefe(laengste <= 0.4 * auswahl.length, `${satz}: die richtige Antwort ist nur bei ${laengste} von ${auswahl.length} Auswahlaufgaben die längste (höchstens 40 %)`);
   }
 
   /* ---------- Server und Browser ---------- */
@@ -185,7 +226,47 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
       H.pruefe(r.immerN && r.immerVerschieden, `${satz}: immer ${ANZAHL} verschiedene Aufgaben`);
       H.pruefe(r.immerAlleAbs, `${satz}: jede Challenge enthält Aufgaben aus allen ABs`);
       H.pruefe(r.gezogen === r.pool, `${satz}: nach 300 Challenges kam jede Aufgabe des Pools mindestens einmal dran`, r);
+
+      // Gewichtung nach Klausurrelevanz: Gewicht 0 = genau eine Aufgabe, höheres Gewicht = im Schnitt mehr Aufgaben
+      const g = await p.evaluate((n) => {
+        const d = KlausurChallenge.daten();
+        const summe = d.themen.map(() => 0);
+        let nullImmerEins = true;
+        const runden = 2000;
+        for (let i = 0; i < runden; i++) {
+          const z = KlausurChallenge.ziehen(d.themen, n);
+          d.themen.forEach((t, j) => {
+            const k = z.filter((e) => e.thema === t).length;
+            summe[j] += k;
+            if (t.gewicht === 0 && k !== 1) nullImmerEins = false;
+          });
+        }
+        const schnitt = {};
+        d.themen.forEach((t, j) => {
+          (schnitt[t.gewicht] = schnitt[t.gewicht] || []).push(summe[j] / runden);
+        });
+        const mittel = {};
+        Object.keys(schnitt).forEach((w) => { mittel[w] = Math.round(100 * schnitt[w].reduce((s, x) => s + x, 0) / schnitt[w].length) / 100; });
+        return { nullImmerEins, mittel, min: Object.fromEntries(Object.keys(schnitt).map((w) => [w, Math.min(...schnitt[w])])),
+          max: Object.fromEntries(Object.keys(schnitt).map((w) => [w, Math.max(...schnitt[w])])) };
+      }, ANZAHL);
+      H.pruefe(g.nullImmerEins, `${satz}: Themen mit Gewicht 0 kommen genau einmal je Challenge dran`, g);
+      const stufen = Object.keys(g.mittel).map(Number).sort((a, b) => a - b);
+      H.pruefe(stufen.every((w, i) => i === 0 || g.mittel[w] > g.mittel[stufen[i - 1]]),
+        `${satz}: je höher das Gewicht, desto mehr Aufgaben im Schnitt (${stufen.map((w) => 'Gewicht ' + w + ': ' + g.mittel[w]).join(', ')})`, g);
     }
+    const leer = await p.evaluate(() => {
+      // Sind die gewichteten Themen leer, füllen die übrigen gleichmäßig auf
+      const themen = [{ gewicht: 0, fragen: ['a', 'b', 'c', 'd'] }, { gewicht: 2, fragen: ['x', 'y'] }, { gewicht: 0, fragen: ['m', 'n', 'o'] }];
+      let ok = true;
+      for (let i = 0; i < 50; i++) {
+        const z = KlausurChallenge.ziehen(themen, 6);
+        if (z.length !== 6 || new Set(z.map((e) => e.f)).size !== 6 || z.filter((e) => e.thema === themen[1]).length !== 2) ok = false;
+      }
+      const ohne = KlausurChallenge.ziehen([{ fragen: ['a', 'b'] }, { fragen: ['c'] }], 3).length;
+      return { ok, ohne };
+    });
+    H.pruefe(leer.ok && leer.ohne === 3, 'Gewichtung: reichen die gewichteten Themen nicht, füllen die übrigen auf; ohne Gewicht zählt jedes Thema gleich', leer);
     const z = await p.evaluate(() => ({
       voll: KlausurChallenge.zeitbonus(200, 1), grenze: KlausurChallenge.zeitbonus(240, 1), mitte: KlausurChallenge.zeitbonus(570, 1),
       null15: KlausurChallenge.zeitbonus(900, 1), spaet: KlausurChallenge.zeitbonus(3000, 1), halb: KlausurChallenge.zeitbonus(200, 0.5),
@@ -212,14 +293,23 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
         return KlausurChallenge.punkteFuer(a);
       };
       const zl = { beide: zeile([2, 4]), eine: zeile([2]), einsFalsch: zeile([2, 3]), alle: zeile([1, 2, 3, 4, 5]) };
+      const mehrfach = (texte) => {
+        const a = KlausurChallenge.vorbereiten({ thema: { ab: 'X' }, f: { typ: 'mehrfach', frage: 'F', richtig: ['r1', 'r2', 'r3'], falsch: ['f1', 'f2'] } });
+        a.antwort = texte.map((t) => a.optionen.findIndex((o) => o.text === t));
+        return KlausurChallenge.punkteFuer(a);
+      };
+      const mf = { alle: mehrfach(['r1', 'r2', 'r3']), zwei: mehrfach(['r3', 'r1']), mitFalsch: mehrfach(['r1', 'r2', 'r3', 'f2']),
+        halbHalb: mehrfach(['r2', 'f1']), allesAn: mehrfach(['r1', 'r2', 'r3', 'f1', 'f2']) };
       const e = KlausurChallenge.auswerten([zu, re, rf, za, zb], 570);
       return { zu: KlausurChallenge.punkteFuer(zu), re: KlausurChallenge.punkteFuer(re), rf: KlausurChallenge.punkteFuer(rf),
-        za: KlausurChallenge.punkteFuer(za), zb: KlausurChallenge.punkteFuer(zb), e, zl };
+        za: KlausurChallenge.punkteFuer(za), zb: KlausurChallenge.punkteFuer(zb), e, zl, mf };
     });
     H.pruefe(teil.zu === 75 && teil.re === 50, 'Teilpunkte: Zuordnen 3 von 4 → 75, Reihenfolge 2 von 4 Plätzen → 50');
     H.pruefe(teil.rf === 100 && teil.za === 100 && teil.zb === 0, 'Richtig/Falsch und Zahl (mit Toleranz) werden richtig bewertet');
     H.pruefe(teil.zl.beide === 100 && teil.zl.eine === 50 && teil.zl.einsFalsch === 0 && teil.zl.alle === 0,
       'Zeile finden: beide richtig → 100, eine von zwei → 50, falsch gewählte Zeile zieht ab, alles antippen → 0', teil.zl);
+    H.pruefe(teil.mf.alle === 100 && teil.mf.zwei === 67 && teil.mf.mitFalsch === 50 && teil.mf.halbHalb === 0 && teil.mf.allesAn === 0,
+      'Alle richtigen antippen: alle 3 → 100, 2 von 3 → 67, eine von 2 falschen dazu → 50, alles antippen → 0', teil.mf);
     H.pruefe(teil.e.aufgabenPunkte === 325 && teil.e.ganzRichtig === 2 && teil.e.bonus === Math.round(500 * 0.5 * 325 / 500) && teil.e.gesamt === 325 + teil.e.bonus,
       'Auswertung: Summe, ganz richtige Aufgaben, anteiliger Bonus', teil.e);
     await ctx.close();
@@ -291,6 +381,30 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe((await p.locator('#fehler').innerText()).includes('Keine Fehler'), 'Fehlerübersicht: „Keine Fehler“');
     H.pruefe(await p.locator('#tipp-formulieren').isVisible() && (await p.locator('#tipp-formulieren').innerText()).startsWith('Tipp für die Klausur: Dort wählen Sie nichts aus'),
       'Auswertung: „Tipp für die Klausur: … selbst formulieren … mit den Lernkarten“');
+    const themenKB1 = POOLS['kb1-diabetes'].themen.length;
+    H.pruefe(await p.locator('#themen .themen-liste li').count() === themenKB1 && await p.locator('#themen .themen-liste li.voll').count() === themenKB1
+      && await p.locator('#themen .themen-link').count() === 0, `Themen-Auswertung: alle ${themenKB1} Themen voll, kein Übungs-Link nötig`);
+
+    console.log('\n== Schreibübung ohne Punkte');
+    H.pruefe(await p.locator('#schreiben').isVisible() && (await p.locator('#schreiben h2').innerText()).includes('ohne Punkte')
+      && await p.locator('#schreib-loesung').isHidden(), 'Auswertung: Schreibübung ohne Punkte, Musterantwort zunächst verdeckt');
+    const schreibFrage = await p.locator('.schreib-frage').innerText();
+    await p.fill('#schreib-feld', 'Meine eigene Antwort');
+    await p.click('#knopf-muster');
+    const checkSoll = await p.evaluate((frage) => {
+      const s = KlausurChallenge.daten().themen.flatMap((t) => t.schreiben || []).find((x) => x.frage.replace(/\*\*/g, '') === frage);
+      return s ? s.checkliste.length : -1;
+    }, schreibFrage);
+    H.pruefe(await p.locator('#schreib-loesung').isVisible() && await p.locator('#knopf-muster').isHidden()
+      && await p.locator('.schreib-muster li').count() > 0 && await p.locator('.schreib-check input[type=checkbox]').count() === checkSoll,
+      `„Musterantwort zeigen“: Musterantwort und Checkliste (${checkSoll} Punkte) zum Abhaken`);
+    await p.locator('.schreib-check input').first().check();
+    H.pruefe((await p.inputValue('#schreib-feld')) === 'Meine eigene Antwort' && e.gesamt === (await p.evaluate(() => KlausurChallenge.ergebnis().gesamt)),
+      'eigener Text bleibt stehen, Punkte ändern sich nicht');
+    await p.locator('#schreiben').screenshot({ path: path.join(ERGEBNISSE, 'challenge-schreibuebung.png') });
+    await p.click('#knopf-andere-schreibuebung');
+    H.pruefe((await p.locator('.schreib-frage').innerText()) !== schreibFrage && await p.locator('#schreib-loesung').isHidden()
+      && (await p.inputValue('#schreib-feld')) === '', '„Andere Schreibübung“: neue Aufgabe, Musterantwort wieder verdeckt');
     await p.fill('#vorname', 'Ben');
     await p.fill('#initial', 'k');
     await p.click('#knopf-eintragen');
@@ -317,6 +431,29 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     const fehlerText = await p.locator('#fehler').innerText();
     H.pruefe(fehlerText.includes('Ihre Antwort:') || fehlerText.includes('Richtige Reihenfolge:') || fehlerText.includes('→'), 'Fehlerübersicht zeigt Ihre Antwort und die Lösung');
     H.pruefe(!(await p.locator('.neu-best').count()) && (await p.locator('.challenge-best').innerText()).includes('2.250'), 'Bestleistung bleibt 2.250');
+
+    console.log('\n== Themen-Auswertung mit Link zu den Lernkarten');
+    const th = await p.evaluate(() => KlausurChallenge.themenAuswerten());
+    const anteile = th.map((t) => t.punkte / t.max);
+    H.pruefe(anteile.every((x, i) => i === 0 || x >= anteile[i - 1]) && await p.locator('#themen .themen-liste li').count() === th.length,
+      'Themen-Auswertung: schwächste Themen oben', th.map((t) => t.punkte + '/' + t.max));
+    const schwach = th.filter((t) => t.punkte < t.max);
+    H.pruefe(await p.locator('#themen .themen-link').count() === schwach.length && (await p.locator('#themen .themen-link').first().innerText()) === '📚 Mit den Lernkarten üben',
+      `je Thema mit Fehlern ein Link „📚 Mit den Lernkarten üben“ (${schwach.length})`);
+    H.pruefe(schwach.map((t) => t.thema).includes(await p.locator('.schreib-thema').innerText()), 'Schreibübung kommt aus einem Thema mit Fehlern');
+    await p.locator('#themen').screenshot({ path: path.join(ERGEBNISSE, 'challenge-themen.png') });
+    const href = await p.locator('#themen .themen-link').first().getAttribute('href');
+    H.pruefe(href === '../kb1-diabetes/?thema=' + encodeURIComponent(th[0].thema), 'Link führt zum schwächsten Thema in den Lernkarten', href);
+    {
+      const p2 = await ctx.newPage();
+      H.beobachten(p2, protokoll, 'thema-link');
+      await p2.goto(new URL(href, p.url()).href);
+      await p2.waitForSelector('.thema');
+      const an = await p2.locator('.thema', { has: p2.locator('input:checked') }).allInnerTexts();
+      H.pruefe(an.length === 1 && an[0].includes(th[0].thema) && !p2.url().includes('thema='),
+        'Lernkarten öffnen mit genau diesem Thema ausgewählt (Adresse wieder ohne ?thema)', an);
+      await p2.close();
+    }
     await p.click('#knopf-nicht-eintragen');
     H.pruefe((await p.locator('#eintragen-meldung').innerText()) === 'Nicht eingetragen.', '„Nicht eintragen“ funktioniert');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'challenge-fehler.png') });
@@ -331,8 +468,8 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe(await p.locator('#knopf-challenge-start').isVisible(), 'Abbrechen (mit Rückfrage) → zurück zum Start');
 
     // Reihenfolge und Zuordnen mit echten Klicks (bis eine solche Aufgabe kommt)
-    let reiheGeprueft = false, zuordnenGeprueft = false, zeileGeprueft = false;
-    for (let versuch = 0; versuch < 30 && !(reiheGeprueft && zuordnenGeprueft && zeileGeprueft); versuch++) {
+    let reiheGeprueft = false, zuordnenGeprueft = false, zeileGeprueft = false, mehrfachGeprueft = false;
+    for (let versuch = 0; versuch < 30 && !(reiheGeprueft && zuordnenGeprueft && zeileGeprueft === true && mehrfachGeprueft === true); versuch++) {
       await p.click('#knopf-challenge-start');
       for (let i = 0; i < ANZAHL; i++) {
         const a = await p.evaluate(() => { const a = KlausurChallenge.aufgabe(); return { typ: a.typ, liste: a.liste }; });
@@ -352,7 +489,7 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
           H.pruefe(await p.locator('#knopf-weiter').isEnabled(), 'Zuordnen: alle Einträge zugeordnet → „Weiter“');
           zuordnenGeprueft = true;
         }
-        let zeileHier = null;
+        let zeileHier = null, mehrfachHier = null;
         if (a.typ === 'zeile' && !zeileGeprueft) {
           const f = await p.evaluate(() => KlausurChallenge.aufgabe().f);
           H.pruefe(await p.locator('.zeile-knopf').count() === f.zeilen.length && (await p.locator('.zeile-knopf').first().innerText()).startsWith('1'),
@@ -367,9 +504,25 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
           await knopf.click();   // bewusst falsch lassen – die Auswertung soll die Lösung zeigen
           zeileHier = { nr: i, richtig: f.richtig, falsch: falscheZeile + 1 };
           zeileGeprueft = true;
+        } else if (a.typ === 'mehrfach' && !mehrfachGeprueft) {
+          const opt = await p.evaluate(() => KlausurChallenge.aufgabe().optionen.map((o) => o.richtig));
+          const knoepfe = p.locator('#aufgabe-antwort .mehrfach-knopf');
+          H.pruefe(await knoepfe.count() === opt.length && await p.locator('#knopf-weiter').isDisabled(),
+            `Alle richtigen antippen: ${opt.length} Antworten, „Weiter“ erst nach einer Auswahl`);
+          await knoepfe.first().click();
+          H.pruefe((await knoepfe.first().getAttribute('aria-pressed')) === 'true' && await p.locator('#knopf-weiter').isEnabled(), 'Alle richtigen antippen: Tipp wählt die Antwort aus');
+          await knoepfe.first().click();
+          H.pruefe((await knoepfe.first().getAttribute('aria-pressed')) === 'false' && await p.locator('#knopf-weiter').isDisabled(), 'Alle richtigen antippen: zweiter Tipp nimmt sie zurück');
+          // alle richtigen und eine falsche – die Auswertung soll Teilpunkte und „(falsch gewählt)“ zeigen
+          for (let j = 0; j < opt.length; j++) if (opt[j]) await knoepfe.nth(j).click();
+          await knoepfe.nth(opt.indexOf(false)).click();
+          await p.screenshot({ path: path.join(ERGEBNISSE, 'challenge-mehrfach-gewaehlt.png') });
+          mehrfachHier = { nr: i, richtig: opt.filter(Boolean).length, falsch: opt.filter((x) => !x).length };
+          mehrfachGeprueft = true;
         } else await beantworten(p, true);
         await p.click('#knopf-weiter');
         if (zeileHier) zeileGeprueft = zeileHier;
+        if (mehrfachHier) mehrfachGeprueft = mehrfachHier;
       }
       await p.waitForSelector('#ergebnis-gesamt');
       if (zeileGeprueft && zeileGeprueft !== true) {
@@ -382,10 +535,23 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
         await karte.screenshot({ path: path.join(ERGEBNISSE, 'challenge-zeile-loesung.png') });
         zeileGeprueft = true;
       }
+      if (mehrfachGeprueft && mehrfachGeprueft !== true) {
+        const m = mehrfachGeprueft;
+        const punkte = await p.evaluate((nr) => KlausurChallenge.ergebnis().punkte[nr], m.nr);
+        const karte = p.locator('.fehler-karte', { has: p.locator('.mehrfach-loesung') });
+        const text = await karte.innerText();
+        H.pruefe(punkte === Math.round(100 * (1 - 1 / m.falsch)) && await karte.count() === 1
+          && await karte.locator('.mehrfach-loesung li.richtig').count() === m.richtig && await karte.locator('.mehrfach-loesung li.falsch').count() === 1
+          && text.includes('(falsch gewählt)') && !text.includes('(nicht gewählt)'),
+          `Alle richtigen antippen: eine falsche zu viel → ${punkte} Punkte, Auswertung markiert „(falsch gewählt)“`, text.slice(0, 300));
+        await karte.screenshot({ path: path.join(ERGEBNISSE, 'challenge-mehrfach-loesung.png') });
+        mehrfachGeprueft = true;
+      }
       await p.click('#knopf-nochmal');
       await p.click('#knopf-abbrechen');
     }
-    H.pruefe(reiheGeprueft && zuordnenGeprueft && zeileGeprueft === true, 'Reihenfolge, Zuordnen und Zeile finden mit echten Fingertipps geprüft');
+    H.pruefe(reiheGeprueft && zuordnenGeprueft && zeileGeprueft === true && mehrfachGeprueft === true,
+      'Reihenfolge, Zuordnen, Zeile finden und Alle richtigen antippen mit echten Fingertipps geprüft');
 
     console.log('\n== Highscore-Seite: Reiter Spiel / Challenge');
     await p.goto(basis + 'challenge/?satz=kb1-diabetes');

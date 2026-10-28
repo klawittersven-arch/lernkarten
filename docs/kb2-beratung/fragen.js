@@ -24,8 +24,17 @@
  *   { typ: 'zeile', frage: '…', zeilen: ['Zeile 1', 'Zeile 2', '…'], richtig: [2, 4] }
  *       → Falltext mit Zeilennummern; die SuS tippen die passenden Zeilen an
  *         (richtig = Nummern ab 1; Teilpunkte, falsch gewählte Zeilen ziehen ab).
+ *   { typ: 'mehrfach', frage: '…', richtig: ['…', '…'], falsch: ['…', '…'] }
+ *       → „Alle richtigen antippen“; die App mischt die Antworten
+ *         (Teilpunkte; falsch gewählte Antworten ziehen ab – wer alles antippt, bekommt 0).
  * Optional bei jeder Aufgabe: fall: '…' (eingerahmter Fall) und
  * erklaerung: '…' (erscheint in der Auswertung bei den Lösungen).
+ *
+ * Je Thema:
+ *   gewicht: 0 bis 3 – wie oft das Thema über die eine Pflichtaufgabe hinaus
+ *            drankommt (Klausurrelevanz). 0 = genau eine Aufgabe je Challenge.
+ *   schreiben: [ { typ: 'schreiben', frage: '…', fall: '…', muster: ['…'], checkliste: ['…'] } ]
+ *            – optionale Schreibübungen ohne Punkte; eine davon erscheint in der Auswertung.
  * ===================================================================== */
 
 var CHALLENGE_FRAGEN = {
@@ -36,14 +45,15 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Wittener Werkzeuge',
+      gewicht: 1,
       fragen: [
         { typ: 'auswahl',
           frage: 'Was bedeutet „**doppelte Fürsorge**“ im Kontext der Wittener Werkzeuge?',
           antworten: [
-            'Die beratene Person wird gestärkt – zugleich achtet die Pflegefachperson auf ihre eigenen Bedürfnisse, ihre Selbstachtung und Selbstfürsorge.',
-            'Zwei Pflegefachpersonen betreuen gemeinsam eine Person.',
-            'Die Pflegefachperson kümmert sich doppelt so lange um die Person wie üblich.',
-            'Die Person und ihre Angehörigen werden gleichzeitig beraten.'
+            'Die beratene Person wird gestärkt; zugleich achtet die Pflegefachperson auf eigene Bedürfnisse, Selbstachtung und Selbstfürsorge.',
+            'Zwei Pflegefachpersonen betreuen gemeinsam eine Person, damit sich die Verantwortung für sie auf mehrere Schultern verteilen kann.',
+            'Die Pflegefachperson kümmert sich doppelt so lange um die Person wie üblich, damit sie sich gut aufgehoben fühlt.',
+            'Die Person und ihre Angehörigen werden gleichzeitig beraten, damit beide dieselben Informationen bekommen.'
           ] },
         { typ: 'zuordnen',
           frage: 'Ordnen Sie den fünf Modalitäten der Wittener Werkzeuge den passenden Begriff zu.',
@@ -67,9 +77,9 @@ var CHALLENGE_FRAGEN = {
           fall: 'Herr Müller ist beim Duschen motiviert, die Pflegekraft übernimmt, weil es ihr zu lange dauert.',
           antworten: [
             'Sprechen (Resourcing) – seine Motivation und seine Fähigkeiten werden nicht genutzt.',
-            'Hören (Einlassen) – die Pflegekraft hört ihm nicht zu.',
-            'Fühlen (Empathie) – die Pflegekraft fühlt sich nicht in ihn hinein.',
-            'Tun (Berührung) – die Pflegekraft berührt ihn nicht.'
+            'Hören (Einlassen) – die Pflegekraft hat kein offenes Ohr für seine Wünsche beim Duschen.',
+            'Fühlen (Empathie) – die Pflegekraft fühlt sich nicht in seine Scham beim Duschen hinein.',
+            'Tun (Berührung) – die Pflegekraft vermittelt beim Duschen keine körperliche Nähe.'
           ] }
       ]
     },
@@ -77,6 +87,7 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Patientenedukation, hinderliche Faktoren, gesprächshemmendes Verhalten',
+      gewicht: 3,
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie jeder Form der Patientenedukation ihr **Ziel** zu.',
@@ -85,6 +96,14 @@ var CHALLENGE_FRAGEN = {
             'Anleitung': ['Können'],
             'Schulung': ['systematisches Lernen'],
             'Beratung': ['Entscheidung unterstützen']
+          } },
+        { typ: 'zuordnen',
+          frage: 'Ordnen Sie jeder Form der Patientenedukation ihr **Vorgehen** zu.',
+          zuordnung: {
+            'Information': ['Wissen weitergeben, indem etwas erklärt wird'],
+            'Anleitung': ['eine Handlung zeigen und von der Person einüben lassen'],
+            'Schulung': ['Wissen und Fertigkeiten geplant und strukturiert vermitteln'],
+            'Beratung': ['fragen, zuhören und gemeinsam klären – das Ergebnis ist offen']
           } },
         { typ: 'zuordnen',
           frage: 'Ordnen Sie das Beispiel (Diabetes) der passenden Form der Patientenedukation zu.',
@@ -98,9 +117,9 @@ var CHALLENGE_FRAGEN = {
           frage: 'Vergleichen Sie Information und Anleitung hinsichtlich des **Vorgehens**: Was ist der Unterschied?',
           antworten: [
             'Bei der Anleitung handelt die Person selbst (sie übt), bei der Information nicht.',
-            'Bei der Information handelt die Person selbst, bei der Anleitung nicht.',
-            'Information und Anleitung unterscheiden sich nur in der Dauer.',
-            'Bei beiden erklärt die Pflegefachperson nur – es gibt keinen Unterschied.'
+            'Bei der Information handelt die Person selbst (sie übt), bei der Anleitung nicht.',
+            'Information und Anleitung unterscheiden sich nur darin, wie lange sie dauern.',
+            'Bei beiden erklärt die Pflegefachperson nur etwas – es gibt keinen Unterschied.'
           ] },
         { typ: 'auswahl',
           frage: 'Welcher Form der Patientenedukation ordnen Sie die Situation zu?',
@@ -145,7 +164,7 @@ var CHALLENGE_FRAGEN = {
           zuordnung: {
             'befehlen': ['„Sie müssen …“'],
             'das Thema wechseln': ['Pat.: „Ich habe Herzstechen!“ PK: „Schönes Wetter heute …“'],
-            'unnötige Fachsprache verwenden': ['„Gemäß BSS entspricht Ihr Defäkat heute Typ 7.“'],
+            'unnötige Fachsprache verwenden': ['„Ihr HbA1c ist zu hoch.“'],
             'Ratschläge geben': [],
             'belehren': [],
             'drohen': [],
@@ -156,9 +175,9 @@ var CHALLENGE_FRAGEN = {
           fall: '„Ach, das wird schon wieder. Essen Sie doch einfach weniger Süßes!“',
           antworten: [
             'bagatellisieren („Ach, das wird schon wieder“) und Ratschläge geben („Essen Sie doch einfach weniger Süßes“)',
-            'drohen und das Thema wechseln',
-            'unnötige Fachsprache verwenden und unterbrechen',
-            'belehren und drohen'
+            'drohen („Ach, das wird schon wieder“) und das Thema wechseln („Essen Sie doch einfach weniger Süßes“)',
+            'belehren („Ach, das wird schon wieder“) und unnötige Fachsprache („Essen Sie doch einfach weniger Süßes“)',
+            'Gefühle verbalisieren („Ach, das wird schon wieder“) und Ratschläge geben („Essen Sie doch einfach weniger Süßes“)'
           ] },
         { typ: 'zeile',
           frage: 'Tippen Sie **alle** Zeilen an, in denen ein **hinderlicher Faktor** für die Beratung steht.',
@@ -176,41 +195,68 @@ var CHALLENGE_FRAGEN = {
           frage: 'Vergleichen Sie **Information** und **Anleitung** hinsichtlich des Vorgehens. Welche Antwort ist ein **vollständiger Vergleich in ganzen Sätzen**?',
           antworten: [
             'Bei der Information gibt die Pflegefachperson Wissen weiter, indem sie etwas erklärt. Bei der Anleitung zeigt sie eine Handlung, und die Person übt sie selbst ein. Der Unterschied: Bei der Anleitung handelt die Person selbst.',
-            'Information: Wissen weitergeben, erklären; Ziel: Wissen. – Anleitung: Handlung zeigen, einüben lassen; Ziel: Können.',
-            'Bei der Anleitung zeigt die Pflegefachperson eine Handlung, und die Person übt sie anschließend selbst ein, bis sie sicher ist.',
-            'Bei der Information und bei der Anleitung vermittelt die Pflegefachperson Wissen, deshalb gibt es beim Vorgehen keinen Unterschied.'
+            'Information: Wissen weitergeben, erklären; Ziel: Wissen. – Anleitung: Handlung zeigen, einüben lassen; Ziel: Können. – Unterschied: Bei der Anleitung übt die Person selbst, bei der Information nicht.',
+            'Bei der Anleitung zeigt die Pflegefachperson eine Handlung, und die Person übt sie anschließend selbst ein, bis sie sicher ist. Das ist wichtig, weil die Person die Handlung später allein durchführen muss.',
+            'Bei der Information gibt die Pflegefachperson Wissen weiter, indem sie etwas erklärt. Bei der Anleitung vermittelt sie ebenfalls Wissen, indem sie etwas erklärt. Deshalb gibt es beim Vorgehen keinen Unterschied.'
           ],
-          erklaerung: 'Ein vollständiger Vergleich beschreibt beide Seiten in ganzen Sätzen und benennt den Unterschied ausdrücklich. Stichworte oder nur eine Seite reichen in der Klausur nicht.' }
+          erklaerung: 'Ein vollständiger Vergleich beschreibt beide Seiten in ganzen Sätzen und benennt den Unterschied ausdrücklich. Stichworte oder nur eine Seite reichen in der Klausur nicht.' },
+        { typ: 'mehrfach',
+          frage: 'Welche Umstände sind **hinderliche Faktoren** für ein Beratungsgespräch? Tippen Sie **alle** richtigen an.',
+          richtig: [
+            'Die Person ist erschöpft und hat Schmerzen.',
+            'Im Zimmer läuft laut der Fernseher.',
+            'Die Pflegefachkraft schaut immer wieder auf die Uhr.',
+            'Es fallen viele Fachbegriffe.'
+          ],
+          falsch: [
+            'Die Pflegefachkraft setzt sich auf Augenhöhe.',
+            'Sie fragt nach, was die Person gerade beschäftigt.',
+            'Für das Gespräch ist ein ruhiger Raum reserviert.'
+          ] }
+      ],
+      schreiben: [
+        { typ: 'schreiben',
+          frage: 'Vergleichen Sie **Information** und **Anleitung** hinsichtlich Vorgehen und Ziel – in ganzen Sätzen.',
+          muster: [
+            'Vorgehen: Bei der Information gibt die Pflegefachperson Wissen weiter, indem sie etwas erklärt. Bei der Anleitung zeigt sie eine Handlung, und die Person übt sie selbst ein. Unterschied: Bei der Anleitung handelt die Person selbst, bei der Information nicht.',
+            'Ziel: Die Information zielt auf Wissen, die Anleitung auf Können. Unterschied: etwas verstehen gegenüber etwas selbst tun können.'
+          ],
+          checkliste: [
+            'Je Kriterium beide Seiten beschrieben?',
+            'Den Unterschied ausdrücklich benannt?',
+            'In ganzen Sätzen (keine Stichworttabelle)?'
+          ] }
       ]
     },
 
     /* ------------------------------------------------------------------ */
     {
       titel: 'Beratungsgrundsätze, -ansätze, Gesprächstechniken',
+      gewicht: 2,
       fragen: [
         { typ: 'auswahl',
           frage: 'Was bedeutet der Beratungsgrundsatz „**ergebnisoffen**“?',
           antworten: [
             'Das Ergebnis steht nicht vorher fest; gemeinsam wird eine passende, realistische Lösung gesucht.',
-            'Die Pflegefachperson legt das Ziel fest und erklärt den Weg dorthin.',
-            'Die Beratung darf ohne Ergebnis enden, Hauptsache es wurde gesprochen.',
-            'Die Person darf nur zwischen zwei vorgegebenen Lösungen wählen.'
+            'Die Pflegefachperson legt das Ziel vorher fest und erklärt der Person den besten Weg dorthin.',
+            'Die Beratung darf ohne Ergebnis enden – Hauptsache, es wurde in Ruhe miteinander gesprochen.',
+            'Die Person darf nur zwischen zwei Lösungen wählen, die die Pflegefachperson vorher festgelegt hat.'
           ] },
         { typ: 'auswahl',
           frage: 'Was bedeutet der Beratungsgrundsatz „**partizipativ**“?',
           antworten: [
             'Die beratene Person wird aktiv beteiligt; ihre Wünsche, Erfahrungen, Ziele und Entscheidungen fließen ein.',
-            'Die Angehörigen entscheiden stellvertretend für die Person.',
-            'Mehrere Berufsgruppen beraten die Person gleichzeitig.',
-            'Die Person hört zu, die Pflegefachperson entscheidet.'
+            'Die Angehörigen werden aktiv beteiligt und entscheiden stellvertretend für die beratene Person.',
+            'Mehrere Berufsgruppen beraten die Person gemeinsam und stimmen ihre Empfehlungen vorher untereinander genau ab.',
+            'Die Person hört aufmerksam zu; die Pflegefachperson entscheidet, welche Lösung am besten passt.'
           ] },
         { typ: 'auswahl',
           frage: 'Welche Frage ist **ergebnisoffen**?',
           antworten: [
             '„Welche Form von Bewegung könnten Sie sich in Ihrem Alltag vorstellen?“',
-            '„Sie gehen ab morgen jeden Tag 30 Minuten spazieren, ja?“',
-            '„Wollen Sie nicht lieber schwimmen gehen?“',
-            '„Warum bewegen Sie sich so wenig?“'
+            '„Sie gehen ab morgen jeden Tag 30 Minuten spazieren, einverstanden?“',
+            '„Wollen Sie nicht lieber schwimmen gehen? Das ist gut für die Gelenke.“',
+            '„Warum bewegen Sie sich eigentlich so wenig, obwohl Sie es besser wissen?“'
           ] },
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die **Leitfrage** dem passenden Beratungsansatz zu.',
@@ -275,14 +321,15 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Ressourcenorientierung, passenden Ansatz wählen',
+      gewicht: 2,
       fragen: [
         { typ: 'auswahl',
           frage: 'Problemorientiert: „Sie bewegen sich viel zu wenig.“ – Welche Umformulierung ist **ressourcenorientiert**?',
           antworten: [
             '„Welche Bewegung gelingt Ihnen schon? Was wäre ein kleiner nächster Schritt?“',
             '„Sie müssen sich mehr bewegen, sonst bekommen Sie Folgeschäden.“',
-            '„Warum bewegen Sie sich denn nicht mehr?“',
-            '„Bewegung ist wichtig, das weiß doch jeder.“'
+            '„Warum bewegen Sie sich denn nicht mehr? Was genau hält Sie eigentlich davon ab?“',
+            '„Bewegung ist wichtig, das weiß doch jeder – fangen Sie einfach morgen an.“'
           ] },
         { typ: 'auswahl',
           frage: 'Welche Aussage ist **ressourcenorientiert**?',
@@ -296,24 +343,29 @@ var CHALLENGE_FRAGEN = {
           frage: 'Welcher Beratungsansatz ist in dieser Situation **besonders geeignet**?',
           fall: 'Eine Patientin sagt mit Tränen in den Augen: „Alle sagen mir ständig, was ich anders machen soll. Mir wird das zu viel!“',
           antworten: [
-            'der personenzentrierte Ansatz, weil die Patientin Zeichen emotionaler Überforderung zeigt und sich zuerst verstanden fühlen muss',
-            'der lösungsorientierte Ansatz, weil sie sofort einen nächsten Schritt braucht',
-            'der motivationsfördernde Ansatz, weil sie überredet werden muss',
-            'gar keine Beratung, weil sie weint'
+            'der personenzentrierte Ansatz, weil die Patientin emotional überfordert ist und sich zuerst verstanden fühlen muss',
+            'der lösungsorientierte Ansatz, weil die Patientin jetzt vor allem einen klaren nächsten Schritt braucht',
+            'der motivationsfördernde Ansatz, weil die Patientin hin- und hergerissen ist und überredet werden muss',
+            'gar keine Beratung, weil die Patientin weint und deshalb heute keine Informationen aufnehmen kann'
           ] },
         { typ: 'auswahl',
           frage: 'Welcher **Gesprächseinstieg** passt zu dieser Situation?',
           fall: 'Eine Patientin sagt mit Tränen in den Augen: „Alle sagen mir ständig, was ich anders machen soll. Mir wird das zu viel!“',
           antworten: [
             '„Das klingt, als ob Ihnen das gerade zu viel wird. Was belastet Sie am meisten?“',
-            '„Was wäre denn ein kleiner nächster Schritt?“',
-            '„Das bekommen Sie schon hin!“',
-            '„Dann machen wir am besten gleich einen Plan.“'
+            '„Was wäre denn ein kleiner nächster Schritt, den Sie heute schon schaffen könnten?“',
+            '„Das bekommen Sie schon hin! Andere Patientinnen haben das auch geschafft.“',
+            '„Dann machen wir am besten gleich einen Plan, was Sie ab morgen ändern.“'
           ] },
-        { typ: 'richtigfalsch',
-          aussage: '„Bei emotionaler Überforderung ist ein lösungsorientierter Einstieg („Was wäre ein nächster Schritt?“) der beste Start.“',
-          richtig: false,
-          erklaerung: 'Ein zu früher lösungsorientierter Einstieg würde die Person zusätzlich unter Druck setzen; zuerst personenzentriert, damit sie sich verstanden fühlt.' },
+        { typ: 'auswahl',
+          frage: 'Wie beurteilen Sie die Aussage – und warum?',
+          fall: '„Bei emotionaler Überforderung ist ein lösungsorientierter Einstieg („Was wäre ein nächster Schritt?“) der beste Start.“',
+          antworten: [
+            'Falsch: Zuerst muss sich die Person verstanden fühlen – passend ist der personenzentrierte Ansatz.',
+            'Richtig: Ein konkreter nächster Schritt lenkt von den Gefühlen ab und nimmt so den Druck heraus.',
+            'Falsch: Bei Überforderung passt der motivationsfördernde Ansatz, weil man die Person überreden muss.',
+            'Richtig: Lösungsorientierte Fragen passen immer, weil jede Beratung ein konkretes Ergebnis braucht.'
+          ] },
         { typ: 'zuordnen',
           frage: 'Woran erkennen Sie den passenden Beratungsansatz? Ordnen Sie zu.',
           zuordnung: {
@@ -327,35 +379,49 @@ var CHALLENGE_FRAGEN = {
           antworten: [
             'der motivationsfördernde Ansatz (MI), weil Herr Kraus hin- und hergerissen ist (Ambivalenz)',
             'der personenzentrierte Ansatz, weil Herr Kraus emotional überfordert ist',
-            'der ressourcenorientierte Ansatz, weil Herr Kraus schon erfolgreich aufgehört hat',
+            'der ressourcenorientierte Ansatz, weil Herr Kraus schon einmal erfolgreich mit dem Rauchen aufgehört hat',
             'gar kein Beratungsansatz, weil Herr Kraus eine klare Anweisung braucht'
           ] },
         { typ: 'auswahl',
           frage: 'Welcher **Gesprächseinstieg** passt zu dieser Situation?',
           fall: 'Herr Kraus (58 J., COPD) sagt: „Eigentlich weiß ich, dass ich mit dem Rauchen aufhören sollte. Aber die Zigarette nach dem Essen ist meine einzige Pause am Tag.“',
           antworten: [
-            '„Einerseits möchten Sie aufhören, andererseits ist die Zigarette Ihre Pause. Was spricht für Sie selbst dafür, etwas zu verändern?“',
-            '„Sie müssen sofort aufhören, sonst wird Ihre COPD immer schlimmer.“',
-            '„Das schaffen Sie schon, andere haben das auch geschafft.“',
-            '„Warum rauchen Sie denn überhaupt noch, obwohl Sie COPD haben?“'
+            '„Einerseits möchten Sie aufhören, andererseits ist die Zigarette Ihre Pause. Was spricht für Sie dafür, etwas zu ändern?“',
+            '„Sie müssen sofort aufhören, sonst wird Ihre COPD immer schlimmer. Ich gebe Ihnen gleich einen Flyer dazu.“',
+            '„Das schaffen Sie schon, andere haben das auch geschafft. Fangen Sie einfach heute nach dem Essen damit an.“',
+            '„Warum rauchen Sie denn überhaupt noch, obwohl Sie COPD haben? Ihnen ist doch klar, wie schädlich das ist.“'
           ] },
         { typ: 'auswahl',
           frage: 'Welcher Beratungsansatz ist in dieser Situation **besonders geeignet**?',
           fall: 'Frau Peters (70 J.) hat nach einem Schlaganfall eine Schwäche in der rechten Hand. Sie erzählt: „Wenn meine Enkelin mit mir knetet, klappt das Knöpfen schon fast allein.“ Sie fragt, was sie selbst noch tun kann.',
           antworten: [
             'der ressourcen-/lösungsorientierte Ansatz, weil schon etwas gelingt und Frau Peters einen nächsten Schritt sucht',
-            'der motivationsfördernde Ansatz (MI), weil Frau Peters hin- und hergerissen ist',
-            'der personenzentrierte Ansatz, weil Frau Peters emotional überfordert ist',
-            'gar kein Beratungsansatz, weil eine Schulung für sie ausreicht'
+            'der motivationsfördernde Ansatz (MI), weil Frau Peters zwischen Üben und Aufgeben hin- und hergerissen ist',
+            'der personenzentrierte Ansatz, weil Frau Peters nach dem Schlaganfall emotional überfordert ist',
+            'gar kein Beratungsansatz, weil eine Schulung zu Übungen für die Hand für sie völlig ausreicht'
           ] },
         { typ: 'auswahl',
           frage: 'Welcher **Gesprächseinstieg** passt zu dieser Situation?',
           fall: 'Frau Peters (70 J.) hat nach einem Schlaganfall eine Schwäche in der rechten Hand. Sie erzählt: „Wenn meine Enkelin mit mir knetet, klappt das Knöpfen schon fast allein.“ Sie fragt, was sie selbst noch tun kann.',
           antworten: [
             '„Das ist ein schöner Fortschritt! Was genau hilft Ihnen, wenn Sie mit Ihrer Enkelin üben?“',
-            '„Knöpfen ist doch nicht so wichtig, das kann Ihre Enkelin für Sie machen.“',
-            '„Sie müssen jeden Tag eine Stunde üben, sonst wird das nichts.“',
-            '„Warum klappt es denn ohne Ihre Enkelin noch nicht?“'
+            '„Knöpfen ist doch nicht so wichtig, das kann Ihre Enkelin auch in Zukunft weiterhin für Sie machen.“',
+            '„Sie müssen jeden Tag eine Stunde üben, sonst wird das mit dem Knöpfen nie etwas.“',
+            '„Warum klappt es denn ohne Ihre Enkelin noch nicht? Was machen Sie allein anders?“'
+          ] }
+      ],
+      schreiben: [
+        { typ: 'schreiben',
+          frage: 'Beurteilen Sie, welcher Beratungsansatz besonders geeignet ist, und formulieren Sie einen passenden Gesprächseinstieg.',
+          fall: 'Frau Arnold (67 J.) erzählt: „Seit ich abends die Tabletten neben die Zahnbürste lege, vergesse ich sie nicht mehr. Morgens klappt das aber noch nicht.“',
+          muster: [
+            'Ressourcen-/lösungsorientiert: Abends gelingt es schon, und Frau Arnold sucht einen nächsten Schritt. Sie ist weder hin- und hergerissen (MI) noch emotional überfordert (personenzentriert).',
+            'Einstieg z. B.: „Abends klappt das ja schon richtig gut! Was könnte Ihnen morgens ähnlich helfen wie die Zahnbürste am Abend?“'
+          ],
+          checkliste: [
+            'Den Ansatz benannt?',
+            'Mit Hinweisen aus dem Fall begründet?',
+            'Den Einstieg als wörtliche Frage formuliert, passend zum Ansatz?'
           ] }
       ]
     },
@@ -363,6 +429,7 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Beratungsprozess (6 Phasen) und SMART-Ziele',
+      gewicht: 3,
       fragen: [
         { typ: 'reihenfolge',
           frage: 'Bringen Sie die **sechs Phasen des Beratungsprozesses** in die richtige Reihenfolge.',
@@ -398,7 +465,7 @@ var CHALLENGE_FRAGEN = {
           frage: 'Was passiert in der Phase **4. Lösungen entwickeln**?',
           antworten: [
             'passende Informationen geben, Wahlmöglichkeiten statt Ratschläge, Ressourcen nutzen',
-            'Ergebnis festhalten, dokumentieren, nächsten Schritt oder Folgetermin vereinbaren',
+            'Ergebnis festhalten, dokumentieren, nächsten Schritt oder einen Folgetermin vereinbaren',
             'begrüßen, Kontakt und Vertrauen aufbauen, Anlass und Rahmen klären',
             'prüfen, was verstanden und hilfreich war; offene Fragen klären'
           ] },
@@ -413,35 +480,76 @@ var CHALLENGE_FRAGEN = {
         { typ: 'auswahl',
           frage: 'Welches Beratungsziel ist **SMART** formuliert?',
           antworten: [
-            '„Am Ende des ersten Gesprächs kann Herr Meier drei Warnzeichen einer Verschlechterung seiner Herzinsuffizienz nennen und beschreiben, wann er seine Hausärztin anruft.“',
-            '„Herr Meier soll besser auf sein Herz achten.“',
-            '„Herr Meier weiß irgendwann alles über Herzinsuffizienz.“',
-            '„Herr Meier soll gesünder leben.“'
+            '„Am Ende des ersten Gesprächs kann Herr Meier drei Warnzeichen einer Verschlechterung nennen und sagen, wann er die Hausärztin anruft.“',
+            '„Herr Meier soll in Zukunft besser auf sein Herz achten und bei Problemen mit der Atmung rechtzeitig Bescheid geben.“',
+            '„Herr Meier weiß irgendwann alles Wichtige über seine Herzinsuffizienz und kann sich dann zu Hause selbst gut versorgen.“',
+            '„Herr Meier soll gesünder leben: sich mehr bewegen, weniger Salz essen und regelmäßig seine Tabletten einnehmen.“'
           ] },
         { typ: 'auswahl',
-          frage: 'Was ist wichtig, wenn Sie ein Beratungsgespräch **fallbezogen anhand der Phasen darstellen**?',
+          frage: 'Was tun Sie in **Phase 2 (Beratungsbedürfnisse/-bedarfe erfassen)**?',
+          fall: 'Frau Ott (76 J.) hat eine Herzinsuffizienz und soll nach der Entlassung täglich ihr Gewicht kontrollieren. Phase 1 ist abgeschlossen.',
           antworten: [
-            'In jeder Phase beschreiben, was die Pflegefachperson tut, und sich konkret auf den Fall beziehen.',
-            'Nur die Namen der sechs Phasen aufzählen.',
-            'Nur die Beispielsätze aus dem Unterricht wortgleich wiedergeben.',
-            'Die Phasen in beliebiger Reihenfolge nennen.'
+            'Ihre Sicht erfragen und zuhören: „Was geht Ihnen durch den Kopf, wenn Sie an das tägliche Wiegen denken?“',
+            'Ein Ziel vereinbaren: „Ab morgen wiegen Sie sich jeden Morgen vor dem Frühstück und schreiben es auf.“',
+            'Das Ergebnis festhalten: „Dann halten wir fest, was wir besprochen haben, und sehen uns nächste Woche wieder.“',
+            'Rückblick halten: „Was war heute für Sie besonders hilfreich, und was ist noch unklar geblieben?“'
           ] },
         { typ: 'auswahl',
           frage: 'Welches Beratungsziel ist **SMART** formuliert?',
           antworten: [
             '„Herr Meier wiegt sich ab morgen eine Woche lang jeden Morgen vor dem Frühstück und notiert das Gewicht in seinem Tagebuch.“',
-            '„Herr Meier soll in Zukunft mehr auf sein Gewicht achten.“',
-            '„Herr Meier wiegt sich regelmäßig und schreibt es auf.“',
-            '„Herr Meier weiß irgendwann, warum das Wiegen wichtig ist.“'
+            '„Herr Meier soll in Zukunft mehr auf sein Gewicht achten und es seiner Hausärztin melden, wenn es ihm auffällt.“',
+            '„Herr Meier wiegt sich regelmäßig, am besten morgens, und schreibt das Gewicht immer gleich in ein Heft.“',
+            '„Herr Meier weiß irgendwann, warum das tägliche Wiegen bei seiner Herzinsuffizienz so wichtig ist.“'
           ] },
         { typ: 'auswahl',
           frage: 'Was fehlt diesem Beratungsziel?',
           fall: 'Frau Schulz (84 J.) trinkt zu wenig. Ziel: „Frau Schulz soll mehr trinken.“',
           antworten: [
             'Es ist nicht messbar und nicht terminiert (wie viel? bis wann?) und nicht mit Frau Schulz vereinbart.',
-            'Nichts – das Ziel ist SMART formuliert.',
-            'Es fehlt nur eine Begründung, warum Trinken wichtig ist.',
-            'Es ist zu konkret – Beratungsziele sollten offen bleiben.'
+            'Nichts – das Ziel ist SMART formuliert, weil es spezifisch sagt, was Frau Schulz tun soll.',
+            'Es fehlt nur eine Begründung, warum ausreichendes Trinken im Alter so wichtig ist.',
+            'Es ist zu konkret und zu streng – Beratungsziele sollten möglichst offen formuliert bleiben.'
+          ] },
+        { typ: 'mehrfach',
+          frage: 'Was tun Sie in **Phase 2 (Beratungsbedürfnisse/-bedarfe erfassen)**? Tippen Sie **alle** richtigen an.',
+          richtig: [
+            'die Sicht der Person erfragen und zuhören',
+            'Beobachtungen einordnen',
+            'Probleme gemeinsam benennen'
+          ],
+          falsch: [
+            'ein realistisches Ziel vereinbaren',
+            'Wahlmöglichkeiten statt Ratschläge anbieten',
+            'einen Folgetermin vereinbaren'
+          ],
+          erklaerung: 'Ziel vereinbaren gehört zu Phase 3, Wahlmöglichkeiten anbieten zu Phase 4, einen Folgetermin vereinbaren zu Phase 6.' }
+      ],
+      schreiben: [
+        { typ: 'schreiben',
+          frage: 'Formulieren Sie ein SMARTes Beratungsziel.',
+          fall: 'Frau Gärtner (79 J.) vergisst häufig, ihre Blutdrucktabletten einzunehmen. Sie möchte das ändern.',
+          muster: [
+            'z. B.: „Frau Gärtner nimmt ab morgen zwei Wochen lang jeden Morgen nach dem Frühstück ihre Blutdrucktablette und hakt sie auf ihrem Wochenplan ab.“'
+          ],
+          checkliste: [
+            'Aus Sicht von Frau Gärtner formuliert?',
+            'Messbar (was genau, wie oft)?',
+            'Terminiert (ab wann, wie lange)?',
+            'Realistisch und für sie annehmbar?'
+          ] },
+        { typ: 'schreiben',
+          frage: 'Stellen Sie dar, wie Sie in Phase 2 (Beratungsbedürfnisse/-bedarfe erfassen) bei Frau Ott vorgehen.',
+          fall: 'Frau Ott (76 J.) hat eine Herzinsuffizienz und soll nach der Entlassung täglich ihr Gewicht kontrollieren.',
+          muster: [
+            'Ihre Sicht erfragen und zuhören, z. B.: „Was geht Ihnen durch den Kopf, wenn Sie an das tägliche Wiegen denken?“',
+            'Beobachtungen einordnen, z. B. geschwollene Beine oder Atemnot ansprechen.',
+            'Probleme gemeinsam benennen, z. B. wo die Waage steht und wann das Wiegen in ihren Alltag passt.'
+          ],
+          checkliste: [
+            'Die Sicht von Frau Ott erfragt (wörtliche Frage)?',
+            'Beobachtungen eingeordnet?',
+            'Probleme gemeinsam benannt – mit Bezug zum Fall?'
           ] }
       ]
     },
@@ -449,6 +557,7 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Beratungskompetenz',
+      gewicht: 0,
       fragen: [
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die Beschreibung dem passenden Bereich der **Beratungskompetenz** zu.',
@@ -471,9 +580,9 @@ var CHALLENGE_FRAGEN = {
           fall: 'Die PK merkt im Gespräch, dass sie ungeduldig wird, und nimmt sich bewusst zurück.',
           antworten: [
             'personale Kompetenz, weil sie ihre eigenen Gefühle wahrnimmt und reflektiert',
-            'Fachkompetenz, weil sie ihr Fachwissen anwendet',
-            'Methodenkompetenz, weil sie eine Gesprächstechnik einsetzt',
-            'sozial-kommunikative Kompetenz, weil sie Bezugspersonen einbezieht'
+            'Fachkompetenz, weil sie ihr Fachwissen über Gesprächsführung gezielt anwendet',
+            'Methodenkompetenz, weil sie bewusst eine Gesprächstechnik zur Beruhigung einsetzt',
+            'sozial-kommunikative Kompetenz, weil sie die Beziehung zur Person schützen will'
           ] },
         { typ: 'auswahl',
           frage: 'Zu welchem Bereich der Beratungskompetenz gehört es, **SMART-Ziele** zu formulieren?',
@@ -484,6 +593,7 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Bezugspersonen einbeziehen, Beratung beurteilen',
+      gewicht: 2,
       fragen: [
         { typ: 'zuordnen',
           frage: 'Bezugspersonen professionell einbeziehen: Ordnen Sie die passende **Begründung** zu.',
@@ -507,19 +617,19 @@ var CHALLENGE_FRAGEN = {
           frage: 'Wie verhalten Sie sich professionell?',
           fall: 'Die Tochter eines Patienten ruft an und möchte wissen, was in der Beratung besprochen wurde. Der Patient hat einer Weitergabe nicht zugestimmt.',
           antworten: [
-            'Keine Auskunft geben: Bezugspersonen nur mit Einverständnis der beratenen Person einbeziehen, weil die Schweigepflicht gilt.',
-            'Alles erzählen, weil Angehörige immer ein Recht auf Information haben.',
-            'Nur das Wichtigste erzählen, das ist dann in Ordnung.',
-            'Die Tochter entscheiden lassen, was mit ihrem Vater besprochen wird.'
+            'Keine Auskunft geben, weil die Schweigepflicht gilt: Bezugspersonen nur mit Einverständnis der Person einbeziehen.',
+            'Alles erzählen, weil Angehörige immer ein Recht auf Information haben – besonders, wenn sie sich kümmern.',
+            'Nur das Wichtigste erzählen, weil die Tochter ihren Vater zu Hause unterstützt und das wissen muss.',
+            'Die Tochter entscheiden lassen, was mit ihrem Vater besprochen wird, weil sie ihn am besten kennt.'
           ] },
         { typ: 'auswahl',
           frage: 'Wie beurteilen Sie die Aussage der Kollegin im Hinblick auf eine professionelle Beratung?',
           fall: 'Frau Kühn hat gerade die Diagnose Diabetes Typ 2 erhalten. Eine Kollegin sagt zu ihr: „Das ist ganz einfach: Sie müssen ab sofort auf Zucker verzichten und jeden Tag eine halbe Stunde spazieren gehen. Sonst bekommen Sie Folgeschäden.“',
           antworten: [
             'keine professionelle Beratung, sondern Belehrung – nicht ergebnisoffen, nicht partizipativ',
-            'professionelle Beratung, weil die Kollegin klare Ziele vorgibt',
-            'professionelle Beratung, weil sie auf mögliche Folgeschäden hinweist',
-            'eine Schulung, weil Wissen geplant und strukturiert vermittelt wird'
+            'professionelle Beratung, weil die Kollegin klare Ziele vorgibt, an denen sich Frau Kühn orientieren kann',
+            'professionelle Beratung, weil sie rechtzeitig und deutlich auf mögliche Folgeschäden hinweist',
+            'eine Schulung, weil Wissen über Ernährung und Bewegung geplant und strukturiert vermittelt wird'
           ] },
         { typ: 'zuordnen',
           frage: 'Frau Kühn: Was steckt in den Teilen der Aussage der Kollegin?',
@@ -547,7 +657,57 @@ var CHALLENGE_FRAGEN = {
             'Ben nimmt die Sorge ernst und fragt, was ihn entlasten würde.'
           ],
           richtig: [3, 6],
-          erklaerung: 'Z. 3: nur mit Einverständnis (Schweigepflicht). Z. 6: die Belastung der Angehörigen wahrnehmen. Z. 4 ist nicht professionell: Ben spricht über den Kopf von Herrn Wolf hinweg.' }
+          erklaerung: 'Z. 3: nur mit Einverständnis (Schweigepflicht). Z. 6: die Belastung der Angehörigen wahrnehmen. Z. 4 ist nicht professionell: Ben spricht über den Kopf von Herrn Wolf hinweg.' },
+        { typ: 'auswahl',
+          frage: 'Welche **Wirkung** hat die Aussage – und wie beurteilen Sie sie?',
+          fall: 'Herr Lang erzählt, dass er abends gern ein Bier trinkt. Die Pflegefachkraft sagt: „Das geht so nicht, das wissen Sie doch.“ Herr Lang verschränkt die Arme und sagt nichts mehr.',
+          antworten: [
+            'Herr Lang zieht sich zurück, das Gespräch bricht ab – keine professionelle Beratung, sondern Belehrung.',
+            'Herr Lang denkt in Ruhe nach und ändert sein Verhalten – eine professionelle, klare Beratung.',
+            'Keine Wirkung – das Verschränken der Arme hat mit der Aussage der Pflegefachkraft gar nichts zu tun.',
+            'Herr Lang fühlt sich verstanden, weil die Pflegefachkraft ehrlich und mit Empathie reagiert hat.'
+          ] },
+        { typ: 'mehrfach',
+          frage: 'Welche gesprächshemmenden Verhaltensweisen stecken in der Aussage? Tippen Sie **alle** richtigen an.',
+          fall: 'Eine Pflegefachkraft sagt: „Das ist doch halb so wild. Sie müssen jetzt einfach konsequent sein, sonst landen Sie bald wieder hier.“',
+          richtig: [
+            'bagatellisieren („Das ist doch halb so wild.“)',
+            'befehlen („Sie müssen …“)',
+            'drohen („sonst landen Sie bald wieder hier“)'
+          ],
+          falsch: [
+            'das Thema wechseln',
+            'unnötige Fachsprache verwenden',
+            'Gefühle verbalisieren'
+          ] },
+        { typ: 'mehrfach',
+          frage: 'Woran halten Sie sich, wenn Angehörige an der Beratung teilnehmen? Tippen Sie **alle** richtigen an.',
+          richtig: [
+            'nur mit Einverständnis der beratenen Person',
+            'gemeinsam sprechen, nicht über ihren Kopf hinweg',
+            'die Entscheidung bleibt bei der beratenen Person'
+          ],
+          falsch: [
+            'die Angehörigen entscheiden, wenn sie es besser wissen',
+            'im Streit für die Angehörigen Partei ergreifen',
+            'Informationen auch ohne Zustimmung weitergeben'
+          ] }
+      ],
+      schreiben: [
+        { typ: 'schreiben',
+          frage: 'Beurteilen Sie die Aussage der Pflegefachkraft im Hinblick auf eine professionelle Beratung.',
+          fall: 'Herr Brandl isst gern Wurst. Eine Pflegefachkraft sagt: „Ach, das bisschen Salz ist doch kein Problem. Aber Sie müssen jetzt endlich auf Ihren Blutdruck achten!“ Herr Brandl schaut weg und sagt nichts mehr.',
+          muster: [
+            'bagatellisieren („das bisschen Salz ist doch kein Problem“) – die Situation wird heruntergespielt.',
+            'befehlen („Sie müssen …“) – nicht ergebnisoffen, nicht partizipativ.',
+            'Wirkung: Herr Brandl zieht sich zurück, das Gespräch bricht ab.',
+            'Urteil: keine professionelle Beratung, sondern Belehrung.'
+          ],
+          checkliste: [
+            'Mindestens zwei gesprächshemmende Verhaltensweisen mit Textbeleg?',
+            'Die Wirkung auf Herrn Brandl beschrieben?',
+            'Ein klares Urteil formuliert?'
+          ] }
       ]
     }
   ]

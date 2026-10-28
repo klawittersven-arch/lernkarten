@@ -230,6 +230,13 @@ function kartenLaden(ordner) {
     await p.click('#knopf-schliessen');
     const titel = await p.locator('.thema-titel').allInnerTexts();
     H.pruefe(titel.includes('Beratungsprozess (6 Phasen) und SMART-Ziele') && !titel.some((t) => t.startsWith('AB')), 'Themenliste mit neutralen Namen, ohne AB-Titel');
+    // aus der Auswertung der Klausur-Challenge: ?thema=… wählt nur dieses Thema aus
+    await p.goto(basis + 'kb2-beratung/?thema=' + encodeURIComponent('Beratungskompetenz'));
+    const gewaehlt = await p.locator('.thema', { has: p.locator('input:checked') }).locator('.thema-titel').allInnerTexts();
+    H.pruefe(gewaehlt.length === 1 && gewaehlt[0] === 'Beratungskompetenz' && !p.url().includes('thema='),
+      '?thema=Beratungskompetenz: nur dieses Thema ausgewählt, Adresse wieder ohne ?thema', gewaehlt);
+    await p.goto(basis + 'kb2-beratung/?thema=Gibt%20es%20nicht');
+    H.pruefe(await p.locator('.thema input:checked').count() === 1, 'unbekanntes ?thema ändert die Auswahl nicht');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'kb2-start.png') });
     await ctx.close();
   }

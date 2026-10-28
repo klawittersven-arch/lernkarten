@@ -162,19 +162,33 @@ Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challen
 
 - **20 Aufgaben**, zufällig aus dem Aufgabenpool des Kartensatzes gezogen – aus jedem Thema
   mindestens eine, in zufälliger Reihenfolge; auch die Antwortmöglichkeiten werden gemischt.
-- Aufgabenarten: eine richtige Antwort auswählen, richtig/falsch, zuordnen, Reihenfolge,
-  Zahl eingeben (z. B. mg/dl in mmol/l) und **Zeile finden** (in einem Falltext mit
-  Zeilennummern die passenden Zeilen antippen – übt die Zeilenangaben der Klausur).
+- **Gewichtung nach Klausurrelevanz:** Jedes Thema in `fragen.js` hat ein `gewicht` von 0 bis 3.
+  Nach der einen Pflichtaufgabe je Thema werden die übrigen Plätze nach diesem Gewicht verteilt;
+  Gewicht 0 = genau eine Aufgabe je Challenge.
+- Aufgabenarten: eine richtige Antwort auswählen (oft als „Wie beurteilen Sie die Aussage – und
+  warum?“ mit Begründung), **alle richtigen antippen**, zuordnen, Reihenfolge,
+  Zahl eingeben (z. B. mg/dl in mmol/l), **Zeile finden** (in einem Falltext mit
+  Zeilennummern die passenden Zeilen antippen – übt die Zeilenangaben der Klausur) und vereinzelt
+  richtig/falsch.
 - Start- und Auswertungsseite erinnern daran, dass in der Klausur selbst formuliert und begründet
   wird – das üben die Lernkarten.
-- **Punkte:** 100 je richtig gelöster Aufgabe (beim Zuordnen, bei Reihenfolgen und beim Zeilenfinden
-  anteilig; beim Zeilenfinden zieht jede falsch gewählte Zeile ab),
+- **Punkte:** 100 je richtig gelöster Aufgabe (beim Zuordnen, bei Reihenfolgen, beim Zeilenfinden
+  und bei „Alle richtigen antippen“ anteilig; falsch gewählte Zeilen bzw. Antworten ziehen ab –
+  wer einfach alles antippt, bekommt 0 Punkte),
   dazu ein **Zeitbonus** bis 500 Punkte: voll bis 4 Minuten, danach gleichmäßig weniger, ab
   15 Minuten keiner mehr. Der Bonus zählt nur anteilig zu den richtigen Antworten (Raten lohnt
   nicht). Höchstens 2 500 Punkte, davon 80 % aus den Aufgaben. Werte in `docs/app/einstellungen.js`
   (`challenge: { … }`).
 - Der Timer läuft von der ersten bis zur letzten Aufgabe. Die **Lösungen** gibt es erst am Ende:
   Übersicht aller Fehler mit der richtigen Lösung.
+- Die Auswertung zeigt außerdem die **Punkte je Thema** (schwächste oben) mit dem Link
+  „📚 Mit den Lernkarten üben“. Er öffnet die Lernkarten mit genau diesem Thema ausgewählt
+  (Adresse `…/kb1-diabetes/?thema=<Thementitel>`).
+- Darunter steht eine **Schreibübung ohne Punkte** (bevorzugt aus einem Thema mit Fehlern): selbst
+  formulieren, dann Musterantwort und Checkliste zur Selbstkontrolle aufdecken. Der Text wird
+  nirgends gespeichert. Die Übungen stehen je Thema unter `schreiben: [ … ]` in `fragen.js`.
+- Ein automatischer Test achtet darauf, dass sich die richtige Antwort nicht durch ihre Länge
+  verrät (höchstens 20 % länger als die längste falsche, und nur selten die längste).
 - Danach Eintrag in eine **eigene Highscore-Liste je Klasse** (Tabellenblätter
   `kb1-diabetes-challenge-3bfp2-1` usw.). Auf der Highscore-Seite wechseln die Reiter
   „🎮 Diabetes Run!“ / „🏁 Klausur-Challenge“. Zurücksetzen mit
