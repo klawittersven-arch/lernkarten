@@ -11,7 +11,7 @@ const H = require('./hilfen');
 const { attrappeErstellen, TEST_SCHLUESSEL } = require('./apps-script-attrappe');
 
 const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
-const SAETZE = ['kb1-diabetes', 'kb2-beratung'];
+const SAETZE = ['kb1-diabetes', 'kb2-beratung', 'kb1-parkinson'];
 const TYPEN = ['auswahl', 'richtigfalsch', 'zuordnen', 'reihenfolge', 'zahl', 'zeile', 'mehrfach'];
 
 function laden(datei, name) {

@@ -8,6 +8,7 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 |---|---|
 | KB I – Diabetes mellitus (Klausur 09.11.2026), 77 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
 | KB II – Beratung (Klausur 09.11.2026), 81 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
+| KB I – Parkinson (3BFP3), 49 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-parkinson/?klasse=3bfp3 |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/ ·
 Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/
@@ -80,6 +81,8 @@ ihrer Klasse; oben in der App steht „Klasse 3BFP2/1“.
 |---|---|---|
 | KB I | `qr/qr_kb1-diabetes_3bfp2-1.png` | `qr/qr_kb1-diabetes_3bfp2-2.png` |
 | KB II | `qr/qr_kb2-beratung_3bfp2-1.png` | `qr/qr_kb2-beratung_3bfp2-2.png` |
+
+Klasse 3BFP3 (KB I – Parkinson): `qr/qr_kb1-parkinson_3bfp3.png` → `…/kb1-parkinson/?klasse=3bfp3`
 
 - **Klassen ändern oder ergänzen:** in `docs/app/einstellungen.js` bei `klassen`, danach QR-Codes erzeugen:
   `python werkzeuge/qr_erzeugen.py --sammelblatt QR-Codes_Klassen.docx` (alle Kästen zum Kopieren in die

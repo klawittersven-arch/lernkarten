@@ -12,7 +12,8 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 // Erwartete Kartensätze (neuer Kartensatz → hier eine Zeile ergänzen)
 const SAETZE = [
   { ordner: 'kb1-diabetes', themen: 11, karten: 77, hinweis: true },
-  { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true }
+  { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true },
+  { ordner: 'kb1-parkinson', themen: 8, karten: 49, hinweis: true }
 ];
 
 function kartenLaden(ordner) {

@@ -46,14 +46,16 @@ var EINSTELLUNGEN = {
   // kennung: nur Kleinbuchstaben, Ziffern und Bindestrich · name: so erscheint sie in der App
   klassen: [
     { kennung: '3bfp2-1', name: '3BFP2/1' },
-    { kennung: '3bfp2-2', name: '3BFP2/2' }
+    { kennung: '3bfp2-2', name: '3BFP2/2' },
+    { kennung: '3bfp3', name: '3BFP3' }
   ],
 
   // Eine Highscore-Liste je Kartensatz (und je Klasse). kennung = speicherName in karten.js,
   // ordner = Ordner des Kartensatzes in docs/
   listen: [
     { kennung: 'kb1-diabetes', ordner: 'kb1-diabetes', titel: 'KB I – Diabetes mellitus', kurz: 'KB I' },
-    { kennung: 'kb2-beratung', ordner: 'kb2-beratung', titel: 'KB II – Beratung', kurz: 'KB II' }
+    { kennung: 'kb2-beratung', ordner: 'kb2-beratung', titel: 'KB II – Beratung', kurz: 'KB II' },
+    { kennung: 'kb1-parkinson', ordner: 'kb1-parkinson', titel: 'KB I – Parkinson', kurz: 'KB I Parkinson' }
   ],
 
   // Einfacher Filter für Vornamen: Enthält ein Name eines dieser Wörter (auch mit
@@ -242,6 +244,13 @@ var EINSTELLUNGEN = {
       'Doppelte Fürsorge: Wer sich selbst nicht stärken kann, kann auch andere nicht stärken.',
       'Die sechs Phasen der Beratung beginnen mit „Beziehung herstellen“ und enden mit „Beratung beenden“.',
       'Ergebnisoffen beraten: Das Ergebnis steht nicht vorher fest.'
+    ],
+    'kb1-parkinson': [
+      'L-Dopa: 30 Minuten vor oder 60–90 Minuten nach dem Essen – Eiweiß bremst die Aufnahme.',
+      'Parkinson-Medikamente nie einfach weglassen – sonst droht eine akinetische Krise.',
+      'Kein Haloperidol, kein MCP: Beide blockieren Dopamin.',
+      'Freezing? Bodenmarkierung, Zählen oder Klatschen helfen – Ziehen nicht.',
+      'Starres Gesicht heißt nicht desinteressiert: Hypomimie ist ein Symptom.'
     ]
   }
 };
