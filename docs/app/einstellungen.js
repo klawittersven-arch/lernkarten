@@ -246,10 +246,10 @@ var EINSTELLUNGEN = {
       'Ergebnisoffen beraten: Das Ergebnis steht nicht vorher fest.'
     ],
     'kb1-parkinson': [
-      'L-Dopa: 30 Minuten vor oder 60–90 Minuten nach dem Essen – Eiweiß bremst die Aufnahme.',
-      'Parkinson-Medikamente nie einfach weglassen – sonst droht eine akinetische Krise.',
-      'Kein Haloperidol, kein MCP: Beide blockieren Dopamin.',
+      'Parkinson fällt erst auf, wenn über die Hälfte der dopaminbildenden Zellen fehlt.',
       'Freezing? Bodenmarkierung, Zählen oder Klatschen helfen – Ziehen nicht.',
+      'Beim Essen: aufrecht sitzen, Kinn zur Brust, kleine Bissen.',
+      'Akinetische Krise: nichts über den Mund geben – Aspirationsgefahr!',
       'Starres Gesicht heißt nicht desinteressiert: Hypomimie ist ein Symptom.'
     ]
   }

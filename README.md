@@ -8,7 +8,7 @@ Smartphone mit Karteikarten (ähnlich wie Quizlet): **vorne die Kompetenz, hinte
 |---|---|
 | KB I – Diabetes mellitus (Klausur 09.11.2026), 77 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-diabetes/ |
 | KB II – Beratung (Klausur 09.11.2026), 81 Karten | https://klawittersven-arch.github.io/lernkarten/kb2-beratung/ |
-| KB I – Parkinson (3BFP3), 49 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-parkinson/?klasse=3bfp3 |
+| KB I – Parkinson (3BFP3), 29 Karten | https://klawittersven-arch.github.io/lernkarten/kb1-parkinson/?klasse=3bfp3 |
 
 Übersicht aller Kartensätze: https://klawittersven-arch.github.io/lernkarten/ ·
 Highscore-Listen: https://klawittersven-arch.github.io/lernkarten/highscore/

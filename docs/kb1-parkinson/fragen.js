@@ -36,7 +36,7 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Fallsituation: Parkinson-Symptome erkennen',
-      gewicht: 1,
+      gewicht: 0,
       fragen: [
         { typ: 'zeile',
           frage: 'Tippen Sie alle Zeilen an, die auf ein **Leitsymptom** von Parkinson hinweisen.',
@@ -69,7 +69,18 @@ var CHALLENGE_FRAGEN = {
             'Hypomimie': ['Gesicht wirkt starr, kaum Mimik'],
             'Mikrographie': ['Handschrift wird immer kleiner'],
             'Hypophonie': ['spricht sehr leise und monoton']
-          } }
+          } },
+        { typ: 'zeile',
+          frage: 'Tippen Sie alle Zeilen an, die auf die **posturale Instabilität** hinweisen.',
+          zeilen: [
+            'Herr Lenz (72 J.) war Schreinermeister.',
+            'Beim Umdrehen verliert er leicht das Gleichgewicht.',
+            'Seine rechte Hand zittert auf der Armlehne.',
+            'Vor zwei Wochen ist er rückwärts gestürzt.',
+            'Er möchte wieder in seine Werkstatt.'
+          ],
+          richtig: [2, 4],
+          erklaerung: 'Gestörte Halte- und Stellreflexe: Gleichgewichtsverlust beim Umdrehen (Z. 2), Sturz nach hinten (Z. 4). Z. 3 ist der Ruhetremor.' }
       ],
       schreiben: [
         { typ: 'schreiben',
@@ -87,7 +98,7 @@ var CHALLENGE_FRAGEN = {
     /* ------------------------------------------------------------------ */
     {
       titel: 'Krankheitsbild: Definition, Ursache, Pathophysiologie',
-      gewicht: 3,
+      gewicht: 2,
       fragen: [
         { typ: 'auswahl',
           frage: 'Welche Aussage beschreibt die **Pathophysiologie** von Parkinson richtig?',
@@ -102,7 +113,7 @@ var CHALLENGE_FRAGEN = {
           frage: 'Was bedeutet „idiopathisches Parkinson-Syndrom“?',
           antworten: [
             'Die Ursache des Zelluntergangs ist unbekannt.',
-            'Die Symptome werden durch Neuroleptika ausgelöst.',
+            'Die Symptome werden durch Medikamente ausgelöst.',
             'Parkinson tritt im Rahmen einer anderen Erkrankung auf.',
             'Die Erkrankung ist angeboren und beginnt im Kindesalter.'
           ] },
@@ -126,9 +137,21 @@ var CHALLENGE_FRAGEN = {
           frage: 'Tippen Sie alle Aussagen an, die zur **Definition** von Parkinson passen.',
           richtig: ['fortschreitend', 'neurodegenerativ', 'nicht heilbar', 'stört v. a. die Bewegungssteuerung'],
           falsch: ['ansteckend', 'heilt nach Jahren aus'] },
+        { typ: 'zuordnen',
+          frage: 'Ordnen Sie die Beschreibungen der Form des Parkinson-Syndroms zu.',
+          zuordnung: {
+            'idiopathisch': ['Ursache unbekannt, häufigste Form'],
+            'symptomatisch (sekundär)': ['ausgelöst z. B. durch Medikamente oder eine Vergiftung'],
+            'atypisch': ['Teil einer anderen neurodegenerativen Erkrankung']
+          } },
         { typ: 'auswahl',
-          frage: 'Welche Untersuchung stützt die Diagnose, indem sich die Symptome nach einer Medikamentengabe bessern?',
-          antworten: ['L-Dopa-Test', 'Lumbalpunktion', 'Schellong-Test', 'Elektrokardiogramm'] }
+          frage: 'Warum wird Parkinson oft erst spät erkannt?',
+          antworten: [
+            'Frühzeichen wie Riechstörung werden selten mit Parkinson verbunden.',
+            'Die Erkrankung beginnt immer mit einer schweren akinetischen Krise.',
+            'Parkinson zeigt sich nur in Blutwerten, die selten bestimmt werden.',
+            'Die Bewegungsstörungen treten nur nachts im Schlaf auf.'
+          ] }
       ],
       schreiben: [
         { typ: 'schreiben',
@@ -144,7 +167,7 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Leitsymptome, Frühzeichen, Verlauf und Auswirkungen',
+      titel: 'Leitsymptome und Frühzeichen',
       gewicht: 2,
       fragen: [
         { typ: 'zuordnen',
@@ -158,18 +181,11 @@ var CHALLENGE_FRAGEN = {
         { typ: 'mehrfach',
           frage: 'Tippen Sie alle **Frühzeichen** von Parkinson an.',
           richtig: ['Riechstörung', 'REM-Schlaf-Verhaltensstörung', 'Obstipation'],
-          falsch: ['Dyskinesien', 'akinetische Krise', 'Demenz'] },
-        { typ: 'auswahl',
-          frage: 'Herr Lenz: beide Körperseiten betroffen, Sturz nach hinten, zieht sich aber noch allein an. Welches Stadium nach Hoehn und Yahr passt?',
-          antworten: ['Stadium 3', 'Stadium 1', 'Stadium 5', 'Stadium 2'],
-          erklaerung: 'Beidseitig + posturale Instabilität, im Alltag noch weitgehend selbstständig = Stadium 3.' },
-        { typ: 'zuordnen',
-          frage: 'Ordnen Sie die Auswirkungen bei Herrn Lenz zu.',
-          zuordnung: {
-            'physisch': ['Platzwunde nach Sturz', 'Gewichtsverlust'],
-            'psychisch': ['schämt sich für sein Zittern', 'Angst vor dem nächsten Sturz'],
-            'sozial': ['geht nicht mehr zum Stammtisch', 'Ehefrau übernimmt seine Aufgaben']
-          } },
+          falsch: ['akinetische Krise', 'Demenz', 'Sturz nach hinten'] },
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle **nichtmotorischen** Symptome an.',
+          richtig: ['vermehrtes Schwitzen', 'depressive Verstimmung', 'Blasenstörung mit Harndrang'],
+          falsch: ['Ruhetremor', 'Freezing', 'Zahnradphänomen'] },
         { typ: 'auswahl',
           frage: 'Wie beurteilen Sie die Aussage „Herr Lenz hat kaum Mimik und antwortet langsam – er ist bestimmt dement.“?',
           antworten: [
@@ -178,144 +194,33 @@ var CHALLENGE_FRAGEN = {
             'richtig – langsames Antworten beweist kognitive Einschränkungen',
             'falsch – bei Parkinson tritt grundsätzlich nie eine Demenz auf'
           ] },
+        { typ: 'auswahl',
+          frage: 'Frau Kern zittert mit der Hand, wenn sie im Schoß liegt. Was passiert beim Greifen nach der Tasse?',
+          antworten: [
+            'Das Zittern wird meist schwächer.',
+            'Das Zittern wird immer sofort stärker.',
+            'Die Hand wird plötzlich völlig schlaff.',
+            'Die Hand verkrampft sich zu einer Faust.'
+          ],
+          erklaerung: 'Typisch für den Parkinson-Tremor: Ruhetremor, der bei gezielten Bewegungen abnimmt.' },
+        { typ: 'auswahl',
+          frage: 'Welche Beobachtung beschreibt den **Rigor**?',
+          antworten: [
+            'zäher, ruckartiger Widerstand beim Beugen des Arms',
+            'schlaffe Muskulatur ohne Widerstand beim Bewegen',
+            'plötzliches Einschießen von Überbewegungen der Arme',
+            'Zittern der Hand, das in Ruhe ganz verschwindet'
+          ] },
         { typ: 'richtigfalsch',
           aussage: 'Die posturale Instabilität tritt meist schon ganz zu Beginn der Erkrankung auf.',
           richtig: false,
-          erklaerung: 'Sie tritt meist erst im Verlauf auf (ab Stadium 3 nach Hoehn und Yahr).' }
-      ],
-      schreiben: [
-        { typ: 'schreiben',
-          frage: 'Leiten Sie aus der Fallsituation je eine physische, psychische und soziale Auswirkung der Erkrankung ab.',
-          fall: 'Frau Ott (68 J.) hat Parkinson. Sie ist zweimal gestürzt, traut sich kaum noch aus dem Haus und hat ihre Tätigkeit im Kirchenchor aufgegeben.',
-          muster: [
-            'physisch: Stürze mit Verletzungsgefahr',
-            'psychisch: Sturzangst, Unsicherheit („traut sich kaum aus dem Haus“)',
-            'sozial: Rückzug, Verlust der Teilhabe (Kirchenchor aufgegeben)'
-          ],
-          checkliste: ['jede Dimension genau einmal', 'jede Auswirkung mit Beleg aus dem Fall'] }
+          erklaerung: 'Sie tritt meist erst im Verlauf auf – dann steigt das Sturzrisiko stark.' }
       ]
     },
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Medikamente und Wirkungsschwankungen',
-      gewicht: 3,
-      fragen: [
-        { typ: 'auswahl',
-          frage: 'Wann sollte L-Dopa eingenommen werden?',
-          antworten: [
-            '30 Minuten vor oder 60–90 Minuten nach einer Mahlzeit, mit Wasser',
-            'immer direkt zu einer eiweißreichen Mahlzeit, damit es besser wirkt',
-            'mit einem Glas Milch, um den Magen vor der Tablette zu schützen',
-            'nur bei Bedarf, wenn Herr Lenz sich besonders steif fühlt'
-          ] },
-        { typ: 'auswahl',
-          frage: 'Warum wird L-Dopa mit einem **Decarboxylasehemmer** kombiniert?',
-          antworten: [
-            'damit L-Dopa erst im Gehirn zu Dopamin umgewandelt wird',
-            'damit L-Dopa schneller über die Nieren ausgeschieden wird',
-            'damit Dopamin direkt die Blut-Hirn-Schranke überwinden kann',
-            'damit die Wirkung von Acetylcholin im Gehirn verstärkt wird'
-          ] },
-        { typ: 'zuordnen',
-          frage: 'Ordnen Sie die Beobachtungen zu.',
-          zuordnung: {
-            'On': ['geht eine Stunde nach der Tablette flüssig ins Bad'],
-            'Off': ['wird kurz vor der nächsten Tablette steif', 'kommt morgens vor der ersten Tablette kaum aus dem Bett'],
-            'Dyskinesie': ['Arme und Beine machen unwillkürliche, schlenkernde Bewegungen']
-          } },
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle typischen Nebenwirkungen von **Dopaminagonisten** an.',
-          richtig: ['plötzliches Einschlafen', 'Kauf- oder Spielsucht', 'Halluzinationen'],
-          falsch: ['Unterzuckerung', 'Haarausfall'] },
-        { typ: 'auswahl',
-          frage: 'Herrn Lenz ist nach der OP übel. Welches Medikament ist bei Parkinson eher geeignet?',
-          antworten: ['Domperidon', 'Metoclopramid (MCP)', 'Haloperidol', 'Ondansetron plus Haloperidol'],
-          erklaerung: 'MCP und Haloperidol blockieren Dopamin-Rezeptoren im Gehirn. Domperidon wirkt kaum im Gehirn.' },
-        { typ: 'auswahl',
-          frage: 'Was bedeutet **Wearing-off**?',
-          antworten: [
-            'Die Wirkung lässt vorhersehbar vor der nächsten Dosis nach.',
-            'Die Wirkung setzt plötzlich und ohne erkennbaren Grund aus.',
-            'Bei hohem Wirkspiegel kommt es zu unwillkürlichen Bewegungen.',
-            'Das Medikament wirkt nur, wenn es mit Milch eingenommen wird.'
-          ] },
-        { typ: 'auswahl',
-          frage: 'Die Urinfarbe von Herrn Kühn ist rotbraun, seit er zusätzlich Entacapon erhält. Wie reagieren Sie?',
-          antworten: [
-            'Ich informiere ihn, dass das harmlos ist, und dokumentiere es.',
-            'Ich setze Entacapon sofort selbstständig ab und informiere niemanden.',
-            'Ich halte es für eine Blutung und lege sofort einen Blasenkatheter.',
-            'Ich reduziere eigenständig die L-Dopa-Dosis, bis der Urin hell ist.'
-          ] }
-      ],
-      schreiben: [
-        { typ: 'schreiben',
-          frage: 'Beurteilen Sie die Medikamentengabe und leiten Sie zwei Regeln für die Einnahme von L-Dopa ab.',
-          fall: 'Frau Klein soll L-Dopa um 7 Uhr erhalten. Sie bekommt es um 8:30 Uhr mit dem Frühstück (Quark, Käsebrot, Milchkaffee). Um 9:30 Uhr ist sie sehr steif.',
-          muster: [
-            'Die Tablette kommt 1,5 Stunden zu spät und mit einer eiweißreichen Mahlzeit → Aufnahme verzögert und vermindert → Off-Phase.',
-            'Regel 1: pünktlich nach individuellem Einnahmeplan geben.',
-            'Regel 2: 30 Minuten vor oder 60–90 Minuten nach dem Essen, mit Wasser.'
-          ],
-          checkliste: ['Verspätung erkannt', 'Eiweiß als Problem begründet', 'Folge: Off-Phase', 'zwei klare Regeln'] }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
-      titel: 'Akinetische Krise und ärztliche Anordnung',
-      gewicht: 2,
-      fragen: [
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle möglichen **Auslöser** einer akinetischen Krise an.',
-          richtig: ['L-Dopa wegen Nüchternheit weggelassen', 'Lungenentzündung mit Fieber', 'Gabe von Haloperidol'],
-          falsch: ['pünktliche Einnahme aller Tabletten', 'tägliche Physiotherapie'] },
-        { typ: 'zuordnen',
-          frage: 'Akinetische Krise: Wer ist zuständig?',
-          zuordnung: {
-            'sofort selbstständig': ['Ärztin informieren', 'Vitalzeichen überwachen', 'Oberkörper hoch, Speichel absaugen'],
-            'nach ärztlicher Anordnung': ['Amantadin-Infusion', 'L-Dopa über Magensonde'],
-            'nicht tun': ['Wasser zum Trinken reichen', 'Haloperidol gegen Unruhe geben']
-          } },
-        { typ: 'auswahl',
-          frage: 'Welche Komplikation droht bei einer akinetischen Krise mit Schluckunfähigkeit besonders?',
-          antworten: ['Aspirationspneumonie', 'Hypoglykämie', 'Harninkontinenz', 'allergische Reaktion'] },
-        { typ: 'auswahl',
-          frage: 'Ein Arzt ordnet bei einem Parkinson-Patienten Haloperidol an. Was ist richtig?',
-          antworten: [
-            'Bedenken äußern und die Anordnung klären, bevor ich das Mittel gebe',
-            'sofort geben, denn die Verantwortung trägt allein der anordnende Arzt',
-            'die halbe Dosis geben, damit das Risiko für den Patienten kleiner ist',
-            'das Medikament heimlich durch ein anderes Neuroleptikum ersetzen'
-          ],
-          erklaerung: 'Die Pflegefachperson trägt die Durchführungsverantwortung: Sie prüft die Anordnung und äußert Bedenken (Remonstration).' },
-        { typ: 'reihenfolge',
-          frage: 'Telefonische Anordnung im Ausnahmefall: Bringen Sie die Schritte in die richtige Reihenfolge.',
-          schritte: [
-            'Anordnung genau anhören',
-            'Anordnung laut wiederholen und bestätigen lassen',
-            'Anordnung mit Uhrzeit und Namen dokumentieren',
-            'Ärztin zeichnet die Anordnung so bald wie möglich gegen'
-          ] }
-      ],
-      schreiben: [
-        { typ: 'schreiben',
-          frage: 'Begründen Sie anhand von vier Beobachtungen, dass eine akinetische Krise vorliegt.',
-          fall: 'Herr Lenz liegt am Morgen nach der Hüft-OP völlig steif im Bett, spricht kaum und verschluckt sich am Tee. Er schwitzt stark. Temperatur 38,9 °C, Puls 116/min.',
-          muster: [
-            'völlige Unbeweglichkeit und Steifigkeit (Akinese, Rigor)',
-            'Sprech- und Schluckstörung – Aspirationsgefahr',
-            'Fieber 38,9 °C und Herzrasen (Puls 116/min)',
-            'starkes Schwitzen – vegetative Entgleisung'
-          ],
-          checkliste: ['vier Beobachtungen aus dem Fall', 'jeweils fachlich eingeordnet', 'Hinweis auf Lebensgefahr/Notfall'] }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
-      titel: 'Pflegeprozess: PESR, Pflegeziele, Interventionen',
+      titel: 'Pflegeprozess: PESR und Pflegeziele',
       gewicht: 3,
       fragen: [
         { typ: 'zuordnen',
@@ -323,7 +228,14 @@ var CHALLENGE_FRAGEN = {
           zuordnung: {
             'E – Einflussfaktor': ['Bradykinese und Rigor', 'Off-Phase vor der nächsten Tablette'],
             'S – Symptom': ['kleine, schlurfende Schritte', 'Freezing an der Schlafzimmertür'],
-            'R – Ressource': ['nutzt den Rollator zuverlässig', 'kennt Strategien aus der Reha']
+            'R – Ressource': ['nutzt den Rollator zuverlässig', 'kennt Strategien aus der Physiotherapie']
+          } },
+        { typ: 'zuordnen',
+          frage: 'Pflegeproblem „beeinträchtigtes Schlucken“: Ordnen Sie die Informationen den PESR-Bausteinen zu.',
+          zuordnung: {
+            'E – Einflussfaktor': ['Rigor und Akinese der Schluckmuskulatur'],
+            'S – Symptom': ['hustet beim Trinken von Wasser', 'Speichel läuft aus dem Mundwinkel'],
+            'R – Ressource': ['geistig klar, setzt Anleitung um', 'Logopädie ist verordnet']
           } },
         { typ: 'auswahl',
           frage: 'Welches Pflegeziel ist **überprüfbar** formuliert?',
@@ -333,14 +245,22 @@ var CHALLENGE_FRAGEN = {
             'Die Pflegefachperson bietet Herrn Lenz regelmäßig Getränke an.',
             'Herr Lenz erhält einen Trinkplan und einen Becher mit Griffen.'
           ] },
+        { typ: 'auswahl',
+          frage: 'Sturzgefahr ist ein **Risiko**-Pflegeproblem. Was nennen Sie statt der Symptome (S)?',
+          antworten: [
+            'Risikofaktoren',
+            'die Pflegeziele',
+            'die Interventionen',
+            'die Evaluation'
+          ] },
         { typ: 'mehrfach',
-          frage: 'Tippen Sie alle passenden Interventionen bei **Freezing** an.',
-          richtig: ['Bodenmarkierung zum Übersteigen', 'Schritte laut mitzählen lassen', 'erst auf der Stelle treten, dann großer Schritt'],
-          falsch: ['am Arm ziehen, damit er weitergeht', 'zur Eile auffordern'] },
+          frage: 'Tippen Sie alle Merkmale eines **überprüfbaren** Pflegeziels an.',
+          richtig: ['aus Sicht des Pflegeempfängers formuliert', 'beobachtbar oder messbar', 'mit Zeitangabe'],
+          falsch: ['beschreibt, was die Pflegefachperson tut', 'als Wunsch mit „soll“ formuliert'] },
         { typ: 'zahl',
-          frage: 'Herr Lenz wiegt 66 kg und ist 1,80 m groß. Berechnen Sie seinen BMI (eine Nachkommastelle).',
-          loesung: 20.4, toleranz: 0.1, einheit: 'kg/m²',
-          erklaerung: '66 : (1,80 × 1,80) = 66 : 3,24 = 20,4 kg/m² – bei über 70-Jährigen zusammen mit Gewichtsverlust ein Hinweis auf Mangelernährung.' },
+          frage: 'Frau Ott wiegt 52 kg und ist 1,65 m groß. Berechnen Sie ihren BMI (eine Nachkommastelle).',
+          loesung: 19.1, toleranz: 0.1, einheit: 'kg/m²',
+          erklaerung: '52 : (1,65 × 1,65) = 52 : 2,7225 = 19,1 kg/m² – bei über 70-Jährigen zusammen mit Gewichtsverlust ein Hinweis auf Mangelernährung.' },
         { typ: 'reihenfolge',
           frage: 'Bringen Sie die Schritte des Pflegeprozesses in die Reihenfolge, die in Prüfungsaufgaben verlangt wird.',
           schritte: [
@@ -349,14 +269,6 @@ var CHALLENGE_FRAGEN = {
             'überprüfbare Pflegeziele festlegen',
             'Pflegeinterventionen planen und begründen',
             'Wirksamkeit evaluieren'
-          ] },
-        { typ: 'auswahl',
-          frage: 'Herr Lenz verschluckt sich bei Suppe. Welche Intervention ist am besten begründet?',
-          antworten: [
-            'aufrecht sitzen, Kopf leicht nach vorn, Suppe nach logopädischer Empfehlung andicken',
-            'im Liegen essen lassen, damit er sich beim Schlucken nicht anstrengen muss',
-            'Suppe besonders schnell anreichen, damit die Mahlzeit nicht zu lange dauert',
-            'Getränke nur noch mit einem großen Becher reichen, damit er mehr trinkt'
           ] }
       ],
       schreiben: [
@@ -375,74 +287,154 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Rehabilitation, Team und Assistenzsysteme',
-      gewicht: 0,
+      titel: 'Pflegeinterventionen entwickeln und begründen',
+      gewicht: 3,
       fragen: [
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle passenden Interventionen bei **Freezing** an.',
+          richtig: ['Bodenmarkierung zum Übersteigen', 'Schritte laut mitzählen lassen', 'erst auf der Stelle treten, dann großer Schritt'],
+          falsch: ['am Arm ziehen, damit er weitergeht', 'zur Eile auffordern'] },
+        { typ: 'auswahl',
+          frage: 'Herr Lenz verschluckt sich bei Suppe. Welche Intervention ist am besten begründet?',
+          antworten: [
+            'aufrecht sitzen, Kinn leicht zur Brust, Suppe nach logopädischer Empfehlung andicken',
+            'im Liegen essen lassen, damit er sich beim Schlucken nicht anstrengen muss',
+            'Suppe besonders schnell anreichen, damit die Mahlzeit nicht zu lange dauert',
+            'Getränke nur noch mit einem großen Becher reichen, damit er mehr trinkt'
+          ] },
+        { typ: 'auswahl',
+          frage: 'Wie soll sich Herr Lenz am besten **umdrehen**?',
+          antworten: [
+            'in einem großen Bogen gehen',
+            'schnell auf der Stelle drehen',
+            'sich mit Schwung herumwerfen',
+            'rückwärts zurückgehen'
+          ],
+          erklaerung: 'Drehen auf der Stelle löst Freezing und Stürze aus; ein großer Bogen ist sicherer.' },
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle Maßnahmen an, die das **Sturzrisiko** in der Wohnung senken.',
+          richtig: ['lose Teppiche entfernen', 'Nachtlicht im Flur', 'Haltegriffe im Bad'],
+          falsch: ['offene Hausschuhe', 'Kabel quer durch das Zimmer'] },
         { typ: 'zuordnen',
-          frage: 'Ordnen Sie die Maßnahmen dem Rehabilitationsziel zu.',
+          frage: 'Ordnen Sie die Interventionen dem Pflegeproblem zu.',
           zuordnung: {
-            'Restitution': ['Gehtraining nach Hüft-OP bis zur alten Gehstrecke'],
-            'Kompensation': ['Anti-Freezing-Stock', 'Besteck mit Griffverdickung'],
-            'Adaption': ['Teppiche entfernen', 'Termine in die On-Phase legen']
-          } },
-        { typ: 'zuordnen',
-          frage: 'Welche Berufsgruppe übernimmt die Aufgabe hauptsächlich?',
-          zuordnung: {
-            'Physiotherapie': ['Gang- und Gleichgewichtstraining'],
-            'Ergotherapie': ['Wohnraumberatung und Hilfsmittel für den Alltag'],
-            'Logopädie': ['Schluck- und Stimmtraining'],
-            'Sozialdienst': ['Beratung zu Leistungen und Anträgen']
+            'Freezing': ['Rhythmus vorgeben („eins – zwei“)', 'Klebemarkierung am Boden'],
+            'beeinträchtigtes Schlucken': ['Getränke andicken', 'Kinn zur Brust, kleine Bissen'],
+            'Obstipation': ['ballaststoffreiche Kost', 'feste Toilettenzeit nach dem Frühstück']
           } },
         { typ: 'auswahl',
-          frage: 'Welches technische Assistenzsystem hilft Herrn Lenz, wenn er allein in der Werkstatt stürzt?',
-          antworten: ['Hausnotruf mit Sturzerkennung', 'Besteck mit verdickten Griffen', 'Teller mit erhöhtem Rand', 'elektrische Zahnbürste'] }
+          frage: 'Das Waschen dauert bei Herrn Lenz sehr lange. Was ist fachgerecht?',
+          antworten: [
+            'Zeit lassen und nur dort unterstützen, wo es nötig ist',
+            'die Körperpflege komplett übernehmen, damit es schneller geht',
+            'ihn zur Eile auffordern, damit er im Zeitplan bleibt',
+            'die Körperpflege auf die Zeit vor der ersten Tablette legen'
+          ],
+          erklaerung: 'Aktivierende Pflege erhält die Selbstständigkeit; Zeitdruck verstärkt die Symptome. Anstrengendes gehört in die On-Phase.' },
+        { typ: 'auswahl',
+          frage: 'Wann planen Sie Gehtraining und Körperpflege bei Herrn Lenz am besten?',
+          antworten: [
+            'wenn die Tabletten gut wirken (On-Phase)',
+            'kurz bevor die nächste Tablette fällig ist',
+            'immer direkt nach dem Aufwachen am Morgen',
+            'wenn er besonders steif ist, zum Training'
+          ] },
+        { typ: 'reihenfolge',
+          frage: 'Herr Lenz bleibt an der Tür stehen (Freezing). Bringen Sie Ihr Vorgehen in eine sinnvolle Reihenfolge.',
+          schritte: [
+            'stehen bleiben lassen, nicht ziehen',
+            'ruhig ansprechen',
+            'Rhythmus vorgeben und auf der Stelle treten lassen',
+            'mit einem großen Schritt über die Markierung gehen'
+          ] },
+        { typ: 'richtigfalsch',
+          aussage: 'Damit das Wasser besser hinunterläuft, soll Herr Lenz beim Trinken den Kopf in den Nacken legen.',
+          richtig: false,
+          erklaerung: 'Mit dem Kopf im Nacken sind die Atemwege offen – Aspirationsgefahr. Richtig: Kinn leicht zur Brust.' }
+      ],
+      schreiben: [
+        { typ: 'schreiben',
+          frage: 'Entwickeln Sie zu „beeinträchtigtes Schlucken“ zwei Pflegeinterventionen und begründen Sie diese.',
+          fall: 'Frau Haas (74 J., Parkinson) verschluckt sich beim Trinken und bei Suppe. Sie isst langsam und wird beim Essen oft gedrängt.',
+          muster: [
+            'aufrecht sitzen, Kinn leicht zur Brust, kleine Bissen und Schlucke → schützt die Atemwege vor Aspiration',
+            'in Ruhe und ohne Zeitdruck in der On-Phase essen lassen → Stress verstärkt Rigor und Akinese; in der On-Phase schluckt sie besser',
+            'Getränke und Suppe nach logopädischer Empfehlung andicken → Dünnflüssiges fließt schnell und wird leicht aspiriert'
+          ],
+          checkliste: ['zwei konkrete Interventionen (wer, was, wie)', 'jede mit „weil/damit …“ begründet', 'Bezug zum Fall (Verschlucken, Zeitdruck)'] }
       ]
     },
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Kommunikation, Angehörige und Ethik',
-      gewicht: 1,
+      titel: 'Akinetische Krise: erkennen und handeln',
+      gewicht: 2,
       fragen: [
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle möglichen **Auslöser** einer akinetischen Krise an.',
+          richtig: ['Parkinson-Tabletten wegen Nüchternheit weggelassen', 'Lungenentzündung mit Fieber', 'Flüssigkeitsmangel'],
+          falsch: ['pünktliche Einnahme aller Tabletten', 'tägliche Physiotherapie'] },
+        { typ: 'zuordnen',
+          frage: 'Akinetische Krise: Was tun Sie?',
+          zuordnung: {
+            'sofort selbstständig': ['Ärztin informieren', 'Vitalzeichen überwachen', 'Oberkörper hoch, Speichel absaugen'],
+            'nach ärztlicher Anordnung': ['Infusion anlegen', 'Medikamente über Magensonde geben'],
+            'nicht tun': ['Wasser zum Trinken reichen', 'Tabletten im Joghurt eingeben']
+          } },
         { typ: 'auswahl',
-          frage: 'Frau Kühn sagt: „Er schaut mich mit diesem leeren Gesicht an – ihm ist alles egal.“ Wie reagieren Sie?',
+          frage: 'Welche Komplikation droht bei einer akinetischen Krise mit Schluckunfähigkeit besonders?',
+          antworten: ['Aspirationspneumonie', 'Hypoglykämie', 'Harninkontinenz', 'allergische Reaktion'] },
+        { typ: 'zeile',
+          frage: 'Tippen Sie alle Zeilen an, die auf eine **akinetische Krise** hinweisen.',
+          zeilen: [
+            'Herr Lenz wurde gestern an der Hüfte operiert.',
+            'Er liegt völlig steif im Bett und kann sich nicht drehen.',
+            'Seine Frau hat ihm frische Wäsche gebracht.',
+            'Er verschluckt sich am Tee und spricht kaum.',
+            'Temperatur 38,9 °C, Puls 116/min, er schwitzt stark.'
+          ],
+          richtig: [2, 4, 5],
+          erklaerung: 'Akinese und Rigor (Z. 2), Schluck- und Sprechstörung (Z. 4), Fieber, Herzrasen, Schwitzen (Z. 5).' },
+        { typ: 'auswahl',
+          frage: 'Warum geben Sie bei einer akinetischen Krise **nichts über den Mund**?',
           antworten: [
-            'Ich erkläre die Hypomimie und ermutige sie, nachzufragen.',
-            'Ich bestätige ihr, dass ihr Mann wohl kein Interesse mehr hat.',
-            'Ich rate ihr, solche Themen besser gar nicht mehr anzusprechen.',
-            'Ich empfehle ihr, auf seine Mimik als einziges Zeichen zu achten.'
+            'weil der Betroffene nicht sicher schlucken kann',
+            'weil Essen und Trinken die Steifigkeit verstärken',
+            'weil der Betroffene vor einer OP nüchtern sein muss',
+            'weil Flüssigkeit das Fieber weiter ansteigen lässt'
           ] },
         { typ: 'mehrfach',
-          frage: 'Tippen Sie alle förderlichen Verhaltensweisen im Gespräch mit Herrn Lenz an.',
-          richtig: ['eine Frage nach der anderen stellen', 'Pausen aushalten', 'Gespräch in die On-Phase legen'],
-          falsch: ['Sätze für ihn zu Ende sprechen', 'die Ehefrau für ihn antworten lassen'] },
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle Angebote an, die pflegende Angehörige entlasten.',
-          richtig: ['Verhinderungspflege', 'Tagespflege', 'Pflegekurs für Angehörige', 'Selbsthilfegruppe'],
-          falsch: ['Parkinson-Tagebuch', 'L-Dopa-Test'] },
+          frage: 'Tippen Sie alle **Komplikationen** der akinetischen Krise an.',
+          richtig: ['Aspirationspneumonie', 'Exsikkose', 'Thrombose', 'Dekubitus'],
+          falsch: ['Unterzuckerung', 'Bluthochdruckkrise durch Bewegung'] },
         { typ: 'auswahl',
-          frage: 'Herr Lenz will allein in die Werkstatt, seine Frau will es verbieten. Welche Lösung verbindet Autonomie und Fürsorge am besten?',
+          frage: 'Fieber, starkes Schwitzen, wenig Urin: Welche Maßnahme ist jetzt besonders wichtig?',
           antworten: [
-            'Risiko senken: Werkstatt nur in On-Phasen, Hausnotruf, zweiter Handlauf',
-            'Die Werkstatt dauerhaft abschließen, damit er nicht mehr stürzen kann',
-            'Herrn Lenz ohne Absprache alles erlauben, auch die Arbeit an der Kreissäge',
-            'Die Entscheidung allein dem Pflegedienst überlassen, ohne Herrn Lenz'
-          ] },
-        { typ: 'richtigfalsch',
-          aussage: 'Bei Parkinson ist die Intelligenz trotz starrer Mimik und langsamer Sprache meist erhalten.',
-          richtig: true,
-          erklaerung: 'Hypomimie und Bradyphrenie sind kein Intelligenzverlust – erst im Spätstadium kann eine Demenz hinzukommen.' }
+            'Ein- und Ausfuhr bilanzieren',
+            'einen großen Becher Tee reichen',
+            'die Bettdecke dicker wählen',
+            'bis zur nächsten Visite warten'
+          ] }
       ],
       schreiben: [
         { typ: 'schreiben',
-          frage: 'Erläutern Sie eine Kommunikationsbarriere und beschreiben Sie zwei Maßnahmen, um sie zu überbrücken.',
-          fall: 'Herr Lenz spricht so leise, dass seine Frau oft nachfragen muss. Dann winkt er ab und schweigt.',
+          frage: 'Begründen Sie anhand von vier Beobachtungen, dass eine akinetische Krise vorliegt.',
+          fall: 'Herr Lenz liegt am Morgen nach der Hüft-OP völlig steif im Bett, spricht kaum und verschluckt sich am Tee. Er schwitzt stark. Temperatur 38,9 °C, Puls 116/min.',
           muster: [
-            'Barriere: Hypophonie – die Stimme ist durch die Parkinson-Erkrankung leise und monoton; ständiges Nachfragen frustriert, Herr Lenz zieht sich aus Gesprächen zurück.',
-            'Maßnahme 1: ruhige Umgebung (Radio aus), Blickkontakt, Zeit lassen, Gespräche in der On-Phase.',
-            'Maßnahme 2: Logopädie (Stimmtraining), ggf. Sprachverstärker; Frau Lenz anleiten.'
+            'völlige Unbeweglichkeit und Steifigkeit (Akinese, Rigor)',
+            'Sprech- und Schluckstörung – Aspirationsgefahr',
+            'Fieber 38,9 °C und Herzrasen (Puls 116/min)',
+            'starkes Schwitzen – vegetative Entgleisung'
           ],
-          checkliste: ['Barriere mit Fachbegriff', 'Folge im Fall erklärt', 'zwei konkrete Maßnahmen'] }
+          checkliste: ['vier Beobachtungen aus dem Fall', 'jeweils fachlich eingeordnet', 'Hinweis auf Lebensgefahr/Notfall'] },
+        { typ: 'schreiben',
+          frage: 'Beschreiben Sie drei pflegerische Sofortmaßnahmen bei einer akinetischen Krise und begründen Sie diese.',
+          muster: [
+            'Ärztin sofort informieren → lebensbedrohlicher Notfall, ärztliche Therapie nötig',
+            'Oberkörper hoch, Speichel absaugen, nichts über den Mund → Aspirationsgefahr durch Schluckunfähigkeit',
+            'Vitalzeichen, Bewusstsein, SpO₂ überwachen; Ein- und Ausfuhr bilanzieren → Verschlechterung und Exsikkose früh erkennen'
+          ],
+          checkliste: ['drei Maßnahmen, die Pflegefachpersonen selbstständig durchführen', 'jede Maßnahme begründet', 'keine Medikamentengabe ohne Anordnung'] }
       ]
     }
   ]
