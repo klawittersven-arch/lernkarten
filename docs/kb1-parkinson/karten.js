@@ -46,7 +46,8 @@ var LERNKARTEN = {
         '**P** – Pflegeproblem (kurzer Titel)',
         '**E** – Einflussfaktoren/Ursachen („aufgrund von …“)',
         '**S** – Symptome/Kennzeichen („erkennbar an …“, mit Zeile)',
-        '**R** – Ressourcen (Fähigkeiten, Motivation, Hilfsmittel, Menschen)'
+        '**R** – Ressourcen (Fähigkeiten, Motivation, Hilfsmittel, Menschen)',
+        '**Risiko-Pflegeproblem:** P + **RF** (Risikofaktoren) + R'
       ]
     }
   },
@@ -55,10 +56,63 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Fallsituation: Parkinson-Symptome erkennen',
+      titel: 'Krankheitsbild: Definition, Formen, Pathophysiologie',
       karten: [
         { nr: 1, afb: 'I',
-          vorne: 'Ich kann in einer Fallsituation Hinweise auf Parkinson-Symptome *identifizieren* und den Fachbegriff nennen:',
+          vorne: 'Ich kann das Parkinson-Syndrom *definieren*.',
+          hinten: 'Das Parkinson-Syndrom ist ein Krankheitsbild mit typischen Störungen der **Bewegungssteuerung**, insbesondere **verlangsamten Bewegungen** sowie häufig **Muskelsteifigkeit** und/oder **Zittern**. Es schreitet fort und ist nicht heilbar.' },
+        { nr: 1, afb: 'I',
+          vorne: 'Ich kann die **Formen** des Parkinson-Syndroms *unterscheiden*.',
+          hinten: [
+            '**idiopathisch** (Morbus Parkinson): Dopaminbildende Zellen der Substantia nigra sterben ab – die Ursache ist unklar.',
+            '**symptomatisch (sekundär):** ähnliche Symptome mit bekanntem Auslöser, z. B. bestimmte Medikamente (v. a. Neuroleptika), Vergiftungen, wiederholte Kopftraumen, Entzündungen des Gehirns',
+            '**atypisch:** parkinsonähnliche Symptome im Rahmen anderer neurodegenerativer Erkrankungen (z. B. Multisystematrophie, Demenz mit Lewy-Körpern)'
+          ] },
+        { nr: 2, afb: 'II',
+          vorne: 'Ich kann Lage und Funktion der **Substantia nigra** *erklären*.',
+          hinten: 'Sie liegt im **Mittelhirn** (Teil des Hirnstamms) und enthält Nervenzellen, die den Neurotransmitter **Dopamin** bilden. Dopamin ist wesentlich an der Steuerung von Bewegungen beteiligt.' },
+        { nr: 2, afb: 'II',
+          vorne: 'Ich kann die **Pathophysiologie** von Parkinson *erläutern*.',
+          nummeriert: true,
+          hinten: [
+            'In der Substantia nigra gehen dopaminbildende Nervenzellen zugrunde → **Dopaminmangel**.',
+            'Das fein abgestimmte **Gleichgewicht** der Neurotransmitter geht verloren: Dopamin zu wenig, **Acetylcholin** relativ zu viel.',
+            'Die Bewegungssteuerung ist gestört → Brady-/Akinese, Rigor, Tremor.'
+          ] }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      titel: 'Symptome erkennen und erläutern',
+      karten: [
+        { nr: 1, afb: 'II',
+          vorne: 'Ich kann das Leitsymptom **Brady-/Akinese** *erläutern*.',
+          hinten: [
+            'Bewegungen sind verlangsamt; Starten und Beenden von Bewegungen sind erschwert – bis zu Bewegungsarmut oder Bewegungsblockaden (**Freezing**)',
+            'Beispiele: kleinschrittiger, schlurfender Gang, Arme schwingen nicht mit, maskenhaftes Gesicht (Hypomimie), leise, monotone Stimme'
+          ] },
+        { nr: 1, afb: 'II',
+          vorne: 'Ich kann das Leitsymptom **Rigor** *erläutern*.',
+          hinten: [
+            'Muskelsteife durch **erhöhten Muskeltonus**; Bewegungen fühlen sich widerständig an',
+            'beim passiven Bewegen ggf. **Zahnradphänomen**; gebeugte Körperhaltung, begleitend oft Schmerzen'
+          ] },
+        { nr: 1, afb: 'II',
+          vorne: 'Ich kann das Leitsymptom **Tremor** *erläutern*.',
+          hinten: [
+            'Zittern, häufig **in Ruhe**',
+            'wird bei psychischer Anspannung oft stärker',
+            'kann durch Festhalten oder eine gezielte Bewegung geringer werden'
+          ] },
+        { nr: 2, afb: 'I',
+          vorne: 'Ich kann **motorische und nichtmotorische** Symptome *unterscheiden*.',
+          hinten: [
+            '**motorisch:** Tremor, Rigor, Brady-/Akinese, Freezing, kleinschrittiger Gang, fehlendes Mitschwingen der Arme, gebeugte Haltung, Hypomimie, leise, monotone Stimme',
+            '**nichtmotorisch:** kognitive Veränderungen, Stimmungsschwankungen/Depression, vermehrtes Schwitzen, Blasenentleerungsstörungen, Obstipation'
+          ] },
+        { nr: 3, afb: 'I',
+          vorne: 'Ich kann in einer Fallsituation Parkinson-Symptome *identifizieren* und den Fachbegriff nennen:',
           fall: 'Herr Roth (69 J.) bleibt an der Badezimmertür plötzlich stehen, „als ob die Füße am Boden kleben“. Seine linke Hand zittert, wenn sie auf der Armlehne liegt. Beim Durchbewegen des Arms spürt die Pflegefachperson einen ruckartigen Widerstand.',
           nummeriert: true,
           hinten: [
@@ -66,31 +120,28 @@ var LERNKARTEN = {
             '„… Hand zittert, wenn sie auf der Armlehne liegt“ → **Ruhetremor**',
             '„… ruckartiger Widerstand …“ → **Rigor** mit Zahnradphänomen'
           ] },
-        { nr: 1, afb: 'I',
-          vorne: 'Ich kann in einer Fallsituation Hinweise auf Parkinson-Symptome *identifizieren* und den Fachbegriff nennen:',
-          fall: 'Frau Haas (74 J.) spricht leise und monoton, ihr Gesicht wirkt starr. Ihre Schrift ist in letzter Zeit sehr klein geworden. Sie schwitzt stark und hat nur alle vier Tage Stuhlgang.',
+        { nr: 3, afb: 'I',
+          vorne: 'Ich kann in einer Fallsituation Parkinson-Symptome *identifizieren* und den Fachbegriff nennen:',
+          fall: 'Frau Haas (74 J.) spricht leise und monoton, ihr Gesicht wirkt starr. Sie schwitzt stark, obwohl es im Zimmer kühl ist, und hat nur alle vier Tage Stuhlgang.',
           nummeriert: true,
           hinten: [
-            '„… spricht leise und monoton …“ → **Hypophonie**',
-            '„… Gesicht wirkt starr“ → **Hypomimie**',
-            '„… Schrift … sehr klein“ → **Mikrographie**',
-            '„… schwitzt stark …“, „… alle vier Tage Stuhlgang“ → nichtmotorisch: **Hyperhidrose**, **Obstipation**'
+            '„… spricht leise und monoton …“ → leise, monotone Stimme (**Hypophonie**)',
+            '„… Gesicht wirkt starr“ → maskenhaftes Gesicht (**Hypomimie**)',
+            '„… schwitzt stark …“, „… alle vier Tage Stuhlgang“ → nichtmotorisch: **vermehrtes Schwitzen**, **Obstipation**'
           ] },
-        { nr: 1, afb: 'I',
-          vorne: 'Ich kann in einer Fallsituation Hinweise auf Parkinson-Symptome *identifizieren* und die **Zeile** angeben:',
+        { nr: 3, afb: 'I',
+          vorne: 'Ich kann in einer Fallsituation Parkinson-Symptome *identifizieren* und die **Zeile** angeben:',
           zeilen: [
             'Herr Brandt (71 J.) lebt mit seiner Frau in einer Wohnung im 2. Stock.',
             'Er geht mit kleinen, schlurfenden Schritten, die Arme schwingen nicht mit.',
-            'Gestern ist er beim Umdrehen in der Küche nach hinten gestürzt.',
-            'Seine Frau erzählt, dass er schon seit Jahren nichts mehr riechen kann.',
+            'Beim Aufstehen braucht er mehrere Anläufe.',
             'Er liest jeden Morgen die Zeitung und löst gern Kreuzworträtsel.',
-            'Nachts schlägt er im Traum um sich und ruft laut.'
+            'In letzter Zeit ist er oft niedergeschlagen und hat zu nichts Lust.'
           ],
           hinten: [
-            '**Bradykinese/Gangstörung:** kleine, schlurfende Schritte, kein Mitschwingen der Arme (Z. 2)',
-            '**posturale Instabilität:** Sturz beim Umdrehen nach hinten (Z. 3)',
-            '**Frühzeichen/nichtmotorisch:** Riechstörung (Z. 4) · REM-Schlaf-Verhaltensstörung (Z. 6)',
-            'Z. 1 und Z. 5 sind Informationen bzw. Ressourcen – keine Symptome.'
+            '**Brady-/Akinese:** kleine, schlurfende Schritte, kein Mitschwingen der Arme (Z. 2); erschwerter Bewegungsstart (Z. 3)',
+            '**nichtmotorisch:** depressive Verstimmung (Z. 5)',
+            'Z. 1 und Z. 4 sind Informationen bzw. Ressourcen – keine Symptome.'
           ],
           hinweis: 'In der Klausur zu jedem Symptom die Zeile angeben – sonst gibt es Punktabzug.' }
       ]
@@ -98,175 +149,99 @@ var LERNKARTEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Krankheitsbild: Definition, Ursache, Pathophysiologie',
-      karten: [
-        { nr: 1, afb: 'I',
-          vorne: 'Ich kann das Krankheitsbild Parkinson *beschreiben*: **Definition**',
-          hinten: 'langsam fortschreitende, nicht heilbare **neurodegenerative** Erkrankung des Gehirns, bei der vor allem die **Bewegungssteuerung** gestört ist.' },
-        { nr: 1, afb: 'I',
-          vorne: 'Ich kann das Krankheitsbild Parkinson *beschreiben*: **Ursache und Formen**',
-          hinten: [
-            '**idiopathisches** Parkinson-Syndrom (ca. 75 %): Ursache unbekannt; wichtigster Risikofaktor ist das Alter',
-            '**symptomatisches (sekundäres)** Parkinson-Syndrom: bekannte Ursache, z. B. Medikamente, Vergiftung, Entzündung',
-            '**atypisches** Parkinson-Syndrom: im Rahmen anderer neurodegenerativer Erkrankungen'
-          ] },
-        { nr: 2, afb: 'II',
-          vorne: 'Ich kann die **Pathophysiologie** von Parkinson *erklären*.',
-          nummeriert: true,
-          hinten: [
-            'In der **Substantia nigra** im Mittelhirn gehen dopaminbildende Nervenzellen zugrunde.',
-            'In den Basalganglien fehlt **Dopamin**; **Acetylcholin** überwiegt relativ → Ungleichgewicht der Botenstoffe.',
-            'Bewegungen können nicht mehr fein gesteuert werden → Bradykinese, Rigor, Tremor.'
-          ] },
-        { nr: 2, afb: 'II',
-          vorne: 'Ich kann *erklären*, warum Parkinson oft erst spät erkannt wird.',
-          hinten: 'Bewegungsstörungen zeigen sich erst, wenn **mehr als die Hälfte** der dopaminbildenden Zellen untergegangen ist (je nach Quelle 50–80 %). Frühzeichen wie Riechstörung oder Obstipation werden selten mit Parkinson in Verbindung gebracht.' }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
-      titel: 'Leitsymptome und Frühzeichen',
+      titel: 'Pflegerisches Handeln bei Parkinson',
       karten: [
         { nr: 1, afb: 'II',
-          vorne: 'Ich kann das Leitsymptom **Bradykinese/Akinese** *erläutern*.',
+          vorne: 'Ich kann **Grundprinzipien** der Pflege bei Parkinson *beschreiben*.',
           hinten: [
-            'Verlangsamung und Verarmung der Bewegungen; Bewegungen sind schwer zu starten und zu beenden',
-            'Beispiele: kleinschrittiger Gang, fehlendes Mitschwingen der Arme, **Freezing**, Hypomimie, Hypophonie, Mikrographie'
+            '**Zeit lassen**, eigenes Tempo respektieren – Zeitdruck und Stress verstärken die Symptome',
+            '**Selbstständigkeit fördern:** nur so viel helfen wie nötig, Gegenstände erreichbar hinstellen (aktivierende Pflege)',
+            '**Selbstbestimmung achten:** Wünsche erfragen und respektieren; Sicherheit herstellen, statt Fähigkeiten wegzunehmen (z. B. Rollator statt Rollstuhl)'
           ] },
-        { nr: 1, afb: 'II',
-          vorne: 'Ich kann das Leitsymptom **Rigor** *erläutern*.',
+        { nr: 1, afb: 'III',
+          vorne: 'Ich kann pflegerisches Handeln *beurteilen*:',
+          fall: 'Herr Roth bleibt im Flur stehen und kommt nicht weiter. Die Pflegefachperson nimmt seinen Arm, zieht ihn nach vorn und sagt: „Kommen Sie, wir sind spät dran!“',
           hinten: [
-            'Muskelsteifigkeit durch **erhöhten Muskeltonus**',
-            'beim passiven Bewegen zäher, oft ruckartiger Widerstand (**Zahnradphänomen**); gebeugte Haltung, oft Schmerzen'
+            'nicht angemessen: Ziehen und Drängen missachten die Verlangsamung; Zeitdruck verstärkt die Blockade, Ziehen bringt ihn aus dem Gleichgewicht → Sturzgefahr',
+            'besser: stehen bleiben lassen, ruhig ansprechen, äußeren Reiz geben (Kommando, Klatschen, Fuß oder Anti-Freezing-Stock als Hindernis)'
           ] },
-        { nr: 1, afb: 'II',
-          vorne: 'Ich kann das Leitsymptom **Tremor** *erläutern*.',
+        { nr: 2, afb: 'II',
+          vorne: 'Ich kann Pflegeinterventionen bei **Freezing** und für eine **sichere Fortbewegung** *beschreiben*.',
           hinten: [
-            '**Ruhetremor:** Zittern in Ruhe, wird bei gezielten Bewegungen schwächer',
-            'oft zuerst einseitig; bei Aufregung stärker'
+            'bei Freezing äußere Reize setzen: Fuß oder Anti-Freezing-Stock als Hindernis, Kommandos, Klatschen, Singen, Markierung zum Übersteigen',
+            'Stolperfallen vermeiden; feste Stühle mit Seitenlehnen',
+            'weite, leicht zu schließende Kleidung; Schuhe ohne Gummisohle'
           ] },
-        { nr: 1, afb: 'II',
-          vorne: 'Ich kann das Leitsymptom **posturale Instabilität** *erläutern*.',
+        { nr: 2, afb: 'II',
+          vorne: 'Ich kann *beschreiben*, wie Pflegefachpersonen **Essen und Trinken** praktisch erleichtern.',
           hinten: [
-            'gestörte **Halte- und Stellreflexe** → Gleichgewichtsverluste werden nicht schnell genug ausgeglichen',
-            'hohes **Sturzrisiko**, oft Stürze nach hinten (Retropulsion); tritt meist erst im Verlauf auf'
+            'ganz nah an den Tisch setzen, Tisch oder Teller erhöhen → Weg zum Mund möglichst kurz',
+            'Hilfsmittel: Warmhalteteller, tremorkompensierender Löffel, Teller mit erhöhtem Rand, Antirutschmatte, Becher mit zwei Griffen',
+            'kleine Portionen; Zeit lassen'
+          ] },
+        { nr: 2, afb: 'II',
+          vorne: 'Ich kann Besonderheiten bei **Ernährung, Flüssigkeit und Schlucken** *begründen*.',
+          hinten: [
+            'ausreichend Flüssigkeit → starkes Schwitzen',
+            'erhöhter **Kalorienbedarf** → Tremor und Rigor verbrauchen Energie',
+            'auf **Schluckstörungen** achten → Aspirationsgefahr',
+            'Essen schmackhaft machen → verminderter Geruchssinn; Speisen nicht zu heiß oder zu kalt → Missempfindungen'
           ] },
         { nr: 2, afb: 'I',
-          vorne: 'Ich kann **Frühzeichen** von Parkinson *nennen*.',
+          vorne: 'Ich kann wichtige **Prophylaxen** bei Parkinson *nennen* und eine Besonderheit beim Bett *begründen*.',
           hinten: [
-            'Riechstörung (Hyposmie)',
-            'REM-Schlaf-Verhaltensstörung (Bewegungen und Rufen im Traum)',
-            'Obstipation',
-            'depressive Verstimmung, Schulter-Nacken-Schmerzen'
-          ] },
-        { nr: 2, afb: 'I',
-          vorne: 'Ich kann **nichtmotorische Symptome** von Parkinson *nennen*.',
-          hinten: [
-            'vegetativ: Obstipation, Blasenstörung (Harndrang), vermehrtes Schwitzen, fettige Haut (Seborrhoe), Speichelfluss, Blutdruckabfall beim Aufstehen',
-            'psychisch/kognitiv: Depression, Angst, verlangsamtes Denken (Bradyphrenie), im Verlauf Demenz',
-            'Schlafstörungen, Riechstörung, Schmerzen'
+            'Pneumonie-, Sturz-, Dekubitus-, Kontraktur-, Soor-/Parotitis-, Obstipations- und Intertrigoprophylaxe – individuell nach Gefährdung',
+            'kein zu weiches Bett bzw. keine Weichlagerungsmatratze → erschwert bei Bewegungsarmut zusätzlich das Drehen'
           ] }
       ]
     },
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Pflegeprozess: PESR und Pflegeziele',
+      titel: 'Pflegeprozess: PESR, Pflegeziele, Interventionen',
       karten: [
         { nr: 1, afb: 'II',
-          vorne: 'Ich kann ein Pflegeproblem bei Parkinson im **PESR-Schema** *erläutern*: **Gehfähigkeit**',
-          hilfe: 'pesr',
-          hinten: [
-            '**P:** beeinträchtigte Gehfähigkeit',
-            '**E:** Bradykinese, Rigor, posturale Instabilität, Wirkungsschwankungen (Off-Phasen)',
-            '**S:** kleine, schlurfende Schritte, Freezing an Türen, Sturz beim Umdrehen (mit Zeile)',
-            '**R:** nutzt Rollator, kennt Strategien aus der Physiotherapie, motiviert'
-          ] },
-        { nr: 1, afb: 'II',
-          vorne: 'Ich kann ein Pflegeproblem bei Parkinson im **PESR-Schema** *erläutern*: **Schlucken**',
+          vorne: 'Ich kann ein **aktuelles Pflegeproblem** bei Parkinson im PESR-Schema *erläutern*: **Schlucken**',
           hilfe: 'pesr',
           hinten: [
             '**P:** beeinträchtigtes Schlucken mit Aspirationsgefahr',
-            '**E:** Rigor und Akinese der Schluckmuskulatur, dünnflüssige Kost',
-            '**S:** Husten und Verschlucken beim Essen, Speichelfluss, lange Essensdauer',
-            '**R:** orientiert, kann Anleitung umsetzen, Logopädie verordnet'
+            '**E:** Rigor und Akinese der Schluck- und Zungenmuskulatur, dünnflüssige Kost',
+            '**S:** verschluckt sich bei Suppe und Wasser, hustet, Speichelfluss, braucht 45 Minuten für das Essen (mit Zeile)',
+            '**R:** geistig klar, setzt Anleitung um, Logopädie verordnet'
           ] },
         { nr: 1, afb: 'II',
-          vorne: 'Ich kann ein Pflegeproblem bei Parkinson im **PESR-Schema** *erläutern*: **Obstipation**',
+          vorne: 'Ich kann ein **Risiko-Pflegeproblem** im PESR-Schema *erläutern*: **Sturzgefahr**',
           hilfe: 'pesr',
           hinten: [
-            '**P:** Obstipation',
-            '**E:** verlangsamte Darmtätigkeit (vegetatives Nervensystem), Bewegungsmangel, geringe Trinkmenge',
-            '**S:** Stuhlgang nur alle 4–5 Tage, harter Stuhl, Schmerzen beim Pressen',
-            '**R:** geht mit Rollator selbst zur Toilette, kooperativ, Angehörige unterstützen'
+            '**P:** Sturzgefahr – das Problem droht erst; statt E und S nennen Sie **Risikofaktoren**',
+            '**RF:** Freezing, kleine, schlurfende Schritte, Sturz in der Vorgeschichte, nächtliche Toilettengänge, lose Teppiche',
+            '**R:** nutzt Rollator, kennt Strategien gegen Freezing, ist motiviert'
           ] },
-        { nr: 1, afb: 'II',
-          vorne: 'Ich kann bei einem **Risiko-Pflegeproblem** (z. B. Sturzgefahr) die Besonderheit *erklären*.',
-          hinten: 'Es ist noch kein Schaden eingetreten – statt Symptomen nennen Sie **Risikofaktoren**: z. B. posturale Instabilität, Freezing, Blutdruckabfall beim Aufstehen, nächtlicher Harndrang, Stolperfallen, offene Hausschuhe.' },
         { nr: 2, afb: 'II',
           vorne: 'Ich kann ein **überprüfbares Pflegeziel** *formulieren*.',
           hinten: [
-            'aus Sicht des Pflegeempfängers: **Wer? Was** (beobachtbar)? **Wie/womit? Bis wann?**',
-            'Beispiel: „Herr Lenz überwindet bis zum 15.12. das Freezing an der Schlafzimmertür selbstständig mithilfe einer Bodenmarkierung.“',
-            'keine Maßnahmen („erhält …“), keine Wünsche („soll …“)'
-          ] }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
-      titel: 'Pflegeinterventionen entwickeln und begründen',
-      karten: [
-        { nr: 1, afb: 'III',
-          vorne: 'Ich kann Pflegeinterventionen bei **Freezing** *entwickeln* und *begründen*.',
-          hinten: [
-            'äußere Reize (**Cueing**): Bodenmarkierung, Zählen, Klatschen, Rhythmus → ersetzen die gestörte automatische Bewegungssteuerung',
-            'stehen bleiben lassen, ruhig ansprechen, erst auf der Stelle treten, dann großer Schritt → Zeitdruck verstärkt die Blockade',
-            '**nicht ziehen** → wegen der gestörten Halte- und Stellreflexe droht ein Sturz'
-          ] },
-        { nr: 1, afb: 'III',
-          vorne: 'Ich kann Pflegeinterventionen bei **Sturzgefahr** *entwickeln* und *begründen*.',
-          hinten: [
-            'beim Umdrehen in **großen Bögen** gehen statt auf der Stelle drehen → auf der Stelle lösen sich Freezing und Stürze aus',
-            'Stolperfallen beseitigen (Teppiche, Kabel), Nachtlicht, Haltegriffe → sichere Umgebung, auch nachts',
-            'Hilfsmittel (Rollator) in Reichweite, festes Schuhwerk; Gehtraining in der On-Phase'
-          ] },
-        { nr: 2, afb: 'III',
-          vorne: 'Ich kann Pflegeinterventionen bei **Schluckstörung** *entwickeln* und *begründen*.',
-          hinten: [
-            'aufrecht sitzen, Kinn leicht zur Brust → schützt die Atemwege',
-            'Mahlzeiten in der On-Phase, ohne Zeitdruck, kleine Bissen → bessere Kontrolle, Stress verstärkt die Symptome',
-            'Flüssigkeiten nach logopädischer Empfehlung andicken → Dünnflüssiges wird leicht aspiriert',
-            'Mundpflege nach dem Essen, auf Pneumoniezeichen achten'
-          ] },
-        { nr: 2, afb: 'III',
-          vorne: 'Ich kann Pflegeinterventionen bei **Obstipation** *entwickeln* und *begründen*.',
-          hinten: [
-            'Trinkmenge steigern (ca. 1,5 l, wenn keine Einschränkung), v. a. tagsüber → weicherer Stuhl',
-            'ballaststoffreiche Kost, Bewegung in der On-Phase → fördert die Darmtätigkeit',
-            'feste Toilettenzeit nach dem Frühstück, Fußbank → nutzt den gastrokolischen Reflex',
-            'Stuhlprotokoll; Abführmittel nur nach Anordnung'
-          ] },
-        { nr: 3, afb: 'II',
-          vorne: 'Ich kann die Pflege an **Wirkungsschwankungen** anpassen und **aktivierend** pflegen – und das *begründen*.',
-          hinten: [
-            'Beweglichkeit über den Tag beobachten und mit Uhrzeit dokumentieren (gute Phase, Steifigkeit, Überbewegungen) → Grundlage für die Planung und für die Ärztin',
-            'Körperpflege, Mobilisation und Therapien in die gute Phase (**On-Phase**) legen → er kann mehr selbst tun',
-            'Zeit lassen, nicht drängen, nur so viel Hilfe wie nötig; Hilfsmittel wie Klettverschlüsse → erhält die Selbstständigkeit'
+            'Pflegeempfänger als Subjekt · **beobachtbar oder messbar** · realistisch · **mit Zeitangabe**',
+            'Beispiel: „Herr Lenz isst und trinkt ab sofort bei jeder Mahlzeit, ohne sich zu verschlucken.“',
+            'kein „soll“, keine Maßnahme („erhält …“), nichts Unrealistisches („wird wieder gesund“)'
           ] },
         { nr: 3, afb: 'III',
-          vorne: 'Ich kann eine Pflegesituation *beurteilen*:',
-          fall: 'Herr Roth bleibt im Flur stehen und kommt nicht weiter. Die Pflegefachperson nimmt seinen Arm, zieht ihn nach vorn und sagt: „Kommen Sie, wir sind spät dran!“',
+          vorne: 'Ich kann Pflegeinterventionen bei **Schluckstörung** *entwickeln* und *begründen*.',
           hinten: [
-            'nicht fachgerecht: Ziehen bringt ihn aus dem Gleichgewicht (posturale Instabilität) → Sturzgefahr',
-            'Zeitdruck verstärkt das Freezing',
-            'besser: stehen bleiben lassen, ruhig ansprechen, Rhythmus vorgeben oder Markierung zum Übersteigen nutzen'
+            'aufrecht und nah am Tisch sitzen, Kinn leicht zur Brust → schützt die Atemwege, kurzer Weg zum Mund',
+            'Getränke und Suppe nach logopädischer Empfehlung andicken → Dünnflüssiges wird leicht aspiriert',
+            'kleine Bissen, Zeit lassen, nicht drängen → Zeitdruck verstärkt die Symptome; Logopädie organisieren'
+          ] },
+        { nr: 3, afb: 'III',
+          vorne: 'Ich kann Pflegeinterventionen bei **Sturzgefahr** *entwickeln* und *begründen*.',
+          hinten: [
+            'lose Teppiche entfernen, Nachtlicht, Haltegriffe → Stolperfallen und dunkle Wege sind Risikofaktoren',
+            'bei Freezing Strategie aus der Physiotherapie nutzen (Markierung, Mitzählen) → äußere Reize lösen die Blockade',
+            'Rollator in Reichweite, feste Schuhe ohne Gummisohle → sichere Fortbewegung'
           ] },
         { nr: 4, afb: 'I',
           vorne: 'Ich kann Kriterien zur **Evaluation** *nennen*.',
           hinten: [
-            'Ist das Ziel erreicht? Beobachtbare Kriterien prüfen, z. B. Zahl der Stürze, Freezing-Episoden, Husten beim Essen, Stuhlfrequenz, Gewicht, Trinkmenge',
+            'Ist das Ziel erreicht? Beobachtbare Kriterien prüfen, z. B. Zahl der Stürze, Verschlucken beim Essen, Stuhlfrequenz, Gewicht, Trinkmenge',
             'Quellen: Protokolle, Beobachtung, Aussagen des Pflegeempfängers; bei Bedarf Ziel oder Maßnahme anpassen'
           ] }
       ]
@@ -309,6 +284,14 @@ var LERNKARTEN = {
             '**sofort selbstständig:** Ärztin informieren (Notfall) · Vitalzeichen, Bewusstsein, SpO₂ überwachen · Oberkörper hoch, absaugen, nichts über den Mund (Aspiration) · Prophylaxen · Ein- und Ausfuhr bilanzieren (Exsikkose)',
             '**nur nach ärztlicher Anordnung:** Infusion, Parkinson-Medikamente über Magensonde, fiebersenkende Medikamente',
             '**nicht tun:** trinken lassen, Tabletten im Joghurt eingeben, bis zur Visite abwarten'
+          ] },
+        { nr: 3, afb: 'II',
+          vorne: 'Ich kann zu Komplikationen der akinetischen Krise passende **Prophylaxen** *ableiten*.',
+          hinten: [
+            '**Aspirationspneumonie:** Oberkörper hoch, absaugen, Mundpflege, nichts über den Mund',
+            '**Dekubitus:** Positionswechsel, Fersen frei lagern, Haut kontrollieren',
+            '**Thrombose:** Beine durchbewegen, Thromboseprophylaxestrümpfe nach Anordnung',
+            '**Exsikkose:** bilanzieren, Haut und Schleimhäute beobachten'
           ] }
       ]
     }

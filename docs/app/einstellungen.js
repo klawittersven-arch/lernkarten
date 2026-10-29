@@ -246,9 +246,9 @@ var EINSTELLUNGEN = {
       'Ergebnisoffen beraten: Das Ergebnis steht nicht vorher fest.'
     ],
     'kb1-parkinson': [
-      'Parkinson fällt erst auf, wenn über die Hälfte der dopaminbildenden Zellen fehlt.',
-      'Freezing? Bodenmarkierung, Zählen oder Klatschen helfen – Ziehen nicht.',
-      'Beim Essen: aufrecht sitzen, Kinn zur Brust, kleine Bissen.',
+      'Dopamin zu wenig, Acetylcholin relativ zu viel – das Gleichgewicht ist gestört.',
+      'Freezing? Hindernis, Kommando oder Klatschen helfen – Ziehen nicht.',
+      'Risiko-Pflegeproblem: Risikofaktoren statt Symptome.',
       'Akinetische Krise: nichts über den Mund geben – Aspirationsgefahr!',
       'Starres Gesicht heißt nicht desinteressiert: Hypomimie ist ein Symptom.'
     ]

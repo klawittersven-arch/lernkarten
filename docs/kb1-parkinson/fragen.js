@@ -35,8 +35,63 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Fallsituation: Parkinson-Symptome erkennen',
+      titel: 'Krankheitsbild: Definition, Formen, Pathophysiologie',
       gewicht: 0,
+      fragen: [
+        { typ: 'auswahl',
+          frage: 'Welche Aussage beschreibt die **Pathophysiologie** von Parkinson richtig?',
+          antworten: [
+            'Dopaminbildende Zellen der Substantia nigra gehen zugrunde; Acetylcholin überwiegt relativ.',
+            'Acetylcholinbildende Zellen im Kleinhirn gehen zugrunde; Dopamin überwiegt dadurch relativ.',
+            'Entzündungsherde zerstören die Markscheiden im Rückenmark und stören so die Bewegungen.',
+            'Ein Gefäßverschluss im Mittelhirn unterbricht plötzlich die Versorgung der Basalganglien.'
+          ],
+          erklaerung: 'Untergang dopaminbildender Neurone in der Substantia nigra → Dopaminmangel, Acetylcholin relativ zu viel.' },
+        { typ: 'zuordnen',
+          frage: 'Ordnen Sie die Beschreibungen der Form des Parkinson-Syndroms zu.',
+          zuordnung: {
+            'idiopathisch': ['Ursache des Zellsterbens unklar (Morbus Parkinson)'],
+            'symptomatisch (sekundär)': ['ausgelöst z. B. durch Neuroleptika oder eine Vergiftung'],
+            'atypisch': ['im Rahmen anderer neurodegenerativer Erkrankungen']
+          } },
+        { typ: 'auswahl',
+          frage: 'Wo liegt die **Substantia nigra**?',
+          antworten: ['im Mittelhirn', 'im Kleinhirn', 'im Rückenmark', 'in der Großhirnrinde'] },
+        { typ: 'auswahl',
+          frage: 'Welcher Neurotransmitter fehlt bei Parkinson?',
+          antworten: ['Dopamin', 'Serotonin', 'Acetylcholin', 'GABA'] },
+        { typ: 'reihenfolge',
+          frage: 'Bringen Sie die Pathophysiologie in die richtige Reihenfolge.',
+          schritte: [
+            'Dopaminbildende Zellen in der Substantia nigra gehen zugrunde.',
+            'Es entsteht ein Dopaminmangel.',
+            'Das Gleichgewicht zu Acetylcholin geht verloren.',
+            'Bewegungen können nicht mehr fein gesteuert werden.'
+          ] },
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle Aussagen an, die zum **Parkinson-Syndrom** passen.',
+          richtig: ['stört die Bewegungssteuerung', 'fortschreitend', 'nicht heilbar'],
+          falsch: ['ansteckend', 'heilt nach Jahren aus', 'betrifft vor allem Kinder'] },
+        { typ: 'auswahl',
+          frage: 'Ein Bewohner zeigt Parkinson-Symptome, seit er ein Neuroleptikum erhält. Welche Form liegt am ehesten vor?',
+          antworten: ['symptomatisches Parkinson-Syndrom', 'idiopathisches Parkinson-Syndrom', 'atypisches Parkinson-Syndrom', 'angeborenes Parkinson-Syndrom'] }
+      ],
+      schreiben: [
+        { typ: 'schreiben',
+          frage: 'Erläutern Sie das Krankheitsbild Parkinson mit Definition, Formen und Pathophysiologie.',
+          muster: [
+            'Definition: Krankheitsbild mit Störungen der Bewegungssteuerung – verlangsamte Bewegungen, häufig Muskelsteifigkeit und/oder Zittern; fortschreitend, nicht heilbar.',
+            'Formen: idiopathisch (Ursache unklar), symptomatisch (bekannter Auslöser, z. B. Neuroleptika), atypisch (bei anderen neurodegenerativen Erkrankungen).',
+            'Pathophysiologie: Untergang dopaminbildender Zellen in der Substantia nigra (Mittelhirn) → Dopaminmangel, Acetylcholin relativ zu viel → gestörte Bewegungssteuerung.'
+          ],
+          checkliste: ['Definition mit Bewegungssteuerung', 'drei Formen unterschieden', 'Substantia nigra, Dopaminmangel, Ungleichgewicht zu Acetylcholin', 'Folge für die Bewegungen erklärt'] }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      titel: 'Symptome erkennen und erläutern',
+      gewicht: 1,
       fragen: [
         { typ: 'zeile',
           frage: 'Tippen Sie alle Zeilen an, die auf ein **Leitsymptom** von Parkinson hinweisen.',
@@ -49,47 +104,61 @@ var CHALLENGE_FRAGEN = {
             'Sie trinkt am Tag etwa 1,5 Liter Tee und Wasser.'
           ],
           richtig: [2, 3, 5],
-          erklaerung: 'Z. 2 Ruhetremor · Z. 3 Rigor (Zahnradphänomen) · Z. 5 Bradykinese/Starthemmung.' },
+          erklaerung: 'Z. 2 Tremor · Z. 3 Rigor (Zahnradphänomen) · Z. 5 Brady-/Akinese (Starthemmung).' },
         { typ: 'zeile',
           frage: 'Tippen Sie alle Zeilen an, die ein **nichtmotorisches** Symptom beschreiben.',
           zeilen: [
             'Herr Vogt (66 J.) war Lehrer und ist seit einem Jahr in Rente.',
             'Er schwitzt stark, obwohl es im Zimmer kühl ist.',
-            'Seine Schrift ist so klein geworden, dass man sie kaum lesen kann.',
-            'Kaffee riecht er schon seit Jahren nicht mehr.',
+            'Seine Arme schwingen beim Gehen nicht mit.',
+            'Er ist oft niedergeschlagen und hat zu nichts Lust.',
             'Er hat nur alle vier bis fünf Tage Stuhlgang.',
             'Sein Gesicht wirkt starr und ausdruckslos.'
           ],
           richtig: [2, 4, 5],
-          erklaerung: 'Nichtmotorisch: Schwitzen (Z. 2), Riechstörung (Z. 4), Obstipation (Z. 5). Mikrographie (Z. 3) und Hypomimie (Z. 6) sind motorisch.' },
+          erklaerung: 'Nichtmotorisch: Schwitzen (Z. 2), depressive Stimmung (Z. 4), Obstipation (Z. 5). Z. 3 und Z. 6 sind motorisch.' },
+        { typ: 'zuordnen',
+          frage: 'Ordnen Sie die Beschreibungen dem Leitsymptom zu.',
+          zuordnung: {
+            'Brady-/Akinese': ['Starten und Beenden von Bewegungen ist erschwert'],
+            'Rigor': ['Muskelsteife, Bewegungen fühlen sich widerständig an'],
+            'Tremor': ['Zittern, häufig in Ruhe']
+          } },
         { typ: 'zuordnen',
           frage: 'Ordnen Sie die Beobachtungen dem passenden Fachbegriff zu.',
           zuordnung: {
             'Freezing': ['bleibt an der Tür „wie festgeklebt“ stehen'],
-            'Hypomimie': ['Gesicht wirkt starr, kaum Mimik'],
-            'Mikrographie': ['Handschrift wird immer kleiner'],
-            'Hypophonie': ['spricht sehr leise und monoton']
+            'Hypomimie': ['Gesicht wirkt starr, maskenhaft'],
+            'Zahnradphänomen': ['ruckartiger Widerstand beim Beugen des Arms']
           } },
-        { typ: 'zeile',
-          frage: 'Tippen Sie alle Zeilen an, die auf die **posturale Instabilität** hinweisen.',
-          zeilen: [
-            'Herr Lenz (72 J.) war Schreinermeister.',
-            'Beim Umdrehen verliert er leicht das Gleichgewicht.',
-            'Seine rechte Hand zittert auf der Armlehne.',
-            'Vor zwei Wochen ist er rückwärts gestürzt.',
-            'Er möchte wieder in seine Werkstatt.'
-          ],
-          richtig: [2, 4],
-          erklaerung: 'Gestörte Halte- und Stellreflexe: Gleichgewichtsverlust beim Umdrehen (Z. 2), Sturz nach hinten (Z. 4). Z. 3 ist der Ruhetremor.' }
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle **motorischen** Symptome an.',
+          richtig: ['kleinschrittiger Gang', 'leise, monotone Stimme', 'gebeugte Körperhaltung'],
+          falsch: ['Obstipation', 'vermehrtes Schwitzen', 'Blasenentleerungsstörung'] },
+        { typ: 'auswahl',
+          frage: 'Frau Kern ist aufgeregt, weil Besuch kommt. Was passiert meist mit ihrem Tremor?',
+          antworten: ['Er wird stärker.', 'Er verschwindet.', 'Er wird schwächer.', 'Er bleibt sicher gleich.'] },
+        { typ: 'auswahl',
+          frage: 'Wie beurteilen Sie die Aussage „Herr Lenz hat kaum Mimik und antwortet langsam – er ist bestimmt dement.“?',
+          antworten: [
+            'falsch – eine starre Mimik und langsames Antworten sind Symptome, kein Intelligenzverlust',
+            'richtig – fehlende Mimik ist bei Parkinson ein sicheres Zeichen einer beginnenden Demenz',
+            'richtig – langsames Antworten beweist bei älteren Menschen immer kognitive Einschränkungen',
+            'falsch – bei Parkinson können grundsätzlich niemals kognitive Veränderungen auftreten'
+          ] },
+        { typ: 'richtigfalsch',
+          aussage: 'Der Parkinson-Tremor kann durch Festhalten oder eine gezielte Bewegung geringer werden.',
+          richtig: true,
+          erklaerung: 'Typisch ist ein Ruhetremor – bei gezielter Bewegung oder beim Festhalten nimmt er oft ab.' }
       ],
       schreiben: [
         { typ: 'schreiben',
           frage: 'Identifizieren Sie in der Fallsituation drei Parkinson-Symptome. Nennen Sie jeweils den Fachbegriff.',
-          fall: 'Herr Bauer (73 J.) geht mit kleinen Schritten, seine Arme schwingen nicht mit. Beim Umdrehen verliert er das Gleichgewicht und ist letzte Woche nach hinten gestürzt. Seine linke Hand zittert beim Fernsehen.',
+          fall: 'Herr Bauer (73 J.) geht mit kleinen Schritten, seine Arme schwingen nicht mit. Beim Durchbewegen des Arms spürt man einen ruckartigen Widerstand. Seine linke Hand zittert beim Fernsehen.',
           muster: [
-            'kleine Schritte, Arme schwingen nicht mit → Bradykinese/Akinese',
-            'Gleichgewichtsverlust, Sturz nach hinten → posturale Instabilität',
-            'Hand zittert in Ruhe → Ruhetremor'
+            'kleine Schritte, Arme schwingen nicht mit → Brady-/Akinese',
+            'ruckartiger Widerstand → Rigor (Zahnradphänomen)',
+            'Hand zittert in Ruhe → Tremor (Ruhetremor)'
           ],
           checkliste: ['drei Symptome mit Textbeleg', 'jeweils der richtige Fachbegriff', 'in der Klausur: Zeile angeben'] }
       ]
@@ -97,138 +166,82 @@ var CHALLENGE_FRAGEN = {
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Krankheitsbild: Definition, Ursache, Pathophysiologie',
+      titel: 'Pflegerisches Handeln bei Parkinson',
       gewicht: 2,
       fragen: [
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle passenden Maßnahmen bei **Freezing** an.',
+          richtig: ['Fuß oder Anti-Freezing-Stock als Hindernis', 'Kommando geben oder klatschen', 'Markierung zum Übersteigen'],
+          falsch: ['am Arm ziehen, damit er weitergeht', 'zur Eile auffordern'] },
         { typ: 'auswahl',
-          frage: 'Welche Aussage beschreibt die **Pathophysiologie** von Parkinson richtig?',
+          frage: 'Herr Meier möchte sein Brötchen selbst bestreichen, braucht aber mehrere Anläufe. Was ist angemessen?',
           antworten: [
-            'Dopaminbildende Zellen der Substantia nigra gehen zugrunde; Acetylcholin überwiegt relativ.',
-            'Acetylcholinbildende Zellen im Kleinhirn gehen zugrunde; Dopamin überwiegt dadurch relativ.',
-            'Entzündungsherde zerstören die Markscheiden im Rückenmark und stören so die Bewegungen.',
-            'Ein Gefäßverschluss im Mittelhirn unterbricht plötzlich die Versorgung der Basalganglien.'
-          ],
-          erklaerung: 'Untergang dopaminbildender Neurone in der Substantia nigra → Dopaminmangel, relatives Acetylcholin-Übergewicht.' },
-        { typ: 'auswahl',
-          frage: 'Was bedeutet „idiopathisches Parkinson-Syndrom“?',
-          antworten: [
-            'Die Ursache des Zelluntergangs ist unbekannt.',
-            'Die Symptome werden durch Medikamente ausgelöst.',
-            'Parkinson tritt im Rahmen einer anderen Erkrankung auf.',
-            'Die Erkrankung ist angeboren und beginnt im Kindesalter.'
+            'Zeit geben und nur so viel helfen wie nötig',
+            'das Bestreichen sofort selbst übernehmen',
+            'ihn bitten, sich zu beeilen, weil andere warten',
+            'ihm ab jetzt nur noch fertige Brote geben'
           ] },
+        { typ: 'zuordnen',
+          frage: 'Welches Problem gleicht das Hilfsmittel beim Essen aus?',
+          zuordnung: {
+            'Tremor': ['tremorkompensierender Löffel', 'Becher mit zwei Griffen'],
+            'langsames Essen': ['Warmhalteteller'],
+            'Rutschen des Tellers': ['Antirutschmatte']
+          } },
         { typ: 'auswahl',
-          frage: 'Wann treten die ersten Bewegungsstörungen auf?',
+          frage: 'Warum sollen Menschen mit Parkinson **nah am Tisch** sitzen, Tisch oder Teller erhöht?',
           antworten: [
-            'wenn über die Hälfte der dopaminbildenden Zellen fehlt',
-            'sobald die ersten dopaminbildenden Nervenzellen untergehen',
-            'erst wenn alle dopaminbildenden Nervenzellen zerstört sind',
-            'unabhängig vom Zellverlust immer ab dem 60. Lebensjahr'
+            'damit der Weg zum Mund möglichst kurz ist',
+            'damit sie beim Essen nicht einschlafen',
+            'damit andere Bewohner besser Platz haben',
+            'damit sie weniger trinken müssen'
+          ] },
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle Gründe an, warum bei Parkinson auf **Flüssigkeit und Kalorien** geachtet werden muss.',
+          richtig: ['starkes Schwitzen', 'Tremor und Rigor verbrauchen Energie', 'Schluckstörungen'],
+          falsch: ['Parkinson senkt den Energiebedarf', 'Dopamin entzieht dem Körper Wasser'] },
+        { typ: 'auswahl',
+          frage: 'Warum ist ein sehr **weiches Bett** bei Parkinson ungünstig?',
+          antworten: [
+            'Es erschwert bei Bewegungsarmut zusätzlich das Drehen.',
+            'Es verstärkt das Zittern in der Nacht deutlich.',
+            'Es löst in der Nacht eine akinetische Krise aus.',
+            'Es verhindert, dass er nachts schwitzt.'
+          ] },
+        { typ: 'mehrfach',
+          frage: 'Tippen Sie alle Maßnahmen für eine **sichere Fortbewegung** an.',
+          richtig: ['Stolperfallen entfernen', 'feste Stühle mit Seitenlehnen', 'Schuhe ohne Gummisohle'],
+          falsch: ['offene Hausschuhe', 'eng anliegende Kleidung mit kleinen Knöpfen'] },
+        { typ: 'auswahl',
+          frage: 'Herr Meier möchte mit dem Rollator in den Aufenthaltsraum gehen. Die Pflegefachperson befürchtet einen Sturz. Was ist angemessen?',
+          antworten: [
+            'Sturzrisiko einschätzen und ihn sicher mit Rollator gehen lassen',
+            'ihn zur Sicherheit immer im Rollstuhl in den Raum schieben',
+            'ihm den Wunsch ausreden, damit er im Zimmer bleibt',
+            'ihn allein gehen lassen, ohne auf Stolperfallen zu achten'
           ] },
         { typ: 'reihenfolge',
-          frage: 'Bringen Sie die Pathophysiologie in die richtige Reihenfolge.',
+          frage: 'Herr Lenz bleibt an der Tür stehen (Freezing). Bringen Sie Ihr Vorgehen in eine sinnvolle Reihenfolge.',
           schritte: [
-            'Dopaminbildende Zellen in der Substantia nigra gehen zugrunde.',
-            'In den Basalganglien fehlt Dopamin.',
-            'Acetylcholin überwiegt relativ – die Botenstoffe sind im Ungleichgewicht.',
-            'Bewegungen können nicht mehr fein gesteuert werden.'
-          ] },
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle Aussagen an, die zur **Definition** von Parkinson passen.',
-          richtig: ['fortschreitend', 'neurodegenerativ', 'nicht heilbar', 'stört v. a. die Bewegungssteuerung'],
-          falsch: ['ansteckend', 'heilt nach Jahren aus'] },
-        { typ: 'zuordnen',
-          frage: 'Ordnen Sie die Beschreibungen der Form des Parkinson-Syndroms zu.',
-          zuordnung: {
-            'idiopathisch': ['Ursache unbekannt, häufigste Form'],
-            'symptomatisch (sekundär)': ['ausgelöst z. B. durch Medikamente oder eine Vergiftung'],
-            'atypisch': ['Teil einer anderen neurodegenerativen Erkrankung']
-          } },
-        { typ: 'auswahl',
-          frage: 'Warum wird Parkinson oft erst spät erkannt?',
-          antworten: [
-            'Frühzeichen wie Riechstörung werden selten mit Parkinson verbunden.',
-            'Die Erkrankung beginnt immer mit einer schweren akinetischen Krise.',
-            'Parkinson zeigt sich nur in Blutwerten, die selten bestimmt werden.',
-            'Die Bewegungsstörungen treten nur nachts im Schlaf auf.'
+            'stehen bleiben lassen, nicht ziehen',
+            'ruhig ansprechen',
+            'äußeren Reiz geben (Kommando, Klatschen, Hindernis)',
+            'mit einem großen Schritt weitergehen'
           ] }
-      ],
-      schreiben: [
-        { typ: 'schreiben',
-          frage: 'Erläutern Sie das Krankheitsbild Parkinson mit Definition, Ursache und Pathophysiologie.',
-          muster: [
-            'Definition: langsam fortschreitende, nicht heilbare neurodegenerative Erkrankung, die v. a. die Bewegungssteuerung stört.',
-            'Ursache: beim idiopathischen Parkinson-Syndrom unbekannt; Risikofaktor Alter.',
-            'Pathophysiologie: Untergang dopaminbildender Zellen in der Substantia nigra → Dopaminmangel in den Basalganglien, Acetylcholin überwiegt relativ → gestörte Bewegungssteuerung; Symptome erst ab über 50 % Zellverlust.'
-          ],
-          checkliste: ['Definition mit „fortschreitend“ und „neurodegenerativ“', 'Ursache: idiopathisch = unbekannt', 'Substantia nigra, Dopaminmangel, Acetylcholin-Übergewicht', 'Folge für die Bewegungssteuerung erklärt'] }
       ]
     },
 
     /* ------------------------------------------------------------------ */
     {
-      titel: 'Leitsymptome und Frühzeichen',
-      gewicht: 2,
-      fragen: [
-        { typ: 'zuordnen',
-          frage: 'Ordnen Sie die Beschreibungen dem Leitsymptom zu.',
-          zuordnung: {
-            'Bradykinese/Akinese': ['Bewegungen sind verlangsamt und schwer zu starten'],
-            'Rigor': ['zäher, ruckartiger Widerstand beim passiven Bewegen'],
-            'Tremor': ['Zittern in Ruhe, schwächer bei gezielter Bewegung'],
-            'posturale Instabilität': ['Gleichgewichtsverluste werden nicht ausgeglichen']
-          } },
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle **Frühzeichen** von Parkinson an.',
-          richtig: ['Riechstörung', 'REM-Schlaf-Verhaltensstörung', 'Obstipation'],
-          falsch: ['akinetische Krise', 'Demenz', 'Sturz nach hinten'] },
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle **nichtmotorischen** Symptome an.',
-          richtig: ['vermehrtes Schwitzen', 'depressive Verstimmung', 'Blasenstörung mit Harndrang'],
-          falsch: ['Ruhetremor', 'Freezing', 'Zahnradphänomen'] },
-        { typ: 'auswahl',
-          frage: 'Wie beurteilen Sie die Aussage „Herr Lenz hat kaum Mimik und antwortet langsam – er ist bestimmt dement.“?',
-          antworten: [
-            'falsch – Hypomimie und Bradyphrenie sind kein Intelligenzverlust',
-            'richtig – fehlende Mimik ist ein sicheres Zeichen einer Demenz',
-            'richtig – langsames Antworten beweist kognitive Einschränkungen',
-            'falsch – bei Parkinson tritt grundsätzlich nie eine Demenz auf'
-          ] },
-        { typ: 'auswahl',
-          frage: 'Frau Kern zittert mit der Hand, wenn sie im Schoß liegt. Was passiert beim Greifen nach der Tasse?',
-          antworten: [
-            'Das Zittern wird meist schwächer.',
-            'Das Zittern wird immer sofort stärker.',
-            'Die Hand wird plötzlich völlig schlaff.',
-            'Die Hand verkrampft sich zu einer Faust.'
-          ],
-          erklaerung: 'Typisch für den Parkinson-Tremor: Ruhetremor, der bei gezielten Bewegungen abnimmt.' },
-        { typ: 'auswahl',
-          frage: 'Welche Beobachtung beschreibt den **Rigor**?',
-          antworten: [
-            'zäher, ruckartiger Widerstand beim Beugen des Arms',
-            'schlaffe Muskulatur ohne Widerstand beim Bewegen',
-            'plötzliches Einschießen von Überbewegungen der Arme',
-            'Zittern der Hand, das in Ruhe ganz verschwindet'
-          ] },
-        { typ: 'richtigfalsch',
-          aussage: 'Die posturale Instabilität tritt meist schon ganz zu Beginn der Erkrankung auf.',
-          richtig: false,
-          erklaerung: 'Sie tritt meist erst im Verlauf auf – dann steigt das Sturzrisiko stark.' }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
-      titel: 'Pflegeprozess: PESR und Pflegeziele',
+      titel: 'Pflegeprozess: PESR, Pflegeziele, Interventionen',
       gewicht: 3,
       fragen: [
         { typ: 'zuordnen',
-          frage: 'Pflegeproblem „beeinträchtigte Gehfähigkeit“: Ordnen Sie die Informationen den PESR-Bausteinen zu.',
+          frage: 'Risiko-Pflegeproblem „Sturzgefahr“: Ordnen Sie die Informationen zu.',
           zuordnung: {
-            'E – Einflussfaktor': ['Bradykinese und Rigor', 'Off-Phase vor der nächsten Tablette'],
-            'S – Symptom': ['kleine, schlurfende Schritte', 'Freezing an der Schlafzimmertür'],
-            'R – Ressource': ['nutzt den Rollator zuverlässig', 'kennt Strategien aus der Physiotherapie']
+            'RF – Risikofaktor': ['Freezing an der Türschwelle', 'vor zwei Wochen gestürzt', 'lose Teppiche im Flur'],
+            'R – Ressource': ['nutzt den Rollator', 'kennt das Mitzählen aus der Physiotherapie'],
+            'anderes Problem': ['verschluckt sich bei Suppe']
           } },
         { typ: 'zuordnen',
           frage: 'Pflegeproblem „beeinträchtigtes Schlucken“: Ordnen Sie die Informationen den PESR-Bausteinen zu.',
@@ -238,25 +251,36 @@ var CHALLENGE_FRAGEN = {
             'R – Ressource': ['geistig klar, setzt Anleitung um', 'Logopädie ist verordnet']
           } },
         { typ: 'auswahl',
+          frage: 'Sturzgefahr ist ein **Risiko**-Pflegeproblem. Was nennen Sie statt E und S?',
+          antworten: ['Risikofaktoren', 'Pflegeziele', 'Interventionen', 'Evaluationskriterien'] },
+        { typ: 'auswahl',
           frage: 'Welches Pflegeziel ist **überprüfbar** formuliert?',
           antworten: [
             'Herr Lenz trinkt ab sofort täglich mindestens 1,5 Liter (Trinkprotokoll).',
-            'Herr Lenz soll mehr trinken, damit er weniger Verstopfung hat.',
-            'Die Pflegefachperson bietet Herrn Lenz regelmäßig Getränke an.',
-            'Herr Lenz erhält einen Trinkplan und einen Becher mit Griffen.'
-          ] },
-        { typ: 'auswahl',
-          frage: 'Sturzgefahr ist ein **Risiko**-Pflegeproblem. Was nennen Sie statt der Symptome (S)?',
-          antworten: [
-            'Risikofaktoren',
-            'die Pflegeziele',
-            'die Interventionen',
-            'die Evaluation'
+            'Herr Lenz soll mehr trinken, damit er weniger Probleme mit dem Stuhlgang hat.',
+            'Die Pflegefachperson bietet Herrn Lenz über den Tag regelmäßig Getränke an.',
+            'Herr Lenz erhält einen Trinkplan und einen Becher mit zwei großen Griffen.'
           ] },
         { typ: 'mehrfach',
           frage: 'Tippen Sie alle Merkmale eines **überprüfbaren** Pflegeziels an.',
-          richtig: ['aus Sicht des Pflegeempfängers formuliert', 'beobachtbar oder messbar', 'mit Zeitangabe'],
+          richtig: ['Pflegeempfänger ist Subjekt', 'beobachtbar oder messbar', 'mit Zeitangabe'],
           falsch: ['beschreibt, was die Pflegefachperson tut', 'als Wunsch mit „soll“ formuliert'] },
+        { typ: 'auswahl',
+          frage: 'Was ist am Ziel „Herr Lenz wird wieder gesund und geht bald ohne Rollator.“ falsch?',
+          antworten: [
+            'Es ist bei Parkinson nicht realistisch und hat keine Zeitangabe.',
+            'Es ist zu kurz und beschreibt keine Maßnahme der Pflegefachperson.',
+            'Es nennt Herrn Lenz als Subjekt, das ist in einem Pflegeziel nicht erlaubt.',
+            'Es enthält ein Hilfsmittel, das in einem Pflegeziel nie genannt werden darf.'
+          ] },
+        { typ: 'auswahl',
+          frage: 'Herr Lenz verschluckt sich bei Suppe. Welche Intervention ist am besten begründet?',
+          antworten: [
+            'aufrecht sitzen, Kinn leicht zur Brust, Suppe nach logopädischer Empfehlung andicken',
+            'im Liegen essen lassen, damit er sich beim Schlucken nicht so sehr anstrengen muss',
+            'die Suppe besonders schnell anreichen, damit die Mahlzeit nicht zu lange dauert',
+            'Getränke nur noch in einem großen Becher reichen, damit er insgesamt mehr trinkt'
+          ] },
         { typ: 'zahl',
           frage: 'Frau Ott wiegt 52 kg und ist 1,65 m groß. Berechnen Sie ihren BMI (eine Nachkommastelle).',
           loesung: 19.1, toleranz: 0.1, einheit: 'kg/m²',
@@ -273,95 +297,22 @@ var CHALLENGE_FRAGEN = {
       ],
       schreiben: [
         { typ: 'schreiben',
-          frage: 'Erläutern Sie ein Pflegeproblem im PESR-Schema.',
-          fall: 'Herr Lenz verschluckt sich bei Suppe und Wasser und hustet. Speichel läuft aus dem Mundwinkel, das Mittagessen dauert 45 Minuten. Er ist geistig klar; Logopädie ist verordnet.',
+          frage: 'Erläutern Sie das Risiko-Pflegeproblem „Sturzgefahr“ im PESR-Schema.',
+          fall: 'Frau Haas (74 J., Parkinson) geht mit kleinen Schritten und bleibt an Türen oft stehen. Letzten Monat ist sie gestürzt. Nachts geht sie zweimal zur Toilette. Sie nutzt einen Rollator und möchte selbstständig bleiben.',
           muster: [
-            'P: beeinträchtigtes Schlucken mit Aspirationsgefahr',
-            'E: Rigor und Akinese der Schluckmuskulatur, dünnflüssige Kost',
-            'S: Verschlucken und Husten bei Suppe und Wasser, Speichelfluss, Essensdauer 45 Minuten',
-            'R: geistig klar, kann Anleitung umsetzen, Logopädie verordnet'
+            'P: Sturzgefahr',
+            'RF: kleinschrittiger Gang, Freezing an Türen, Sturz in der Vorgeschichte, nächtliche Toilettengänge',
+            'R: nutzt Rollator, motiviert, möchte selbstständig bleiben'
           ],
-          checkliste: ['alle vier Bausteine', 'E erklärt die Ursache', 'S mit konkreter Beobachtung', 'mindestens eine Ressource'] }
-      ]
-    },
-
-    /* ------------------------------------------------------------------ */
-    {
-      titel: 'Pflegeinterventionen entwickeln und begründen',
-      gewicht: 3,
-      fragen: [
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle passenden Interventionen bei **Freezing** an.',
-          richtig: ['Bodenmarkierung zum Übersteigen', 'Schritte laut mitzählen lassen', 'erst auf der Stelle treten, dann großer Schritt'],
-          falsch: ['am Arm ziehen, damit er weitergeht', 'zur Eile auffordern'] },
-        { typ: 'auswahl',
-          frage: 'Herr Lenz verschluckt sich bei Suppe. Welche Intervention ist am besten begründet?',
-          antworten: [
-            'aufrecht sitzen, Kinn leicht zur Brust, Suppe nach logopädischer Empfehlung andicken',
-            'im Liegen essen lassen, damit er sich beim Schlucken nicht anstrengen muss',
-            'Suppe besonders schnell anreichen, damit die Mahlzeit nicht zu lange dauert',
-            'Getränke nur noch mit einem großen Becher reichen, damit er mehr trinkt'
-          ] },
-        { typ: 'auswahl',
-          frage: 'Wie soll sich Herr Lenz am besten **umdrehen**?',
-          antworten: [
-            'in einem großen Bogen gehen',
-            'schnell auf der Stelle drehen',
-            'sich mit Schwung herumwerfen',
-            'rückwärts zurückgehen'
-          ],
-          erklaerung: 'Drehen auf der Stelle löst Freezing und Stürze aus; ein großer Bogen ist sicherer.' },
-        { typ: 'mehrfach',
-          frage: 'Tippen Sie alle Maßnahmen an, die das **Sturzrisiko** in der Wohnung senken.',
-          richtig: ['lose Teppiche entfernen', 'Nachtlicht im Flur', 'Haltegriffe im Bad'],
-          falsch: ['offene Hausschuhe', 'Kabel quer durch das Zimmer'] },
-        { typ: 'zuordnen',
-          frage: 'Ordnen Sie die Interventionen dem Pflegeproblem zu.',
-          zuordnung: {
-            'Freezing': ['Rhythmus vorgeben („eins – zwei“)', 'Klebemarkierung am Boden'],
-            'beeinträchtigtes Schlucken': ['Getränke andicken', 'Kinn zur Brust, kleine Bissen'],
-            'Obstipation': ['ballaststoffreiche Kost', 'feste Toilettenzeit nach dem Frühstück']
-          } },
-        { typ: 'auswahl',
-          frage: 'Das Waschen dauert bei Herrn Lenz sehr lange. Was ist fachgerecht?',
-          antworten: [
-            'Zeit lassen und nur dort unterstützen, wo es nötig ist',
-            'die Körperpflege komplett übernehmen, damit es schneller geht',
-            'ihn zur Eile auffordern, damit er im Zeitplan bleibt',
-            'die Körperpflege auf die Zeit vor der ersten Tablette legen'
-          ],
-          erklaerung: 'Aktivierende Pflege erhält die Selbstständigkeit; Zeitdruck verstärkt die Symptome. Anstrengendes gehört in die On-Phase.' },
-        { typ: 'auswahl',
-          frage: 'Wann planen Sie Gehtraining und Körperpflege bei Herrn Lenz am besten?',
-          antworten: [
-            'wenn die Tabletten gut wirken (On-Phase)',
-            'kurz bevor die nächste Tablette fällig ist',
-            'immer direkt nach dem Aufwachen am Morgen',
-            'wenn er besonders steif ist, zum Training'
-          ] },
-        { typ: 'reihenfolge',
-          frage: 'Herr Lenz bleibt an der Tür stehen (Freezing). Bringen Sie Ihr Vorgehen in eine sinnvolle Reihenfolge.',
-          schritte: [
-            'stehen bleiben lassen, nicht ziehen',
-            'ruhig ansprechen',
-            'Rhythmus vorgeben und auf der Stelle treten lassen',
-            'mit einem großen Schritt über die Markierung gehen'
-          ] },
-        { typ: 'richtigfalsch',
-          aussage: 'Damit das Wasser besser hinunterläuft, soll Herr Lenz beim Trinken den Kopf in den Nacken legen.',
-          richtig: false,
-          erklaerung: 'Mit dem Kopf im Nacken sind die Atemwege offen – Aspirationsgefahr. Richtig: Kinn leicht zur Brust.' }
-      ],
-      schreiben: [
+          checkliste: ['Problem als Risiko benannt', 'Risikofaktoren statt Symptome', 'mindestens drei Risikofaktoren aus dem Fall', 'mindestens eine Ressource'] },
         { typ: 'schreiben',
-          frage: 'Entwickeln Sie zu „beeinträchtigtes Schlucken“ zwei Pflegeinterventionen und begründen Sie diese.',
-          fall: 'Frau Haas (74 J., Parkinson) verschluckt sich beim Trinken und bei Suppe. Sie isst langsam und wird beim Essen oft gedrängt.',
+          frage: 'Formulieren Sie zu „beeinträchtigtes Schlucken“ ein überprüfbares Pflegeziel. Entwickeln Sie zwei Interventionen und begründen Sie diese.',
           muster: [
-            'aufrecht sitzen, Kinn leicht zur Brust, kleine Bissen und Schlucke → schützt die Atemwege vor Aspiration',
-            'in Ruhe und ohne Zeitdruck in der On-Phase essen lassen → Stress verstärkt Rigor und Akinese; in der On-Phase schluckt sie besser',
-            'Getränke und Suppe nach logopädischer Empfehlung andicken → Dünnflüssiges fließt schnell und wird leicht aspiriert'
+            'Ziel: „Herr Lenz isst und trinkt ab sofort bei jeder Mahlzeit, ohne sich zu verschlucken.“',
+            'aufrecht und nah am Tisch sitzen, Kinn zur Brust → schützt die Atemwege, kurzer Weg zum Mund',
+            'Getränke nach logopädischer Empfehlung andicken, kleine Bissen, Zeit lassen → Dünnflüssiges wird leicht aspiriert, Zeitdruck verstärkt die Symptome'
           ],
-          checkliste: ['zwei konkrete Interventionen (wer, was, wie)', 'jede mit „weil/damit …“ begründet', 'Bezug zum Fall (Verschlucken, Zeitdruck)'] }
+          checkliste: ['Ziel: Subjekt, beobachtbar, Zeitangabe', 'zwei konkrete Interventionen', 'jede mit „weil/damit …“ begründet'] }
       ]
     },
 
@@ -381,9 +332,6 @@ var CHALLENGE_FRAGEN = {
             'nach ärztlicher Anordnung': ['Infusion anlegen', 'Medikamente über Magensonde geben'],
             'nicht tun': ['Wasser zum Trinken reichen', 'Tabletten im Joghurt eingeben']
           } },
-        { typ: 'auswahl',
-          frage: 'Welche Komplikation droht bei einer akinetischen Krise mit Schluckunfähigkeit besonders?',
-          antworten: ['Aspirationspneumonie', 'Hypoglykämie', 'Harninkontinenz', 'allergische Reaktion'] },
         { typ: 'zeile',
           frage: 'Tippen Sie alle Zeilen an, die auf eine **akinetische Krise** hinweisen.',
           zeilen: [
@@ -396,13 +344,24 @@ var CHALLENGE_FRAGEN = {
           richtig: [2, 4, 5],
           erklaerung: 'Akinese und Rigor (Z. 2), Schluck- und Sprechstörung (Z. 4), Fieber, Herzrasen, Schwitzen (Z. 5).' },
         { typ: 'auswahl',
+          frage: 'Welche Komplikation droht bei einer akinetischen Krise mit Schluckunfähigkeit besonders?',
+          antworten: ['Aspirationspneumonie', 'Hypoglykämie', 'Harninkontinenz', 'allergische Reaktion'] },
+        { typ: 'auswahl',
           frage: 'Warum geben Sie bei einer akinetischen Krise **nichts über den Mund**?',
           antworten: [
-            'weil der Betroffene nicht sicher schlucken kann',
-            'weil Essen und Trinken die Steifigkeit verstärken',
-            'weil der Betroffene vor einer OP nüchtern sein muss',
-            'weil Flüssigkeit das Fieber weiter ansteigen lässt'
+            'weil er nicht sicher schlucken kann',
+            'weil Trinken die Steifigkeit verstärkt',
+            'weil er vor einer OP nüchtern bleiben muss',
+            'weil Flüssigkeit das Fieber erhöht'
           ] },
+        { typ: 'zuordnen',
+          frage: 'Welcher Komplikation beugt die Maßnahme vor?',
+          zuordnung: {
+            'Pneumonie': ['Mundpflege, Oberkörper hoch'],
+            'Dekubitus': ['Fersen frei lagern'],
+            'Thrombose': ['Beine passiv durchbewegen'],
+            'Exsikkose': ['Ein- und Ausfuhr bilanzieren']
+          } },
         { typ: 'mehrfach',
           frage: 'Tippen Sie alle **Komplikationen** der akinetischen Krise an.',
           richtig: ['Aspirationspneumonie', 'Exsikkose', 'Thrombose', 'Dekubitus'],
@@ -412,7 +371,7 @@ var CHALLENGE_FRAGEN = {
           antworten: [
             'Ein- und Ausfuhr bilanzieren',
             'einen großen Becher Tee reichen',
-            'die Bettdecke dicker wählen',
+            'eine dickere Bettdecke holen',
             'bis zur nächsten Visite warten'
           ] }
       ],

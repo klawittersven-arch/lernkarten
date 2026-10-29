@@ -13,7 +13,7 @@ const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 const SAETZE = [
   { ordner: 'kb1-diabetes', themen: 11, karten: 77, hinweis: true },
   { ordner: 'kb2-beratung', themen: 7, karten: 81, hinweis: true },
-  { ordner: 'kb1-parkinson', themen: 6, karten: 29, hinweis: true }
+  { ordner: 'kb1-parkinson', themen: 5, karten: 28, hinweis: true }
 ];
 
 function kartenLaden(ordner) {
