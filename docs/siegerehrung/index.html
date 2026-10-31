@@ -9,18 +9,21 @@
 </head>
 <body class="festlich">
 
-<!-- Seite 1: Auswahl (Klasse und Highscore-Liste) -->
+<!-- Seite 1: Klasse wählen -->
+<main id="klassenwahl" class="auswahl klassenwahl" hidden>
+  <h1 id="titel-klasse">Welche Klasse?</h1>
+  <div class="knopfreihe gross" id="wahl-klasse" role="group" aria-labelledby="titel-klasse"></div>
+</main>
+
+<!-- Seite 2: Highscore-Liste wählen -->
 <main id="auswahl" class="auswahl" hidden>
   <header class="auswahl-kopf">
     <div class="pokal-gross" aria-hidden="true" data-pokal></div>
     <h1>Siegerehrung</h1>
     <p class="unterzeile">Highscores aus den Lernkarten – für den Beamer</p>
+    <p class="klasse-gewaehlt"><span id="klasse-name"></span>
+      <button type="button" id="klasse-wechseln" class="klein-knopf">Klasse wechseln</button></p>
   </header>
-
-  <section class="wahl" aria-labelledby="titel-klasse">
-    <h2 id="titel-klasse">Klasse</h2>
-    <div class="knopfreihe" id="wahl-klasse" role="radiogroup" aria-labelledby="titel-klasse"></div>
-  </section>
 
   <section class="wahl" aria-labelledby="titel-liste">
     <h2 id="titel-liste">Highscore-Liste</h2>
@@ -32,7 +35,7 @@
   <p class="fusszeile">Tipp: Taste <kbd>F</kbd> = Vollbild. Dieser Rechner wird bei der anonymen Nutzungszählung nicht mitgezählt.</p>
 </main>
 
-<!-- Seite 2: Siegerehrung -->
+<!-- Seite 3: Siegerehrung -->
 <main id="buehne" class="buehne" hidden>
   <header class="buehne-kopf">
     <p class="buehne-art" id="buehne-art"></p>

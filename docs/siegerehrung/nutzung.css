@@ -1,4 +1,4 @@
-/* Nutzungsübersicht – ruhig, hell/dunkel, Diagramme als SVG ohne fremde Bibliotheken */
+/* Nutzungsübersicht (eine Klasse) – ruhig, hell/dunkel, Diagramm als SVG ohne fremde Bibliotheken */
 
 :root {
   --flaeche: #fcfcfb;
@@ -10,9 +10,7 @@
   --achse: #c9c9c3;
   --rand: #e3e3de;
   --markiert: rgba(29, 29, 27, .06);
-  --s1: #2a78d6;   /* Lernkarten */
-  --s2: #eb6834;   /* Klausur-Challenge */
-  --s3: #1baf7a;   /* Diabetes Run! */
+  --s1: #2a78d6;   /* Säulenfarbe */
   --akzent: #0E3B43;
   color-scheme: light;
 }
@@ -28,8 +26,6 @@
     --rand: #34342f;
     --markiert: rgba(255, 255, 255, .07);
     --s1: #3987e5;
-    --s2: #d95926;
-    --s3: #199e70;
     --akzent: #8CC4CC;
     color-scheme: dark;
   }
@@ -52,7 +48,19 @@ body {
 .zurueck:hover { color: var(--text); text-decoration: underline; }
 .kopf-zeile { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
 h1 { margin: 0; font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; letter-spacing: -.01em; }
-.unter { margin: 4px 0 0; color: var(--text-2); }
+.klasse {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 3px 12px;
+  font-size: 17px;
+  font-weight: 750;
+  color: var(--akzent);
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+.klasse:empty { display: none; }
+.unter { margin: 6px 0 0; color: var(--text-2); }
+.meldung a { color: var(--s1); font-weight: 700; }
 
 .knopf {
   cursor: pointer;
@@ -95,10 +103,6 @@ h1 { margin: 0; font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; letter-sp
 .karte h2 { margin: 0; font-size: 19px; font-weight: 750; }
 .erklaerung { margin: 3px 0 0; font-size: 14px; color: var(--text-3); }
 
-.legende { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; padding: 0; font-size: 14px; color: var(--text-2); }
-.legende li { display: flex; align-items: center; gap: 7px; }
-.legende .farbe { width: 12px; height: 12px; border-radius: 3px; }
-
 .diagramm { position: relative; margin-top: 8px; }
 .diagramm svg { display: block; width: 100%; height: auto; overflow: visible; }
 .diagramm svg:focus { outline: none; }
@@ -130,12 +134,6 @@ tfoot td { font-weight: 750; border-top: 2px solid var(--achse); }
 }
 .tooltip .tt-titel { font-weight: 750; margin-bottom: 4px; }
 .tooltip .tt-zeile { display: flex; align-items: center; gap: 8px; }
-.tooltip .tt-zeile .farbe { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
 .tooltip .tt-zeile .wert { margin-left: auto; padding-left: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.tooltip .tt-summe { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--gitter); }
 
 .fuss { margin-top: 8px; font-size: 13px; color: var(--text-3); }
-
-@media (forced-colors: active) {
-  .legende .farbe, .tooltip .farbe { forced-color-adjust: none; }
-}

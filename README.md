@@ -191,19 +191,22 @@ getrennt von „Nutzung (anonym)“, damit eigene Auswertungen dort unverändert
 
 **https://klawittersven-arch.github.io/lernkarten/siegerehrung/** – nirgends in der App verlinkt.
 
-- **Erste Seite:** Klasse wählen und die Liste (Klausur-Challenge KB I, Klausur-Challenge KB II,
-  Minispiel Diabetes Run!), dann „🏆 Siegerehrung starten“. Die Seite merkt sich die letzte Wahl.
+- **Bildschirm 1 „Welche Klasse?“:** 3BFP2/1 oder 3BFP2/2. Die Klasse wird bei jedem Öffnen neu gefragt.
+- **Bildschirm 2 „Siegerehrung“:** Liste wählen (Klausur-Challenge KB I, Klausur-Challenge KB II,
+  Minispiel Diabetes Run!), dann „🏆 Siegerehrung starten“. Die zuletzt gewählte Liste ist vorausgewählt;
+  „Klasse wechseln“ führt zurück zu Bildschirm 1.
 - **Siegerehrung:** Siegertreppchen 2 – 1 – 3, Pokal neben dem Namen auf Platz 1, darunter die Plätze 4–12.
   Die Plätze werden nacheinander enthüllt (Platz 1 zuletzt, mit Konfetti). Tasten: **F** Vollbild,
-  **R** oder Leertaste nochmal, **A** aktualisieren, **Rücktaste** zur Auswahl. Die Knöpfe unten rechts
-  verschwinden nach 3 Sekunden ohne Mausbewegung.
+  **R** oder Leertaste nochmal, **A** aktualisieren, **Rücktaste** zur Listenauswahl. Die Knöpfe unten
+  rechts verschwinden nach 3 Sekunden ohne Mausbewegung.
 - **Direkt-Link** für eine Liste (z. B. als Lesezeichen): `…/siegerehrung/?k=3bfp2-1&l=kb1-diabetes-challenge`
   (`l` = `kb1-diabetes-challenge`, `kb2-beratung-challenge` oder `diabetes-run`).
 - **Diabetes Run!** fasst die Spiel-Listen beider Kartensätze zusammen (je Name die beste Runde).
-- **„📊 Nutzung der App ansehen“** (`…/siegerehrung/nutzung.html`): Kennzahlen, Aufrufe pro Tag
-  (gestapelt nach Bereich), bewertete Karten pro Tag, Klassen im Vergleich – mit Filtern für Zeitraum,
-  Klasse und Kartensatz, Tooltip beim Zeigen auf einen Tag und Tabellenansicht. Die Zahlen kommen aus
-  „Nutzung (anonym)“ und „Ereignisse (anonym)“ (nur Anzahlen, keine Namen, keine Gerätekennungen).
+- **„📊 Nutzung der App ansehen“** (`…/siegerehrung/nutzung.html?k=3bfp2-1`) zeigt **nur die gewählte Klasse**
+  – kein Klassenvergleich: Aufrufe, bewertete Lernkarten, beendete Challenges, gespielte Spielrunden und
+  ein Säulendiagramm „Aufrufe pro Tag“ (alle Bereiche zusammen), mit Filtern für Zeitraum und Kartensatz,
+  Tooltip beim Zeigen auf einen Tag und Tabellenansicht. Die Zahlen kommen aus „Nutzung (anonym)“ und
+  „Ereignisse (anonym)“ (nur Anzahlen, keine Namen, keine Gerätekennungen).
 - Ein Rechner, auf dem eine dieser Seiten geöffnet wurde, zählt bei der Nutzungszählung nicht mit
   (wie `?nichtzaehlen=1`).
 - Dafür braucht die Tabelle die aktuelle Fassung von `werkzeuge/highscore-apps-script.gs` (Aktion `nutzung`).

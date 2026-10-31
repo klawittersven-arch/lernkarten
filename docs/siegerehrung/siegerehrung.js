@@ -52,22 +52,29 @@
   }
   Array.prototype.forEach.call(document.querySelectorAll('[data-pokal]'), function (el) { el.innerHTML = pokalSvg('pokal-kopf'); });
 
-  /* ---------- Auswahl ---------- */
-  var MERKEN = 'siegerehrung:auswahl';
+  /* ---------- Bildschirme: 1. Klasse wählen → 2. Liste wählen → 3. Siegerehrung ---------- */
+  // Die Klasse wird bei jedem Öffnen neu abgefragt (nicht gemerkt); die zuletzt gewählte Liste wird gemerkt.
+  var MERKEN = 'siegerehrung:liste';
   var wahl = { klasse: null, liste: null };
-  try {
-    var g = JSON.parse(localStorage.getItem(MERKEN) || 'null');
-    if (g && typeof g === 'object') wahl = { klasse: g.klasse || null, liste: g.liste || null };
-  } catch (e) { /* egal */ }
+  try { wahl.liste = localStorage.getItem(MERKEN) || null; } catch (e) { /* egal */ }
 
   function klasseFinden(k) { return KLASSEN.filter(function (x) { return x.kennung === k; })[0] || null; }
   function listeFinden(l) { return LISTEN.filter(function (x) { return x.id === l; })[0] || null; }
 
+  function bildschirm(id) {
+    ['klassenwahl', 'auswahl', 'buehne'].forEach(function (x) { $(x).hidden = x !== id; });
+  }
+  function adresseSetzen(teil) {
+    try { history.replaceState(null, '', location.pathname + (teil ? '?' + teil : '')); } catch (e) { /* egal */ }
+  }
+
   function wahlKnopf(text, unter, aktiv, fn, symbol) {
     var b = document.createElement('button');
     b.type = 'button';
-    b.setAttribute('role', 'radio');
-    b.setAttribute('aria-checked', aktiv ? 'true' : 'false');
+    if (aktiv !== null) {
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', aktiv ? 'true' : 'false');
+    }
     if (symbol) { var s = document.createElement('span'); s.className = 'symbol'; s.textContent = symbol; b.appendChild(s); }
     var t = document.createElement('span'); t.className = 'titel'; t.textContent = text; b.appendChild(t);
     if (unter) { var u = document.createElement('span'); u.className = 'unter'; u.textContent = unter; b.appendChild(u); }
@@ -75,27 +82,45 @@
     return b;
   }
 
-  function auswahlZeigen() {
+  // 1. Klasse wählen (eigener Bildschirm, nichts vorausgewählt)
+  function klassenwahlZeigen() {
+    wahl.klasse = null;
     var kl = $('wahl-klasse');
     kl.textContent = '';
     KLASSEN.forEach(function (k) {
-      kl.appendChild(wahlKnopf(k.name, '', wahl.klasse === k.kennung, function () { wahl.klasse = k.kennung; auswahlZeigen(); }));
+      kl.appendChild(wahlKnopf(k.name, '', null, function () {
+        wahl.klasse = k.kennung;
+        adresseSetzen('k=' + encodeURIComponent(k.kennung));
+        auswahlZeigen();
+      }));
     });
+    bildschirm('klassenwahl');
+    document.title = 'Siegerehrung – Lernkarten';
+  }
+
+  // 2. Liste wählen (für die gewählte Klasse)
+  function auswahlZeigen() {
+    var klasse = klasseFinden(wahl.klasse);
+    if (!klasse) { klassenwahlZeigen(); return; }
+    $('klasse-name').textContent = 'Klasse ' + klasse.name;
     var li = $('wahl-liste');
     li.textContent = '';
     LISTEN.forEach(function (l) {
       li.appendChild(wahlKnopf(l.titel, l.untertitel, wahl.liste === l.id, function () { wahl.liste = l.id; auswahlZeigen(); }, l.symbol));
     });
-    $('los').disabled = !(klasseFinden(wahl.klasse) && listeFinden(wahl.liste));
-    $('buehne').hidden = true;
-    $('auswahl').hidden = false;
-    document.title = 'Siegerehrung – Lernkarten';
+    $('los').disabled = !listeFinden(wahl.liste);
+    // Die Nutzungsübersicht zeigt nur diese Klasse
+    $('nutzung-link').href = 'nutzung.html?k=' + encodeURIComponent(klasse.kennung);
+    bildschirm('auswahl');
+    document.title = 'Siegerehrung ' + klasse.name;
   }
+
+  $('klasse-wechseln').addEventListener('click', function () { adresseSetzen(''); klassenwahlZeigen(); });
 
   $('los').addEventListener('click', function () {
     if ($('los').disabled) return;
-    try { localStorage.setItem(MERKEN, JSON.stringify(wahl)); } catch (e) { /* egal */ }
-    try { history.replaceState(null, '', '?k=' + encodeURIComponent(wahl.klasse) + '&l=' + encodeURIComponent(wahl.liste)); } catch (e) { /* egal */ }
+    try { localStorage.setItem(MERKEN, wahl.liste); } catch (e) { /* egal */ }
+    adresseSetzen('k=' + encodeURIComponent(wahl.klasse) + '&l=' + encodeURIComponent(wahl.liste));
     buehneZeigen();
   });
 
@@ -244,8 +269,7 @@
     var klasse = klasseFinden(wahl.klasse);
     var liste = listeFinden(wahl.liste);
     if (!klasse || !liste) { auswahlZeigen(); return; }
-    $('auswahl').hidden = true;
-    $('buehne').hidden = false;
+    bildschirm('buehne');
     $('buehne-art').textContent = liste.symbol + ' ' + liste.titel + (liste.untertitel ? ' · ' + liste.untertitel : '');
     $('buehne-titel').textContent = 'Klasse ' + klasse.name;
     document.title = 'Siegerehrung ' + klasse.name + ' – ' + liste.titel;
@@ -270,7 +294,8 @@
   }
   function zurAuswahl() {
     zeitgeber.forEach(clearTimeout);
-    try { history.replaceState(null, '', location.pathname); } catch (e) { /* egal */ }
+    $('konfetti').textContent = '';
+    adresseSetzen('k=' + encodeURIComponent(wahl.klasse));
     auswahlZeigen();
   }
   $('zurueck').addEventListener('click', zurAuswahl);
@@ -298,14 +323,15 @@
   document.addEventListener('keydown', regung);
   regung();
 
-  /* ---------- Start: direkt zur Bühne, wenn die Adresse Klasse und Liste enthält ---------- */
+  /* ---------- Start ---------- */
   (function () {
+    // ?k=…&l=… → direkt zur Siegerehrung; ?k=… → Liste wählen; sonst zuerst die Klasse
     var p = new URLSearchParams(location.search);
-    if (klasseFinden(p.get('k')) && listeFinden(p.get('l'))) {
-      wahl = { klasse: p.get('k'), liste: p.get('l') };
-      buehneZeigen();
+    if (klasseFinden(p.get('k'))) {
+      wahl.klasse = p.get('k');
+      if (listeFinden(p.get('l'))) { wahl.liste = p.get('l'); buehneZeigen(); } else auswahlZeigen();
     } else {
-      auswahlZeigen();
+      klassenwahlZeigen();
     }
   })();
 

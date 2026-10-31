@@ -1,7 +1,7 @@
 /* Siegerehrung (Beamer) und Nutzungsübersicht:
  * 1. Apps Script: aktion=nutzung liefert die anonymen Tageszahlen
- * 2. Siegerehrung: Auswahl, Siegertreppchen mit Pokal, Spiel-Listen zusammengeführt, leere Liste, Fehler
- * 3. Nutzung: Kennzahlen, Diagramme, Filter, Tabellenansicht, Tooltip, dunkles Design */
+ * 2. Siegerehrung: Klassenfrage, Auswahl, Siegertreppchen mit Pokal, Spiel-Listen zusammengeführt, leere Liste, Fehler
+ * 3. Nutzung: nur die gewählte Klasse, Kennzahlen, Aufrufe pro Tag, Filter, Tabellenansicht, Tooltip, dunkles Design */
 'use strict';
 const path = require('path');
 const H = require('./hilfen');
@@ -88,16 +88,25 @@ async function main() {
     const p = await ctx.newPage();
     H.beobachten(p, protokoll, 'siegerehrung');
     await p.goto(basis + 'siegerehrung/');
-    await p.waitForSelector('#auswahl:not([hidden])');
+    // Bildschirm 1: nur die Klassenfrage
+    await p.waitForSelector('#klassenwahl:not([hidden])');
     H.pruefe(await p.evaluate(() => localStorage.getItem('lernkarten:nicht-zaehlen')) === 'true', 'Lehrkraft-Rechner zählt nicht mit');
-    H.pruefe(await p.locator('#wahl-klasse button').count() === 2, 'zwei Klassen zur Auswahl');
+    H.pruefe(await p.locator('#auswahl').isHidden() && await p.locator('#buehne').isHidden(), 'zuerst eigener Bildschirm nur mit der Klassenfrage');
+    const klassenKnoepfe = await p.locator('#wahl-klasse button').allTextContents();
+    H.pruefe(klassenKnoepfe.join('|') === '3BFP2/1|3BFP2/2', 'zwei Klassen zur Auswahl', klassenKnoepfe);
+    H.pruefe(await p.locator('#wahl-klasse [aria-checked="true"]').count() === 0, 'keine Klasse vorausgewählt');
+    await p.screenshot({ path: path.join(ERGEBNISSE, 'siegerehrung-klasse.png') });
+    await p.click('#wahl-klasse button:has-text("3BFP2/2")');
+    // Bildschirm 2: Liste wählen
+    await p.waitForSelector('#auswahl:not([hidden])');
+    H.pruefe(await p.locator('#klassenwahl').isHidden(), 'nach der Klasse: Bildschirm „Siegerehrung“');
+    H.pruefe(await p.locator('#klasse-name').textContent() === 'Klasse 3BFP2/2', 'gewählte Klasse wird angezeigt');
+    H.pruefe(/\?k=3bfp2-2$/.test(p.url()), 'Adresse merkt die Klasse', p.url());
     const kacheln = await p.locator('#wahl-liste button .titel').allTextContents();
     H.pruefe(JSON.stringify(kacheln) === JSON.stringify(['Klausur-Challenge KB I', 'Klausur-Challenge KB II', 'Minispiel Diabetes Run!']),
       'Listen: Challenge KB I, Challenge KB II, Diabetes Run!', kacheln);
-    H.pruefe(await p.locator('#los').isDisabled(), 'Start erst nach Auswahl von Klasse und Liste');
-    H.pruefe(await p.locator('#nutzung-link').getAttribute('href') === 'nutzung.html', 'Knopf zur Nutzungsübersicht');
-    await p.click('#wahl-klasse button:has-text("3BFP2/2")');
-    H.pruefe(await p.locator('#los').isDisabled(), 'nur Klasse gewählt → noch gesperrt');
+    H.pruefe(await p.locator('#los').isDisabled(), 'Start erst nach Auswahl der Liste');
+    H.pruefe(await p.locator('#nutzung-link').getAttribute('href') === 'nutzung.html?k=3bfp2-2', 'Knopf zur Nutzungsübersicht – nur für diese Klasse');
     await p.click('#wahl-liste button:has-text("Klausur-Challenge KB I")');
     H.pruefe(await p.locator('#wahl-liste button[aria-checked="true"] .titel').textContent() === 'Klausur-Challenge KB I', 'gewählte Liste markiert');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'siegerehrung-auswahl.png') });
@@ -133,8 +142,8 @@ async function main() {
     H.pruefe(passt, 'alles passt ohne Scrollen auf 1920×1080');
     await p.mouse.move(900, 500);
     await p.screenshot({ path: path.join(ERGEBNISSE, 'siegerehrung-buehne.png') });
-    await H.warte(3300);
-    H.pruefe(await p.evaluate(() => getComputedStyle(document.querySelector('.steuerung')).opacity) === '0', 'Steuerung verschwindet ohne Mausbewegung');
+    const weg = await H.bis(() => p.evaluate(() => document.body.classList.contains('ruhig') && getComputedStyle(document.querySelector('.steuerung')).opacity === '0'), { zeit: 6000 });
+    H.pruefe(weg, 'Steuerung verschwindet ohne Mausbewegung');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'siegerehrung-buehne-ruhig.png') });
 
     // Nochmal (Taste R) startet die Enthüllung neu
@@ -157,7 +166,7 @@ async function main() {
     // Zurück zur Auswahl, Spiel-Liste (beide Kartensätze zusammen)
     await p.click('#zurueck');
     await p.waitForSelector('#auswahl:not([hidden])');
-    H.pruefe(!/\?/.test(p.url()), 'zurück: Adresse ohne Auswahl');
+    H.pruefe(/\?k=3bfp2-2$/.test(p.url()) && await p.locator('#klasse-name').textContent() === 'Klasse 3BFP2/2', 'zurück: Listenauswahl, Klasse bleibt');
     await p.click('#wahl-liste button:has-text("Diabetes Run!")');
     await p.click('#los');
     await p.waitForSelector('#buehne.zeige-1', { timeout: 8000 });
@@ -189,11 +198,17 @@ async function main() {
     H.pruefe(true, 'nicht erreichbar → Hinweis, „Aktualisieren“ nochmal drücken');
     a.aus = false;
 
-    // Auswahl wird gemerkt
+    // Neu öffnen: Klasse wird wieder gefragt, die Liste ist gemerkt
     await p.goto(basis + 'siegerehrung/');
+    await p.waitForSelector('#klassenwahl:not([hidden])');
+    H.pruefe(true, 'neu geöffnet: wieder zuerst die Klassenfrage');
+    await p.click('#wahl-klasse button:has-text("3BFP2/1")');
     await p.waitForSelector('#auswahl:not([hidden])');
-    H.pruefe(await p.locator('#wahl-klasse button[aria-checked="true"]').textContent() === '3BFP2/2' && !(await p.locator('#los').isDisabled()),
-      'zuletzt gewählte Klasse und Liste sind vorausgewählt');
+    H.pruefe(!(await p.locator('#los').isDisabled()) && await p.locator('#nutzung-link').getAttribute('href') === 'nutzung.html?k=3bfp2-1',
+      'zuletzt gewählte Liste ist vorausgewählt; Nutzungs-Link passt zur neuen Klasse');
+    await p.click('#klasse-wechseln');
+    await p.waitForSelector('#klassenwahl:not([hidden])');
+    H.pruefe(!/\?/.test(p.url()), '„Klasse wechseln“ führt zurück zur Klassenfrage');
 
     // Weniger Bewegung: alles sofort sichtbar, kein Konfetti
     const ctxRuhig = await browser.newContext({ viewport: { width: 1920, height: 1080 }, reducedMotion: 'reduce', timezoneId: 'Europe/Berlin' });
@@ -206,33 +221,38 @@ async function main() {
     H.pruefe(await q.locator('#konfetti span').count() === 0, '„Weniger Bewegung“: sofort alles da, kein Konfetti');
     await ctxRuhig.close();
 
-    /* ---------------- 3. Nutzung ---------------- */
+    /* ---------------- 3. Nutzung (nur eine Klasse) ---------------- */
     console.log('\n3. Nutzungsübersicht');
-    await p.goto(basis + 'siegerehrung/');
+    await p.goto(basis + 'siegerehrung/?k=3bfp2-1');
+    await p.waitForSelector('#auswahl:not([hidden])');
     await p.click('#nutzung-link');
-    await p.waitForURL(/nutzung\.html$/);
+    await p.waitForURL(/nutzung\.html\?k=3bfp2-1$/);
     await p.setViewportSize({ width: 1440, height: 900 });
     await p.waitForSelector('#inhalt:not([hidden])');
-    const kz = await p.locator('#kennzahlen .wert').allTextContents();
     const de = (n) => n.toLocaleString('de-DE');
-    H.pruefe(kz[0] === de(erwartet.aufrufe), 'Kennzahl Aufrufe (Testzeile mit unbekanntem Kartensatz zählt nicht)', { kz, erwartet: erwartet.aufrufe });
-    H.pruefe(kz[1] === de(erwartet.karten), 'Kennzahl bewertete Karten', { kz, erwartet: erwartet.karten });
-    H.pruefe(kz[2] === de(erwartet.beendet) && kz[3] === de(erwartet.gespielt), 'Kennzahlen Challenges und Spielrunden', kz);
-    const zusatz = await p.locator('#kennzahlen .zusatz').allTextContents();
-    H.pruefe(zusatz[0] === 'an 8 von 10 Tagen genutzt' && zusatz[2] === 'von ' + erwartet.begonnen + ' begonnenen' && /^gezählt seit /.test(zusatz[1]), 'Zusatzzeilen', zusatz);
+    H.pruefe(await p.locator('#klasse').textContent() === 'Klasse 3BFP2/1', 'Überschrift nennt die Klasse');
+    H.pruefe(await p.locator('#f-klasse').count() === 0, 'kein Klassenfilter');
+    const text = await p.locator('body').innerText();
+    H.pruefe(!/3BFP2\/2|ohne Klasse|Klassen im Vergleich/i.test(text), 'keine andere Klasse, kein Klassenvergleich', text.match(/3BFP2\/2|ohne Klasse|Klassen im Vergleich/i));
+    H.pruefe(!/Bewertete Lernkarten pro Tag/.test(text) && await p.locator('#d-karten').count() === 0, 'Abschnitt „Bewertete Lernkarten pro Tag“ entfernt');
+    H.pruefe(!/gezählt seit/.test(text), 'Hinweis „gezählt seit …“ entfernt');
+    const kz = await p.locator('#kennzahlen .wert').allTextContents();
+    H.pruefe(kz[0] === de(erwartet.k1), 'Kennzahl Aufrufe nur dieser Klasse', { kz, erwartet: erwartet.k1 });
+    H.pruefe(kz[1] === de(erwartet.karten), 'Kennzahl bewertete Karten (nur 3BFP2/1)', { kz, erwartet: erwartet.karten });
+    H.pruefe(kz[2] === '0' && kz[3] === '0', 'Challenges und Spielrunden der anderen Klasse bzw. ohne Klasse zählen nicht mit', kz);
+    H.pruefe((await p.locator('#kennzahlen .zusatz').first().textContent()) === 'an 8 von 10 Tagen genutzt', 'Tage mit Nutzung');
     H.pruefe(await p.locator('#d-aufrufe [data-i]').count() === 10, 'Aufrufe pro Tag: 10 Tage durchgehend (auch Tage ohne Nutzung)');
-    H.pruefe(await p.locator('#legende-aufrufe li').count() === 3, 'Legende mit 3 Bereichen');
-    H.pruefe(await p.locator('#d-karten [data-i]').count() === 7, 'Karten pro Tag erst ab Beginn der Ereigniszählung (7 Tage)');
-    const klassenZeilen = await p.locator('#d-klassen text[text-anchor="end"]').allTextContents();
-    H.pruefe(klassenZeilen.join('|') === '3BFP2/1|3BFP2/2|Ohne Klasse', 'Klassen im Vergleich', klassenZeilen);
+    const farben = await p.locator('#d-aufrufe path').evaluateAll((l) => [...new Set(l.map((e) => e.getAttribute('fill')))]);
+    H.pruefe(farben.length === 1 && await p.locator('.legende').count() === 0, 'eine Farbe, keine Aufschlüsselung nach Bereich', farben);
+    H.pruefe(await p.locator('#d-aufrufe path').count() === 8, 'eine Säule je Tag mit Nutzung');
 
-    // Tooltip
+    // Tooltip: Tag und Aufrufe zusammen
     const saeule = p.locator('#d-aufrufe [data-i="9"]');
     const box = await saeule.boundingBox();
     await p.mouse.move(box.x + box.width / 2, box.y + box.height - 20);
     await p.waitForSelector('#tooltip:not([hidden])');
     const tip = await p.locator('#tooltip').textContent();
-    H.pruefe(/Lernkarten/.test(tip) && /Zusammen/.test(tip) && /\d{2}\.\d{2}\.\d{4}/.test(tip), 'Tooltip: Tag, Bereiche, zusammen', tip);
+    H.pruefe(/\d{2}\.\d{2}\.\d{4}/.test(tip) && /Aufrufe3$/.test(tip) && !/Lernkarten|Challenge/.test(tip), 'Tooltip: Tag und Aufrufe zusammen', tip);
     await p.screenshot({ path: path.join(ERGEBNISSE, 'nutzung-hell.png'), fullPage: true });
     await p.mouse.move(5, 5);
     await p.waitForSelector('#tooltip', { state: 'hidden' });
@@ -245,19 +265,15 @@ async function main() {
     // Tabelle
     await p.click('[data-tabelle="aufrufe"]');
     H.pruefe(await p.locator('#tab-aufrufe tbody tr').count() === 10 && await p.locator('#d-aufrufe').isHidden(), 'Tabellenansicht statt Diagramm');
-    H.pruefe((await p.locator('#tab-aufrufe tfoot td').last().textContent()) === de(erwartet.aufrufe), 'Tabelle: Summe');
+    H.pruefe(await p.locator('#tab-aufrufe thead th').count() === 2, 'Tabelle: nur Tag und Aufrufe');
+    H.pruefe((await p.locator('#tab-aufrufe tfoot td').last().textContent()) === de(erwartet.k1), 'Tabelle: Summe');
     await p.click('[data-tabelle="aufrufe"]');
     H.pruefe(await p.locator('#d-aufrufe').isVisible(), 'zurück zum Diagramm');
 
     // Filter
-    await p.selectOption('#f-klasse', '3bfp2-1');
-    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === de(erwartet.k1), 'Filter Klasse 3BFP2/1', erwartet.k1);
-    H.pruefe(await p.locator('#d-klassen text[text-anchor="end"]').count() === 3, 'Klassenvergleich zeigt weiter alle Klassen');
-    await p.selectOption('#f-klasse', 'ohne Klasse');
-    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === de(erwartet.ohne), 'Filter ohne Klasse', erwartet.ohne);
-    await p.selectOption('#f-klasse', 'alle');
     await p.selectOption('#f-satz', 'kb2-beratung');
-    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === de(erwartet.k2 - 8), 'Filter Kartensatz KB II');
+    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === '0', 'Filter Kartensatz KB II (3BFP2/1 hat dort keine Aufrufe)');
+    H.pruefe(/Keine Aufrufe/.test(await p.locator('#d-aufrufe').textContent()), 'keine Aufrufe → Hinweis statt leerem Diagramm');
     await p.selectOption('#f-satz', 'alle');
     await p.selectOption('#f-zeitraum', '7');
     H.pruefe(await p.locator('#d-aufrufe [data-i]').count() === 7, 'Zeitraum: letzte 7 Tage');
@@ -265,6 +281,22 @@ async function main() {
     await p.waitForSelector('#inhalt:not([hidden])');
     H.pruefe(await p.locator('#f-zeitraum').inputValue() === '7', 'Filter werden gemerkt');
     await p.selectOption('#f-zeitraum', 'alle');
+
+    // Andere Klasse
+    await p.goto(basis + 'siegerehrung/nutzung.html?k=3bfp2-2');
+    await p.waitForSelector('#inhalt:not([hidden])');
+    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === de(erwartet.k2) &&
+      (await p.locator('#kennzahlen .wert').nth(2).textContent()) === de(erwartet.beendet), 'Klasse 3BFP2/2: eigene Zahlen');
+    H.pruefe(!/3BFP2\/1/.test(await p.locator('body').innerText()), 'Klasse 3BFP2/2: 3BFP2/1 kommt nicht vor');
+    H.pruefe(/index\.html\?k=3bfp2-2$/.test(await p.locator('#zurueck').getAttribute('href')), '„Zur Siegerehrung“ führt zur Listenauswahl dieser Klasse');
+
+    // Ohne Klasse in der Adresse: nichts anzeigen, zur Klassenwahl schicken
+    await p.goto(basis + 'siegerehrung/nutzung.html');
+    await p.waitForSelector('#meldung:not([hidden])');
+    H.pruefe(/Klasse wählen/.test(await p.locator('#meldung').textContent()) && await p.locator('#inhalt').isHidden() && await p.locator('#filter').isHidden(),
+      'ohne Klasse: Hinweis und Link zur Klassenwahl, keine Zahlen');
+    await p.goto(basis + 'siegerehrung/nutzung.html?k=3bfp2-1');
+    await p.waitForSelector('#inhalt:not([hidden])');
 
     // Dunkles Design
     await p.emulateMedia({ colorScheme: 'dark' });

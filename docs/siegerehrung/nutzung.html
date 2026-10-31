@@ -10,17 +10,18 @@
 <body>
 <main class="seite">
   <header class="kopf">
-    <a class="zurueck" href="index.html">← Zur Siegerehrung</a>
+    <a class="zurueck" id="zurueck" href="index.html">← Zur Siegerehrung</a>
     <div class="kopf-zeile">
       <div>
         <h1>Nutzung der Lernkarten-App</h1>
+        <p class="klasse" id="klasse"></p>
         <p class="unter" id="stand">Die Zahlen werden geladen …</p>
       </div>
       <button type="button" id="aktualisieren" class="knopf">↻ Aktualisieren</button>
     </div>
   </header>
 
-  <!-- Filter: eine Zeile über allen Diagrammen -->
+  <!-- Filter: eine Zeile über dem Diagramm (die Klasse steht fest) -->
   <form class="filter" id="filter" aria-label="Filter" onsubmit="return false">
     <label>Zeitraum
       <select id="f-zeitraum">
@@ -29,9 +30,6 @@
         <option value="30">Letzte 30 Tage</option>
         <option value="alle" selected>Gesamter Zeitraum</option>
       </select>
-    </label>
-    <label>Klasse
-      <select id="f-klasse"></select>
     </label>
     <label>Kartensatz
       <select id="f-satz"></select>
@@ -47,41 +45,15 @@
       <div class="karte-kopf">
         <div>
           <h2 id="t-aufrufe">Aufrufe pro Tag</h2>
-          <p class="erklaerung">Je Bereich der App. Ein Handy zählt höchstens alle 30 Minuten einmal je Bereich.</p>
+          <p class="erklaerung">Lernkarten, Klausur-Challenge und Diabetes Run! zusammen. Ein Handy zählt höchstens alle 30 Minuten einmal je Bereich.</p>
         </div>
         <button type="button" class="knopf klein" data-tabelle="aufrufe">Als Tabelle</button>
       </div>
-      <ul class="legende" id="legende-aufrufe"></ul>
       <div class="diagramm" id="d-aufrufe"></div>
       <div class="tabelle-box" id="tab-aufrufe" hidden></div>
     </section>
 
-    <section class="karte" aria-labelledby="t-karten">
-      <div class="karte-kopf">
-        <div>
-          <h2 id="t-karten">Bewertete Lernkarten pro Tag</h2>
-          <p class="erklaerung" id="karten-seit">Umgedreht und mit „Gewusst“ oder „Noch nicht“ bewertet.</p>
-        </div>
-        <button type="button" class="knopf klein" data-tabelle="karten">Als Tabelle</button>
-      </div>
-      <div class="diagramm" id="d-karten"></div>
-      <div class="tabelle-box" id="tab-karten" hidden></div>
-    </section>
-
-    <section class="karte" aria-labelledby="t-klassen">
-      <div class="karte-kopf">
-        <div>
-          <h2 id="t-klassen">Klassen im Vergleich</h2>
-          <p class="erklaerung">Immer alle Klassen – Zeitraum und Kartensatz wie oben gewählt.</p>
-        </div>
-        <button type="button" class="knopf klein" data-tabelle="klassen">Als Tabelle</button>
-      </div>
-      <ul class="legende" id="legende-klassen"></ul>
-      <div class="diagramm" id="d-klassen"></div>
-      <div class="tabelle-box" id="tab-klassen" hidden></div>
-    </section>
-
-    <p class="fuss">Alle Zahlen sind anonym: je Tag, Klasse, Kartensatz und Bereich nur Anzahlen – keine Namen, keine Gerätekennungen.
+    <p class="fuss">Alle Zahlen sind anonym: je Tag und Kartensatz nur Anzahlen – keine Namen, keine Gerätekennungen.
       Rechner, auf denen die Siegerehrung geöffnet wurde, zählen nicht mit.</p>
   </div>
 </main>

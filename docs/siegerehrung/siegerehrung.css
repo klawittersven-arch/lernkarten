@@ -60,6 +60,48 @@ button, a { font: inherit; }
 .pokal-gross { display: flex; justify-content: center; }
 .pokal-kopf { width: clamp(72px, 13vh, 130px); height: auto; filter: drop-shadow(0 6px 18px rgba(242, 182, 0, .45)); }
 
+/* Bildschirm 1: Klasse wählen */
+.klassenwahl { min-height: 100vh; justify-content: center; gap: clamp(28px, 6vh, 64px); padding-bottom: 8vh; }
+.klassenwahl h1 {
+  margin: 0;
+  font-size: clamp(36px, 7vh, 76px);
+  font-weight: 800;
+  color: var(--gold);
+  text-shadow: 0 4px 24px rgba(242, 182, 0, .35);
+}
+.knopfreihe.gross { gap: clamp(16px, 3vw, 40px); }
+.knopfreihe.gross button {
+  min-width: clamp(220px, 26vw, 420px);
+  padding: .7em 1.2em;
+  font-size: clamp(30px, 6vh, 64px);
+  border-radius: 28px;
+}
+.knopfreihe.gross button:hover { background: var(--gold); border-color: var(--gold-hell); color: #10282C; }
+
+/* Bildschirm 2: gewählte Klasse */
+.klasse-gewaehlt {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: .8em 0 0;
+  padding: .3em .4em .3em 1em;
+  font-size: clamp(18px, 2.8vh, 26px);
+  font-weight: 800;
+  border: 2px solid var(--gold);
+  border-radius: 999px;
+}
+.klein-knopf {
+  cursor: pointer;
+  padding: .3em .9em;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: 999px;
+}
+.klein-knopf:hover { border-color: var(--gold-hell); }
+
 .wahl { width: 100%; }
 .wahl h2 {
   margin: 0 0 .6em;
