@@ -81,6 +81,7 @@ function suchen({ sekunde, muster, typ, raster }) {
   const { server, basis } = await H.serverStarten();
   const browser = await H.chromium.launch();
   const ctx = await browser.newContext(H.MOBIL);
+  await ctx.addInitScript(() => { try { localStorage.setItem('lernkarten:klasse-gefragt', 'true'); } catch (e) { /* about:blank */ } }); // Klassenfrage: eigener Test in spiel.test.js
   await ctx.addInitScript(() => {
     localStorage.setItem('lernkarten:kb1-diabetes:spiel-verdient', '1');
   });

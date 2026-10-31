@@ -73,6 +73,11 @@ var EINSTELLUNGEN = {
 
   /* ---------- Texte ---------- */
   texte: {
+    // Einmalige Frage nach der Klasse, wenn das Handy noch keine kennt (nur für die Klassen oben)
+    klasseFrageTitel: 'In welche Klasse gehen Sie?',
+    klasseFrageText: 'Dann erscheinen Ihre Punkte in der Highscore-Liste Ihrer Klasse.',
+    klasseFrageOhne: 'Ohne Klasse weiter',
+
     // Kasten auf der Startseite der Lernkarten
     spielTitel: 'Belohnungsspiel: Diabetes Run!',
     spielFreiEine: '1 Spielrunde frei!',

@@ -927,7 +927,7 @@
   LK.ausstehendeSenden();
 
   if (!L || !LK.spielAn(SATZ)) zeigeUnbekannt();
-  else { zeigeStart(); LK.nutzungZaehlen(SATZ, 'spiel'); }
+  else { zeigeStart(); LK.klasseErfragen(); LK.nutzungZaehlen(SATZ, 'spiel'); }
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', function () {

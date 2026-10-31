@@ -1049,6 +1049,8 @@
 
   // Punkte, die offline erspielt wurden, jetzt in die Highscore-Liste nachtragen
   if (SPIEL || CHALLENGE) LK.ausstehendeSenden();
+  // Handy kennt noch keine Klasse: einmal nachfragen (vor dem Zählen)
+  if (LK) LK.klasseErfragen();
   // anonym mitzählen, wie oft die Lernkarten geöffnet werden (Einstellung nutzungZaehlen)
   if (LK) LK.nutzungZaehlen(SATZ, 'lernkarten');
 

@@ -192,6 +192,7 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
   // freigeschaltet: false = so, als stünde in einstellungen.js challengeAn: false
   async function kontext({ freigeschaltet = true, optionen = {} } = {}) {
     const ctx = await browser.newContext(Object.assign({}, H.MOBIL, { reducedMotion: 'reduce', serviceWorkers: 'block' }, optionen));
+    await ctx.addInitScript(() => { try { localStorage.setItem('lernkarten:klasse-gefragt', 'true'); } catch (e) { /* about:blank */ } }); // Klassenfrage: eigener Test in spiel.test.js
     await ctx.addInitScript((a) => { window.HIGHSCORE_TEST_ADRESSE = a; }, attrappeAdresse);
     if (!freigeschaltet) {
       await ctx.route('**/app/einstellungen.js', async (route) => {

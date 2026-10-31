@@ -81,6 +81,11 @@ ihrer Klasse; oben in der App steht „Klasse 3BFP2/1“.
 | KB I | `qr/qr_kb1-diabetes_3bfp2-1.png` | `qr/qr_kb1-diabetes_3bfp2-2.png` |
 | KB II | `qr/qr_kb2-beratung_3bfp2-1.png` | `qr/qr_kb2-beratung_3bfp2-2.png` |
 
+- **Handy ohne Klasse:** Kennt ein Handy noch keine Klasse (z. B. App über den Startbildschirm des
+  iPhones geöffnet – der hat einen eigenen Speicher –, Link ohne Klasse weitergeleitet bekommen oder
+  anderer Browser), fragt die App einmal „In welche Klasse gehen Sie?“ mit je einem Knopf pro Klasse
+  aus `klassen`. „Ohne Klasse weiter“ ist möglich; dann fragt sie nicht noch einmal. Auf dem
+  Lehrkraft-Handy (`?nichtzaehlen=1`) fragt sie nie. Texte in `einstellungen.js` (`klasseFrage…`).
 - **Klassen ändern oder ergänzen:** in `docs/app/einstellungen.js` bei `klassen`, danach QR-Codes erzeugen:
   `python werkzeuge/qr_erzeugen.py --sammelblatt QR-Codes_Klassen.docx` (alle Kästen zum Kopieren in die
   Ich-kann-Listen) oder einzeln `python werkzeuge/qr_erzeugen.py kb1-diabetes --klasse 3bfp2-1 Liste.docx`.

@@ -151,8 +151,9 @@ function kartenIds(ordner) {
   const ids1 = kartenIds('kb1-diabetes');
   const OPT = Object.assign({}, H.MOBIL, { reducedMotion: 'reduce' });
 
-  async function kontext(mitAdresse = true) {
+  async function kontext(mitAdresse = true, klasseFragen = false) {
     const ctx = await browser.newContext(OPT);
+    if (!klasseFragen) await ctx.addInitScript(() => { try { localStorage.setItem('lernkarten:klasse-gefragt', 'true'); } catch (e) { /* about:blank */ } }); // Klassenfrage: eigener Test in spiel.test.js
     if (!mitAdresse) await ctx.addInitScript(() => { window.HIGHSCORE_TEST_ADRESSE = 'keine'; });
     if (mitAdresse) await ctx.addInitScript((a) => { window.HIGHSCORE_TEST_ADRESSE = a; }, attrappeAdresse);
     return ctx;
@@ -532,6 +533,10 @@ function kartenIds(ordner) {
     const textOhne = await oo.locator('body').innerText();
     await cOhne.close();
 
+    // am Server mitschreiben, welche Paketkennungen ankommen (auch Pakete, die beim Verlassen der Seite gesendet werden)
+    const angekommen = [];
+    const postVorher = attrappe.post;
+    attrappe.post = (body) => { try { const d = JSON.parse(body); if (d.aktion === 'ereignis') angekommen.push(d.paket); } catch (e) { /* anderes */ } return postVorher(body); };
     const c6 = await kontext();
     const q = await c6.newPage();
     H.beobachten(q, protokoll, 'ereignisse');
@@ -554,7 +559,9 @@ function kartenIds(ordner) {
     await q.goto(basis + 'challenge/?satz=kb1-diabetes');
     H.pruefe(await H.bis(() => ereignis('Karten bewertet').anzahl === 13) && ereignis('Karten bewertet').geraete === 1,
       'Seite verlassen: die restlichen 3 Karten werden nachgesendet (13), Geräte 1', ereignis('Karten bewertet'));
-    H.pruefe(gesendet.length >= 2 && gesendet[1].paket !== gesendet[0].paket, 'jedes Paket hat eine neue Zufallskennung (nicht dem Handy zuzuordnen)');
+    H.pruefe(await H.bis(() => (attrappe.blaetter.get('Ereignisse (anonym)') || { zeilen: [] }).zeilen.length >= 2)
+      && new Set(angekommen).size >= 2,
+      'jedes Paket hat eine eigene Zufallskennung (nicht dem Handy zuzuordnen)', angekommen);
     await q.click('#knopf-challenge-start');
     H.pruefe(await H.bis(() => ereignis('Challenge begonnen').anzahl === 1), 'Klausur-Challenge gestartet: „Challenge begonnen“ 1');
     await q.click('#knopf-abbrechen');
@@ -591,6 +598,7 @@ function kartenIds(ordner) {
     H.pruefe(gesendet.length === vorherAnzahl && ereignis('Karten bewertet').anzahl === 13, 'Lehrkraft-Handy mit ?nichtzaehlen=1: keine Ereignisse');
     await q.goto(basis + 'kb1-diabetes/?nichtzaehlen=0');
     await c6.close();
+    attrappe.post = postVorher;
 
     // ohne Netz: nichts geht verloren, beim nächsten Öffnen nachgereicht
     const c7 = await kontext();
@@ -601,16 +609,76 @@ function kartenIds(ordner) {
     attrappe.aus = true;
     for (let i = 0; i < 10; i++) await w.click('#knopf-gewusst');
     await w.waitForTimeout(800);
-    H.pruefe(ereignis('Karten bewertet').anzahl === 13 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].paket.anzahl)) === 10,
+    H.pruefe(ereignis('Karten bewertet').anzahl === 13 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].pakete[0].anzahl)) === 10,
       'Verbindung weg: das Paket mit 10 Karten bleibt auf dem Handy gespeichert');
     attrappe.aus = false;
     await w.reload();
     H.pruefe(await H.bis(() => ereignis('Karten bewertet').anzahl === 23, { zeit: 8000 }) && ereignis('Karten bewertet').geraete === 2,
       '… und wird beim Verlassen bzw. nach dem nächsten Öffnen nachgereicht (23, zweites Handy: Geräte 2)', attrappe.blaetter.get('Ereignisse (anonym)').zeilen.filter((r) => r[3] === 'Karten bewertet'));
     await w.waitForTimeout(4000); // Nachsenden nach dem Öffnen: dasselbe Paket darf nicht doppelt zählen
-    H.pruefe(ereignis('Karten bewertet').anzahl === 23 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].paket)) === null,
+    H.pruefe(ereignis('Karten bewertet').anzahl === 23 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].pakete.length)) === 0,
       'dasselbe Paket zweimal gesendet: zählt nur einmal, danach ist es vom Handy gelöscht');
     await c7.close();
+  }
+
+  console.log('\n== Klasse erfragen, wenn das Handy keine kennt');
+  {
+    const nutzung = (klasse, bereich) => {
+      const b = attrappe.blaetter.get('Nutzung (anonym)');
+      const z = b ? b.zeilen.find((r) => r[1] === 'kb2-beratung' && r[2] === klasse && r[3] === bereich) : undefined;
+      return z ? z[4] : 0;
+    };
+    const vorher = { k2: nutzung('3bfp2-2', 'Lernkarten'), ohne: nutzung('ohne Klasse', 'Klausur-Challenge') };
+    const c8 = await kontext(true, true);
+    const f = await c8.newPage();
+    H.beobachten(f, protokoll, 'klassenfrage');
+    const gesendet = [];
+    f.on('request', (r) => { if (r.method() === 'POST') { try { const d = JSON.parse(r.postData()); if (d.aktion === 'zaehlen') gesendet.push(d); } catch (e) { /* anderes */ } } });
+    await f.goto(basis + 'kb2-beratung/');
+    H.pruefe(await f.locator('#klasse-frage').isVisible() && (await f.locator('#kf-titel').innerText()) === 'In welche Klasse gehen Sie?',
+      'ohne Klasse: Frage „In welche Klasse gehen Sie?“ erscheint');
+    const knoepfe = await f.locator('#klasse-frage button').allInnerTexts();
+    H.pruefe(JSON.stringify(knoepfe) === JSON.stringify(['3BFP2/1', '3BFP2/2', 'Ohne Klasse weiter']), 'Knöpfe: 3BFP2/1, 3BFP2/2, „Ohne Klasse weiter“', knoepfe);
+    const box = await f.locator('#klasse-frage .kf-box').boundingBox();
+    H.pruefe(box && box.width <= 360 && box.x >= 0 && box.x + box.width <= OPT.viewport.width, 'Fenster passt aufs Handy', box);
+    await f.screenshot({ path: path.join(ERGEBNISSE, 'klassenfrage.png') });
+    await f.keyboard.press('ArrowRight');
+    await f.waitForTimeout(400);
+    H.pruefe(gesendet.length === 0 && await f.locator('#klasse-frage').isVisible(), 'solange die Frage offen ist: nichts gezählt, Tasten wirken nicht auf die Seite darunter');
+    await f.click('#klasse-frage >> text=3BFP2/2');
+    await f.waitForLoadState('load');
+    H.pruefe(await f.locator('#klasse-frage').count() === 0 && (await f.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:klasse')))) === '3bfp2-2',
+      '3BFP2/2 gewählt: Seite lädt neu, Klasse gespeichert, keine Frage mehr');
+    H.pruefe((await f.locator('body').innerText()).includes('Klasse 3BFP2/2'), 'oben steht jetzt „Klasse 3BFP2/2“');
+    H.pruefe(await H.bis(() => nutzung('3bfp2-2', 'Lernkarten') === vorher.k2 + 1), 'Aufruf zählt jetzt für die Klasse 3bfp2-2');
+    await f.goto(basis + 'challenge/?satz=kb2-beratung');
+    H.pruefe(await f.locator('#klasse-frage').count() === 0, 'auch in der Klausur-Challenge keine Frage mehr');
+    await c8.close();
+
+    const c9 = await kontext(true, true);
+    const g = await c9.newPage();
+    H.beobachten(g, protokoll, 'klassenfrage-ohne');
+    await g.goto(basis + 'challenge/?satz=kb2-beratung');
+    H.pruefe(await g.locator('#klasse-frage').isVisible(), 'Klausur-Challenge ohne Klasse: Frage erscheint auch dort');
+    await g.click('#klasse-frage .kf-ohne');
+    H.pruefe(await g.locator('#klasse-frage').count() === 0 && await g.locator('#knopf-challenge-start').isVisible(), '„Ohne Klasse weiter“: Frage weg, Challenge bedienbar');
+    H.pruefe(await H.bis(() => nutzung('ohne Klasse', 'Klausur-Challenge') === vorher.ohne + 1), '… der Aufruf wird danach gezählt (ohne Klasse)');
+    await g.goto(basis + 'kb2-beratung/');
+    H.pruefe(await g.locator('#klasse-frage').count() === 0, 'nach „Ohne Klasse weiter“ wird nicht noch einmal gefragt');
+    await c9.close();
+
+    const c10 = await kontext(true, true);
+    const k = await c10.newPage();
+    await k.goto(basis + 'kb2-beratung/?klasse=3bfp2-1');
+    H.pruefe(await k.locator('#klasse-frage').count() === 0, 'mit Klasse im QR-Code: keine Frage');
+    await c10.close();
+    const c11 = await kontext(true, true);
+    const l = await c11.newPage();
+    await l.goto(basis + 'kb2-beratung/?nichtzaehlen=1');
+    H.pruefe(await l.locator('#klasse-frage').count() === 0, 'Lehrkraft-Handy (?nichtzaehlen=1): keine Frage');
+    await l.goto(basis + 'spiel/?satz=kb2-beratung');
+    H.pruefe(await l.locator('#klasse-frage').count() === 0, '… auch nicht im Spiel');
+    await c11.close();
   }
 
   console.log('\n== Datenschutz');

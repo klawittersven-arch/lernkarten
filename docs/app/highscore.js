@@ -61,6 +61,7 @@
     for (var i = 0; i < k.length; i++) if (k[i].kennung === kennung) return k[i];
     return null;
   }
+  var KLASSE_GEFRAGT = 'lernkarten:klasse-gefragt'; // „Ohne Klasse weiter“ gewählt: nicht noch einmal fragen
   var KLASSE = (function () {
     var ausAdresse = '';
     try { ausAdresse = (new URLSearchParams(location.search).get('klasse') || '').toLowerCase(); } catch (e) { /* alter Browser */ }
@@ -277,6 +278,8 @@
 
   function jetztZaehlen(satz, bereich) {
     if (E.nutzungZaehlen === false || !eingerichtet() || lesen(NICHT_ZAEHLEN) === true) return;
+    // Klasse wird gerade erfragt: erst danach zählen (mit Klasse nach dem Neuladen, sonst ohne)
+    if (frageOffen) { aufgeschoben.push([satz, bereich]); return; }
     if (navigator.onLine === false) return;
     var alle = lesen(NUTZUNG);
     if (!alle || typeof alle !== 'object') alle = {};
@@ -325,44 +328,54 @@
   /* Jede Meldung ist ein „Paket“ mit Zufallskennung. Es bleibt auf dem Handy, bis das Skript
      den Empfang bestätigt; wird es doppelt gesendet (z. B. beim Schließen der Seite und beim
      nächsten Öffnen noch einmal), zählt das Skript es trotzdem nur einmal. */
+  var MAX_PAKETE = 20;          // je Ereignis höchstens so viele unbestätigte Pakete auf dem Handy
+  var MAX_JE_PAKET = 200;       // so viel nimmt das Skript je Meldung an
+  var unterwegs = {};           // Pakete, deren Antwort gerade aussteht (nur auf dieser Seite)
+
   function ereignisseSenden(nur, beimVerlassen) {
     if (!zaehlenErlaubt() || navigator.onLine === false) return;
     var alle = ereignisseLesen();
     var tag = heute();
     var jetzt = Date.now();
-    var geaendert = false;
     var zuSenden = [];
     Object.keys(alle).forEach(function (k) {
       if (nur && k !== nur) return;
       var v = alle[k] || {};
-      var p = v.paket;
-      if (p && p.verlassen && jetzt - p.verlassen > PAKET_VERFALL_MS) { p = null; geaendert = true; }
-      if (!p && ganzeZahl(v.offen) > 0) {
-        p = { id: zufallsId(10), anzahl: ganzeZahl(v.offen), neu: v.gemeldet !== tag };
-        v.offen = 0;
+      var pakete = (Array.isArray(v.pakete) ? v.pakete : []).filter(function (p) {
+        return p && p.id && !(p.verlassen && jetzt - p.verlassen > PAKET_VERFALL_MS);
+      });
+      var offen = ganzeZahl(v.offen);
+      if (offen > 0 && pakete.length < MAX_PAKETE) {
+        var n = Math.min(offen, MAX_JE_PAKET);
+        pakete.push({ id: zufallsId(10), anzahl: n, neu: v.gemeldet !== tag });
+        v.offen = offen - n;
         v.gemeldet = tag;
-        geaendert = true;
       }
-      if (p && beimVerlassen && !p.verlassen) { p.verlassen = jetzt; geaendert = true; }
-      v.paket = p || null;
+      pakete.forEach(function (p) {
+        if (beimVerlassen && !p.verlassen) p.verlassen = jetzt;
+        if (beimVerlassen || !unterwegs[p.id]) zuSenden.push({ k: k, p: p });
+      });
+      v.pakete = pakete;
       alle[k] = v;
-      if (p) zuSenden.push({ k: k, p: p });
     });
-    if (geaendert) schreiben(EREIGNISSE, alle);
+    schreiben(EREIGNISSE, alle); // zuerst merken – erst danach senden
     zuSenden.forEach(function (z) {
       var teile = z.k.split('|');
+      unterwegs[z.p.id] = true;
       senden({ aktion: 'ereignis', satz: teile[0], klasse: KLASSE ? KLASSE.kennung : '', ereignis: teile[1],
         anzahl: z.p.anzahl, neu: z.p.neu, paket: z.p.id }, beimVerlassen)
         .then(function (antwort) {
-          // angekommen (oder schon früher angekommen): Paket entfernen; abgelehnt (ungültig): ebenfalls
+          delete unterwegs[z.p.id];
+          // angekommen (oder schon früher angekommen) oder als ungültig abgelehnt: Paket entfernen
           if (!antwort || (!antwort.ok && antwort.fehler === 'beschäftigt')) return;
           var a = ereignisseLesen();
-          if (a[z.k] && a[z.k].paket && a[z.k].paket.id === z.p.id) {
-            a[z.k].paket = null;
+          if (a[z.k] && Array.isArray(a[z.k].pakete)) {
+            a[z.k].pakete = a[z.k].pakete.filter(function (p) { return p && p.id !== z.p.id; });
             schreiben(EREIGNISSE, a);
           }
-        })
-        .catch(function () { /* bleibt liegen und wird beim nächsten Mal noch einmal gesendet */ });
+        }, function () {
+          delete unterwegs[z.p.id]; // bleibt liegen und wird beim nächsten Mal noch einmal gesendet
+        });
     });
   }
 
@@ -384,6 +397,82 @@
   });
   window.addEventListener('pagehide', function () { ereignisseSenden(null, true); });
   setTimeout(function () { ereignisseSenden(); }, 3000);
+
+  /* ---------- Klasse erfragen: Kennt das Handy noch keine Klasse (z. B. App über den
+     Startbildschirm des iPhones geöffnet, Link ohne Klasse bekommen, anderer Browser),
+     fragt die App einmal nach. Nicht auf dem Lehrkraft-Handy (?nichtzaehlen=1). ---------- */
+  var frageOffen = false;
+  var aufgeschoben = [];
+
+  function klasseErfragen() {
+    var k = E.klassen || [];
+    if (KLASSE || !k.length || !lager || lesen(NICHT_ZAEHLEN) === true || lesen(KLASSE_GEFRAGT) === true) return;
+    if (document.getElementById('klasse-frage')) return;
+    frageOffen = true;
+
+    var stil = document.createElement('style');
+    stil.textContent =
+      '#klasse-frage{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;' +
+      'padding:16px;background:rgba(14,24,27,.6);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}' +
+      '#klasse-frage .kf-box{background:#fff;color:#16262A;border-radius:16px;width:100%;max-width:360px;' +
+      'padding:22px 20px 14px;box-shadow:0 10px 40px rgba(0,0,0,.35);text-align:center}' +
+      '#klasse-frage h2{margin:0 0 8px;font-size:1.25rem;line-height:1.3}' +
+      '#klasse-frage p{margin:0 0 18px;line-height:1.45;color:#56696E}' +
+      '#klasse-frage .kf-klasse{display:block;width:100%;min-height:52px;margin:0 0 10px;padding:12px;font:inherit;' +
+      'font-size:1.15rem;font-weight:700;border:0;border-radius:12px;background:#25434B;color:#fff;cursor:pointer}' +
+      '#klasse-frage .kf-ohne{margin:2px 0 0;padding:10px;font:inherit;font-size:.9rem;background:none;border:0;' +
+      'color:#56696E;text-decoration:underline;cursor:pointer}' +
+      '#klasse-frage button:focus-visible{outline:3px solid #F2B600;outline-offset:2px}#klasse-frage .kf-box:focus{outline:none}' +
+      '@media (prefers-color-scheme:dark){#klasse-frage .kf-box{background:#1A2A2E;color:#E6EEF0}' +
+      '#klasse-frage p,#klasse-frage .kf-ohne{color:#A3B6BB}#klasse-frage .kf-klasse{background:#3F7D85}}';
+    document.head.appendChild(stil);
+
+    var huelle = document.createElement('div');
+    huelle.id = 'klasse-frage';
+    var box = document.createElement('div');
+    box.className = 'kf-box';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-labelledby', 'kf-titel');
+    var h = document.createElement('h2');
+    h.id = 'kf-titel';
+    h.textContent = T.klasseFrageTitel || 'In welche Klasse gehen Sie?';
+    var p = document.createElement('p');
+    p.textContent = T.klasseFrageText || 'Dann erscheinen Ihre Punkte in der Highscore-Liste Ihrer Klasse.';
+    box.appendChild(h);
+    box.appendChild(p);
+    k.forEach(function (klasse) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'kf-klasse';
+      b.textContent = klasse.name;
+      b.addEventListener('click', function () {
+        schreiben('lernkarten:klasse', klasse.kennung);
+        location.reload();
+      });
+      box.appendChild(b);
+    });
+    var ohne = document.createElement('button');
+    ohne.type = 'button';
+    ohne.className = 'kf-ohne';
+    ohne.textContent = T.klasseFrageOhne || 'Ohne Klasse weiter';
+    ohne.addEventListener('click', function () {
+      schreiben(KLASSE_GEFRAGT, true);
+      if (huelle.parentNode) huelle.parentNode.removeChild(huelle);
+      frageOffen = false;
+      var w = aufgeschoben;
+      aufgeschoben = [];
+      w.forEach(function (a) { jetztZaehlen(a[0], a[1]); });
+    });
+    box.appendChild(ohne);
+    huelle.appendChild(box);
+    // Tasten (Pfeile, Leertaste, Escape) nicht an die Seite darunter weitergeben
+    huelle.addEventListener('keydown', function (e) { e.stopPropagation(); });
+    document.body.appendChild(huelle);
+    // Fokus aufs Fenster selbst (für Bildschirmleser) – kein Klassenknopf soll vorausgewählt wirken
+    box.tabIndex = -1;
+    box.focus({ preventScroll: true });
+  }
 
   window.LK = {
     E: E,
@@ -410,6 +499,7 @@
     zuruecksetzen: zuruecksetzen,
     geraeteId: geraeteId,
     nutzungZaehlen: nutzungZaehlen,
-    ereignisZaehlen: ereignisZaehlen
+    ereignisZaehlen: ereignisZaehlen,
+    klasseErfragen: klasseErfragen
   };
 })();

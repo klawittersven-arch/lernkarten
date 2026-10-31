@@ -80,6 +80,7 @@ function kartenLaden(ordner) {
   // nie die echte Google-Adresse ansprechen (Nutzungszählung, Highscore) – das prüft spiel.test.js mit einer Attrappe
   async function neuerKontext(optionen) {
     const ctx = await browser.newContext(optionen);
+    await ctx.addInitScript(() => { try { localStorage.setItem('lernkarten:klasse-gefragt', 'true'); } catch (e) { /* about:blank */ } }); // Klassenfrage: eigener Test in spiel.test.js
     await ctx.addInitScript(() => { window.HIGHSCORE_TEST_ADRESSE = 'keine'; });
     return ctx;
   }
