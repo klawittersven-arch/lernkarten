@@ -1,0 +1,141 @@
+/* Nutzungsübersicht – ruhig, hell/dunkel, Diagramme als SVG ohne fremde Bibliotheken */
+
+:root {
+  --flaeche: #fcfcfb;
+  --karte: #ffffff;
+  --text: #1d1d1b;
+  --text-2: #55554f;
+  --text-3: #6f6f69;
+  --gitter: #e9e9e5;
+  --achse: #c9c9c3;
+  --rand: #e3e3de;
+  --markiert: rgba(29, 29, 27, .06);
+  --s1: #2a78d6;   /* Lernkarten */
+  --s2: #eb6834;   /* Klausur-Challenge */
+  --s3: #1baf7a;   /* Diabetes Run! */
+  --akzent: #0E3B43;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --flaeche: #1a1a19;
+    --karte: #222220;
+    --text: #f2f2ef;
+    --text-2: #c2c2bc;
+    --text-3: #a3a39d;
+    --gitter: #33332f;
+    --achse: #4a4a45;
+    --rand: #34342f;
+    --markiert: rgba(255, 255, 255, .07);
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --akzent: #8CC4CC;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--flaeche);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 3px solid var(--s1); outline-offset: 2px; }
+
+.seite { max-width: 1180px; margin: 0 auto; padding: 20px 20px 40px; }
+
+.zurueck { color: var(--text-2); text-decoration: none; font-weight: 600; }
+.zurueck:hover { color: var(--text); text-decoration: underline; }
+.kopf-zeile { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+h1 { margin: 0; font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; letter-spacing: -.01em; }
+.unter { margin: 4px 0 0; color: var(--text-2); }
+
+.knopf {
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+  color: var(--text);
+  background: var(--karte);
+  border: 1px solid var(--rand);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+.knopf:hover { border-color: var(--text-3); }
+.knopf.klein { padding: 5px 10px; font-size: 14px; white-space: nowrap; }
+
+/* Filter in einer Zeile */
+.filter { display: flex; flex-wrap: wrap; gap: 12px 18px; margin: 20px 0 16px; padding: 12px 14px; background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; }
+.filter label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 650; color: var(--text-2); }
+.filter select {
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.meldung { padding: 18px; background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; color: var(--text-2); font-size: 17px; }
+
+/* Kennzahlen */
+.kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kachel { background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; padding: 14px 16px; }
+.kachel .titel { font-size: 14px; font-weight: 650; color: var(--text-2); }
+.kachel .wert { margin-top: 4px; font-size: 34px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.kachel .zusatz { margin-top: 2px; font-size: 14px; color: var(--text-3); }
+
+/* Karten mit Diagramm */
+.karte { background: var(--karte); border: 1px solid var(--rand); border-radius: 16px; padding: 16px 18px 12px; margin-bottom: 16px; }
+.karte-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.karte h2 { margin: 0; font-size: 19px; font-weight: 750; }
+.erklaerung { margin: 3px 0 0; font-size: 14px; color: var(--text-3); }
+
+.legende { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; padding: 0; font-size: 14px; color: var(--text-2); }
+.legende li { display: flex; align-items: center; gap: 7px; }
+.legende .farbe { width: 12px; height: 12px; border-radius: 3px; }
+
+.diagramm { position: relative; margin-top: 8px; }
+.diagramm svg { display: block; width: 100%; height: auto; overflow: visible; }
+.diagramm svg:focus { outline: none; }
+.diagramm svg:focus-visible { outline: 2px solid var(--s1); outline-offset: 4px; border-radius: 4px; }
+.diagramm text { font-family: inherit; }
+.leer-hinweis { padding: 30px 0; text-align: center; color: var(--text-3); }
+
+/* Tabellenansicht */
+.tabelle-box { max-height: 420px; overflow: auto; margin-top: 10px; border: 1px solid var(--rand); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--gitter); }
+th:first-child, td:first-child { text-align: left; }
+thead th { position: sticky; top: 0; background: var(--karte); color: var(--text-2); font-weight: 700; }
+tfoot td { font-weight: 750; border-top: 2px solid var(--achse); }
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+  min-width: 170px;
+  padding: 9px 11px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--karte);
+  border: 1px solid var(--rand);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+}
+.tooltip .tt-titel { font-weight: 750; margin-bottom: 4px; }
+.tooltip .tt-zeile { display: flex; align-items: center; gap: 8px; }
+.tooltip .tt-zeile .farbe { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+.tooltip .tt-zeile .wert { margin-left: auto; padding-left: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tooltip .tt-summe { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--gitter); }
+
+.fuss { margin-top: 8px; font-size: 13px; color: var(--text-3); }
+
+@media (forced-colors: active) {
+  .legende .farbe, .tooltip .farbe { forced-color-adjust: none; }
+}

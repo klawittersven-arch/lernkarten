@@ -11,6 +11,7 @@ node lernkarten.test.js   # Inhalte, Bedienung, alle Karten auf großem und klei
 node spiel.test.js        # Spielrunden, Highscore, Google-Apps-Script (lokal nachgebaut), Offline (~1 Minute)
 node challenge.test.js    # Klausur-Challenge: Aufgabenpools, Punkte, Timer, Auswertung, Highscore (~1 Minute)
 node schwierigkeit.test.js  # Schwierigkeitskurve des Spiels: Reaktionszeit, Machbarkeit, Dichte (~10 Sekunden)
+node siegerehrung.test.js   # Siegerehrung am Beamer und Nutzungsübersicht (Apps-Script-Aktion „nutzung“, ~40 Sekunden)
 ```
 
 Ergebnisse des letzten Laufs liegen in `tests/ergebnisse/`.

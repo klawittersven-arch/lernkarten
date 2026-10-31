@@ -1,0 +1,364 @@
+/* Siegerehrung für den Beamer – festlich dunkel mit Gold, Größen in vh,
+ * damit es auf jedem Beamer (1024×768 bis 1920×1080) passt. */
+
+:root {
+  --petrol: #0E3B43;
+  --petrol-tief: #061E23;
+  --gold: #F2B600;
+  --gold-hell: #FFE38A;
+  --gold-tief: #B98200;
+  --silber: #D9DEE2;
+  --silber-tief: #8E979E;
+  --bronze: #D98A4E;
+  --bronze-tief: #8F5126;
+  --text: #FFFFFF;
+  --text-leise: rgba(255, 255, 255, .72);
+  --flaeche: rgba(255, 255, 255, .07);
+  --rand: rgba(255, 255, 255, .22);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body { margin: 0; height: 100%; }
+body.festlich {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 60% 55% at 50% -8%, rgba(242, 182, 0, .28), transparent 70%),
+    radial-gradient(ellipse 35% 60% at 12% 0%, rgba(140, 196, 204, .16), transparent 70%),
+    radial-gradient(ellipse 35% 60% at 88% 0%, rgba(140, 196, 204, .16), transparent 70%),
+    linear-gradient(180deg, var(--petrol) 0%, var(--petrol-tief) 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, a { font: inherit; }
+:focus-visible { outline: 3px solid var(--gold-hell); outline-offset: 3px; }
+
+/* ===================== Seite 1: Auswahl ===================== */
+.auswahl {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vh, 48px) clamp(16px, 4vw, 48px) 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.6vh, 28px);
+  text-align: center;
+}
+.auswahl-kopf h1 {
+  margin: .1em 0 0;
+  font-size: clamp(40px, 8vh, 84px);
+  font-weight: 800;
+  letter-spacing: .01em;
+  color: var(--gold);
+  text-shadow: 0 4px 24px rgba(242, 182, 0, .35);
+}
+.unterzeile { margin: .3em 0 0; color: var(--text-leise); font-size: clamp(16px, 2.4vh, 22px); }
+.pokal-gross { display: flex; justify-content: center; }
+.pokal-kopf { width: clamp(72px, 13vh, 130px); height: auto; filter: drop-shadow(0 6px 18px rgba(242, 182, 0, .45)); }
+
+.wahl { width: 100%; }
+.wahl h2 {
+  margin: 0 0 .6em;
+  font-size: clamp(15px, 2.1vh, 19px);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-leise);
+}
+.knopfreihe { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+
+.knopfreihe button, .kacheln button {
+  cursor: pointer;
+  color: var(--text);
+  background: var(--flaeche);
+  border: 2px solid var(--rand);
+  border-radius: 16px;
+  transition: background .15s, border-color .15s, transform .15s, color .15s;
+}
+.knopfreihe button {
+  min-width: 190px;
+  padding: .55em 1.4em;
+  font-size: clamp(22px, 3.4vh, 32px);
+  font-weight: 800;
+  border-radius: 999px;
+}
+.kacheln button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2em;
+  padding: 1em .8em;
+  min-height: 150px;
+  justify-content: center;
+}
+.kacheln .symbol { font-size: clamp(30px, 5vh, 46px); line-height: 1.1; }
+.kacheln .titel { font-size: clamp(19px, 2.8vh, 25px); font-weight: 800; }
+.kacheln .unter { font-size: clamp(14px, 2vh, 17px); color: var(--text-leise); }
+.knopfreihe button:hover, .kacheln button:hover { border-color: var(--gold-hell); transform: translateY(-2px); }
+.knopfreihe button[aria-checked="true"], .kacheln button[aria-checked="true"] {
+  background: var(--gold);
+  border-color: var(--gold-hell);
+  color: #10282C;
+  box-shadow: 0 6px 24px rgba(242, 182, 0, .35);
+}
+.kacheln button[aria-checked="true"] .unter { color: #3A3000; }
+
+.los {
+  margin-top: .2em;
+  cursor: pointer;
+  padding: .6em 1.8em;
+  font-size: clamp(22px, 3.6vh, 34px);
+  font-weight: 800;
+  color: #10282C;
+  background: linear-gradient(180deg, var(--gold-hell), var(--gold));
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 8px 30px rgba(242, 182, 0, .4);
+  transition: transform .15s, opacity .15s;
+}
+.los:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); }
+.los:disabled { cursor: not-allowed; opacity: .38; box-shadow: none; }
+
+.nutzung-link {
+  display: inline-block;
+  padding: .55em 1.4em;
+  font-size: clamp(16px, 2.3vh, 20px);
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  border: 2px solid var(--rand);
+  border-radius: 999px;
+  background: var(--flaeche);
+}
+.nutzung-link:hover { border-color: var(--gold-hell); }
+.fusszeile { margin: 0; color: var(--text-leise); font-size: 14px; }
+kbd {
+  display: inline-block;
+  padding: 0 .4em;
+  border: 1px solid var(--rand);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 700;
+}
+
+/* ===================== Seite 2: Bühne ===================== */
+.buehne {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 2.5vh 3vw 2vh;
+}
+.buehne-kopf { text-align: center; }
+.buehne-art {
+  margin: 0;
+  font-size: clamp(16px, 2.8vh, 34px);
+  font-weight: 700;
+  color: var(--gold-hell);
+  letter-spacing: .02em;
+}
+.buehne-kopf h1 {
+  margin: .05em 0 0;
+  font-size: clamp(30px, 6.6vh, 80px);
+  font-weight: 800;
+  line-height: 1.05;
+}
+.stand { margin: .25em 0 0; font-size: clamp(12px, 1.8vh, 20px); color: var(--text-leise); min-height: 1.2em; }
+
+/* --- Siegertreppchen: Reihenfolge 2 – 1 – 3 --- */
+.podest {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.2vw;
+  min-height: 0;
+  padding-top: 2vh;
+}
+.platz {
+  flex: 0 1 25vw;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  opacity: 0;
+  transform: translateY(8vh);
+  transition: opacity .7s ease-out, transform .9s cubic-bezier(.2, .9, .25, 1.15);
+}
+.zeige-3 .platz-3, .zeige-2 .platz-2, .zeige-1 .platz-1 { opacity: 1; transform: none; }
+
+.sieger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 .4vw 1.4vh;
+}
+.name-zeile { display: flex; align-items: center; justify-content: center; gap: .3em; max-width: 100%; }
+.sieger .name {
+  font-size: clamp(22px, 4.6vh, 58px);
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.sieger .name.frei { color: var(--text-leise); font-weight: 400; }
+.sieger .punkte {
+  margin-top: .25em;
+  font-size: clamp(15px, 2.8vh, 34px);
+  font-weight: 700;
+  color: var(--text-leise);
+  font-variant-numeric: tabular-nums;
+}
+.platz-1 .sieger .name { font-size: clamp(28px, 6.4vh, 80px); color: var(--gold-hell); text-shadow: 0 0 28px rgba(242, 182, 0, .5); }
+.platz-1 .sieger .punkte { color: var(--gold); }
+
+/* Pokal neben dem Namen auf Platz 1 */
+.pokal-neben { flex: 0 0 auto; display: inline-flex; }
+.pokal-sieger {
+  width: clamp(40px, 9vh, 110px);
+  height: auto;
+  filter: drop-shadow(0 4px 16px rgba(242, 182, 0, .6));
+  transform-origin: 50% 90%;
+}
+.zeige-1 .pokal-sieger { animation: pokal-auftritt 1.1s cubic-bezier(.2, .9, .25, 1.3) .35s both, pokal-glanz 2.8s ease-in-out 1.6s infinite; }
+@keyframes pokal-auftritt {
+  0% { transform: scale(0) rotate(-25deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes pokal-glanz {
+  0%, 100% { transform: rotate(0) scale(1); }
+  50% { transform: rotate(-4deg) scale(1.06); }
+}
+
+.block {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 14px 14px 0 0;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .55), 0 -6px 40px rgba(0, 0, 0, .25);
+}
+.block .nr {
+  margin-top: .12em;
+  font-size: clamp(44px, 11vh, 140px);
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(0, 0, 0, .38);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, .35);
+}
+.platz-1 .block { height: 30vh; background: linear-gradient(180deg, var(--gold-hell) 0%, var(--gold) 45%, var(--gold-tief) 100%); }
+.platz-2 .block { height: 22vh; background: linear-gradient(180deg, #F4F6F8 0%, var(--silber) 45%, var(--silber-tief) 100%); }
+.platz-3 .block { height: 15vh; background: linear-gradient(180deg, #F2B98C 0%, var(--bronze) 45%, var(--bronze-tief) 100%); }
+.platz.unbesetzt .block { opacity: .45; }
+.platz-1 .block::after {
+  content: "";
+  position: absolute;
+  inset: -12vh -3vw auto;
+  height: 12vh;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255, 227, 138, .35), transparent 70%);
+  pointer-events: none;
+}
+
+.leer {
+  align-self: center;
+  justify-self: center;
+  max-width: 900px;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(22px, 4vh, 44px);
+  font-weight: 700;
+  color: var(--text-leise);
+}
+
+/* --- Plätze 4 bis 12 --- */
+.weitere {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .9vh 1.2vw;
+  max-width: 1400px;
+  width: 100%;
+  margin: 1.6vh auto 0;
+  opacity: 0;
+  transform: translateY(2vh);
+  transition: opacity .8s ease-out, transform .8s ease-out;
+}
+.zeige-weitere .weitere { opacity: 1; transform: none; }
+.weiterer {
+  display: flex;
+  align-items: baseline;
+  gap: .6em;
+  padding: .45em .9em;
+  font-size: clamp(15px, 2.7vh, 30px);
+  background: var(--flaeche);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+}
+.weiterer .rang { flex: 0 0 2.2em; color: var(--text-leise); font-weight: 700; font-variant-numeric: tabular-nums; }
+.weiterer .name { flex: 1 1 auto; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.weiterer .punkte { flex: 0 0 auto; color: var(--text-leise); font-variant-numeric: tabular-nums; }
+.weiterer.mehr { justify-content: center; color: var(--text-leise); grid-column: 1 / -1; background: none; border: 0; padding: .1em; font-size: clamp(13px, 2vh, 22px); }
+
+/* --- Steuerung: unten rechts, verschwindet ohne Mausbewegung --- */
+.steuerung {
+  position: fixed;
+  right: 14px;
+  bottom: 12px;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  transition: opacity .4s;
+}
+.steuerung button {
+  cursor: pointer;
+  padding: .45em .9em;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(6, 30, 35, .78);
+  border: 1px solid var(--rand);
+  border-radius: 999px;
+}
+.steuerung button:hover { border-color: var(--gold-hell); }
+body.ruhig .steuerung { opacity: 0; }
+body.ruhig .buehne { cursor: none; }
+.steuerung:focus-within { opacity: 1 !important; }
+
+/* --- Konfetti --- */
+.konfetti { position: fixed; inset: 0; z-index: 4; overflow: hidden; pointer-events: none; }
+.konfetti span {
+  position: absolute;
+  top: -4vh;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  opacity: .95;
+  animation-name: konfetti-fall;
+  animation-timing-function: cubic-bezier(.3, .2, .6, 1);
+  animation-fill-mode: both;
+}
+.konfetti span:nth-child(3n) { width: 8px; height: 8px; border-radius: 50%; }
+.konfetti span:nth-child(4n) { width: 14px; height: 6px; }
+@keyframes konfetti-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0); }
+  50% { transform: translate3d(3vw, 55vh, 0) rotate(380deg); }
+  100% { transform: translate3d(-2vw, 112vh, 0) rotate(820deg); }
+}
+
+/* Kleine Fenster (z. B. Laptop beim Vorbereiten) */
+@media (max-width: 760px) {
+  .podest { gap: 2vw; }
+  .platz { flex-basis: 31vw; }
+  .weitere { grid-template-columns: 1fr; }
+  .steuerung { left: 8px; right: 8px; justify-content: center; flex-wrap: wrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .platz, .weitere, .knopfreihe button, .kacheln button, .los { transition: none; }
+  .zeige-1 .pokal-sieger { animation: none; }
+}

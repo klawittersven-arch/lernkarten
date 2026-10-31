@@ -187,6 +187,27 @@ getrennt von „Nutzung (anonym)“, damit eigene Auswertungen dort unverändert
   für dieses Ereignis zählt – keine Namen, keine Gerätekennung, nicht welche Karten gewusst wurden.
 - `?nichtzaehlen=1` und `nutzungZaehlen: false` gelten auch hier.
 
+### Siegerehrung am Beamer und Nutzungsübersicht (nur Lehrkraft)
+
+**https://klawittersven-arch.github.io/lernkarten/siegerehrung/** – nirgends in der App verlinkt.
+
+- **Erste Seite:** Klasse wählen und die Liste (Klausur-Challenge KB I, Klausur-Challenge KB II,
+  Minispiel Diabetes Run!), dann „🏆 Siegerehrung starten“. Die Seite merkt sich die letzte Wahl.
+- **Siegerehrung:** Siegertreppchen 2 – 1 – 3, Pokal neben dem Namen auf Platz 1, darunter die Plätze 4–12.
+  Die Plätze werden nacheinander enthüllt (Platz 1 zuletzt, mit Konfetti). Tasten: **F** Vollbild,
+  **R** oder Leertaste nochmal, **A** aktualisieren, **Rücktaste** zur Auswahl. Die Knöpfe unten rechts
+  verschwinden nach 3 Sekunden ohne Mausbewegung.
+- **Direkt-Link** für eine Liste (z. B. als Lesezeichen): `…/siegerehrung/?k=3bfp2-1&l=kb1-diabetes-challenge`
+  (`l` = `kb1-diabetes-challenge`, `kb2-beratung-challenge` oder `diabetes-run`).
+- **Diabetes Run!** fasst die Spiel-Listen beider Kartensätze zusammen (je Name die beste Runde).
+- **„📊 Nutzung der App ansehen“** (`…/siegerehrung/nutzung.html`): Kennzahlen, Aufrufe pro Tag
+  (gestapelt nach Bereich), bewertete Karten pro Tag, Klassen im Vergleich – mit Filtern für Zeitraum,
+  Klasse und Kartensatz, Tooltip beim Zeigen auf einen Tag und Tabellenansicht. Die Zahlen kommen aus
+  „Nutzung (anonym)“ und „Ereignisse (anonym)“ (nur Anzahlen, keine Namen, keine Gerätekennungen).
+- Ein Rechner, auf dem eine dieser Seiten geöffnet wurde, zählt bei der Nutzungszählung nicht mit
+  (wie `?nichtzaehlen=1`).
+- Dafür braucht die Tabelle die aktuelle Fassung von `werkzeuge/highscore-apps-script.gs` (Aktion `nutzung`).
+
 ## Klausur-Challenge
 
 Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challenge starten“**
@@ -302,6 +323,7 @@ docs/                       ← alles, was GitHub Pages veröffentlicht
   spiel/                    ← „Diabetes Run!“ (spiel/?satz=kb1-diabetes)
   challenge/                ← Klausur-Challenge (challenge/?satz=kb1-diabetes)
   highscore/                ← Highscore-Listen (highscore/?liste=kb1-diabetes)
+  siegerehrung/             ← Siegerehrung am Beamer und Nutzungsübersicht (nur Lehrkraft)
   kb1-diabetes/             ← Kartensatz KB I – Diabetes mellitus
     karten.js               ← ALLE Kartentexte
     fragen.js               ← Aufgabenpool der Klausur-Challenge

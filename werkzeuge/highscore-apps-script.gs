@@ -67,6 +67,7 @@ function doGet(e) {
   var p = (e && e.parameter) || {};
   try {
     if (p.aktion === 'liste') return antwort(listeLesen(p.liste));
+    if (p.aktion === 'nutzung') return antwort(nutzungLesen());
     if (p.aktion === 'zuruecksetzen') return antwort(zuruecksetzen(p.liste, p.schluessel));
     return antwort({ ok: false, fehler: 'unbekannte Aktion' });
   } catch (x) {
@@ -279,6 +280,20 @@ function hochzaehlen(o) {
   } finally {
     sperre.releaseLock();
   }
+}
+
+/* ---------- Nutzung lesen (für die Seite „Siegerehrung → Nutzung“): nur die anonymen Tageszahlen ---------- */
+function nutzungLesen() {
+  var tabelle = SpreadsheetApp.getActiveSpreadsheet();
+  var zone = tabelle.getSpreadsheetTimeZone();
+  function blattLesen(name) {
+    var b = tabelle.getSheetByName(name);
+    if (!b || b.getLastRow() < 2) return [];
+    return b.getRange(2, 1, b.getLastRow() - 1, 6).getValues().map(function (z) {
+      return [tagVon(z[0], zone), String(z[1]), String(z[2]), String(z[3]), Number(z[4]) || 0, Number(z[5]) || 0];
+    }).filter(function (z) { return z[0] && LISTE_MUSTER.test(z[1]); });
+  }
+  return { ok: true, nutzung: blattLesen(NUTZUNG_BLATT), ereignisse: blattLesen(EREIGNIS_BLATT) };
 }
 
 // Tag einer Zeile als „yyyy-MM-dd“ – egal, ob dort ein Datum oder (ältere Zeilen) Text wie „Mo, 19.10.2026“ steht

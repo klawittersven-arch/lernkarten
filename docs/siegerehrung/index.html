@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Siegerehrung – Lernkarten</title>
+<link rel="stylesheet" href="siegerehrung.css">
+</head>
+<body class="festlich">
+
+<!-- Seite 1: Auswahl (Klasse und Highscore-Liste) -->
+<main id="auswahl" class="auswahl" hidden>
+  <header class="auswahl-kopf">
+    <div class="pokal-gross" aria-hidden="true" data-pokal></div>
+    <h1>Siegerehrung</h1>
+    <p class="unterzeile">Highscores aus den Lernkarten – für den Beamer</p>
+  </header>
+
+  <section class="wahl" aria-labelledby="titel-klasse">
+    <h2 id="titel-klasse">Klasse</h2>
+    <div class="knopfreihe" id="wahl-klasse" role="radiogroup" aria-labelledby="titel-klasse"></div>
+  </section>
+
+  <section class="wahl" aria-labelledby="titel-liste">
+    <h2 id="titel-liste">Highscore-Liste</h2>
+    <div class="kacheln" id="wahl-liste" role="radiogroup" aria-labelledby="titel-liste"></div>
+  </section>
+
+  <button id="los" class="los" type="button" disabled>🏆 Siegerehrung starten</button>
+  <a id="nutzung-link" class="nutzung-link" href="nutzung.html">📊 Nutzung der App ansehen</a>
+  <p class="fusszeile">Tipp: Taste <kbd>F</kbd> = Vollbild. Dieser Rechner wird bei der anonymen Nutzungszählung nicht mitgezählt.</p>
+</main>
+
+<!-- Seite 2: Siegerehrung -->
+<main id="buehne" class="buehne" hidden>
+  <header class="buehne-kopf">
+    <p class="buehne-art" id="buehne-art"></p>
+    <h1 id="buehne-titel"></h1>
+    <p class="stand" id="stand"></p>
+  </header>
+
+  <div class="podest" id="podest" aria-live="polite"></div>
+  <p class="leer" id="leer" hidden></p>
+  <section class="weitere" id="weitere" aria-label="Weitere Plätze"></section>
+
+  <nav class="steuerung" aria-label="Steuerung">
+    <button type="button" id="zurueck">← Auswahl</button>
+    <button type="button" id="nochmal">⟲ Nochmal</button>
+    <button type="button" id="aktualisieren">↻ Aktualisieren</button>
+    <button type="button" id="vollbild">⛶ Vollbild</button>
+  </nav>
+  <div class="konfetti" id="konfetti" aria-hidden="true"></div>
+</main>
+
+<script src="../app/einstellungen.js"></script>
+<script src="siegerehrung.js"></script>
+</body>
+</html>
