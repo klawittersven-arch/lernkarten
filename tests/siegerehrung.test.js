@@ -1,7 +1,7 @@
 /* Siegerehrung (Beamer) und Nutzungsübersicht:
  * 1. Apps Script: aktion=nutzung liefert die anonymen Tageszahlen
  * 2. Siegerehrung: Klassenfrage, Auswahl, Siegertreppchen mit Pokal, Spiel-Listen zusammengeführt, leere Liste, Fehler
- * 3. Nutzung: nur die gewählte Klasse, Kennzahlen, Aufrufe pro Tag, Filter, Tabellenansicht, Tooltip, dunkles Design */
+ * 3. Nutzung: nur die gewählte Klasse, Kennzahl Aufrufe, Aufrufe pro Tag, Filter, Tabellenansicht, Tooltip, dunkles Design */
 'use strict';
 const path = require('path');
 const H = require('./hilfen');
@@ -240,9 +240,8 @@ async function main() {
     H.pruefe(!/Bewertete Lernkarten pro Tag/.test(text) && await p.locator('#d-karten').count() === 0, 'Abschnitt „Bewertete Lernkarten pro Tag“ entfernt');
     H.pruefe(!/gezählt seit/.test(text), 'Hinweis „gezählt seit …“ entfernt');
     const kz = await p.locator('#kennzahlen .wert').allTextContents();
-    H.pruefe(kz[0] === de(erwartet.k1), 'Kennzahl Aufrufe nur dieser Klasse', { kz, erwartet: erwartet.k1 });
-    H.pruefe(kz[1] === de(erwartet.karten), 'Kennzahl bewertete Karten (nur 3BFP2/1)', { kz, erwartet: erwartet.karten });
-    H.pruefe(kz[2] === '0' && kz[3] === '0', 'Challenges und Spielrunden der anderen Klasse bzw. ohne Klasse zählen nicht mit', kz);
+    H.pruefe(kz.length === 1 && kz[0] === de(erwartet.k1), 'nur eine Kachel: Aufrufe dieser Klasse', { kz, erwartet: erwartet.k1 });
+    H.pruefe(!/Lernkarten bewertet|Challenges beendet|Spielrunden gespielt/.test(text), 'Kacheln „Lernkarten bewertet“, „Klausur-Challenges beendet“, „Spielrunden gespielt“ entfernt');
     H.pruefe((await p.locator('#kennzahlen .zusatz').first().textContent()) === 'an 8 von 10 Tagen genutzt', 'Tage mit Nutzung');
     H.pruefe(await p.locator('#d-aufrufe [data-i]').count() === 10, 'Aufrufe pro Tag: 10 Tage durchgehend (auch Tage ohne Nutzung)');
     const farben = await p.locator('#d-aufrufe path').evaluateAll((l) => [...new Set(l.map((e) => e.getAttribute('fill')))]);
@@ -288,8 +287,7 @@ async function main() {
     // Andere Klasse
     await p.goto(basis + 'siegerehrung/nutzung.html?k=3bfp2-2');
     await p.waitForSelector('#inhalt:not([hidden])');
-    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === de(erwartet.k2) &&
-      (await p.locator('#kennzahlen .wert').nth(2).textContent()) === de(erwartet.beendet), 'Klasse 3BFP2/2: eigene Zahlen');
+    H.pruefe((await p.locator('#kennzahlen .wert').first().textContent()) === de(erwartet.k2), 'Klasse 3BFP2/2: eigene Zahlen');
     H.pruefe(!/3BFP2\/1/.test(await p.locator('body').innerText()), 'Klasse 3BFP2/2: 3BFP2/1 kommt nicht vor');
     H.pruefe(/index\.html\?k=3bfp2-2$/.test(await p.locator('#zurueck').getAttribute('href')), '„Zur Siegerehrung“ führt zur Listenauswahl dieser Klasse');
 

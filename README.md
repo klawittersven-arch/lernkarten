@@ -203,10 +203,9 @@ getrennt von „Nutzung (anonym)“, damit eigene Auswertungen dort unverändert
   (`l` = `kb1-diabetes-challenge`, `kb2-beratung-challenge` oder `diabetes-run`).
 - **Diabetes Run!** fasst die Spiel-Listen beider Kartensätze zusammen (je Name die beste Runde).
 - **„📊 Nutzung der App ansehen“** (`…/siegerehrung/nutzung.html?k=3bfp2-1`) zeigt **nur die gewählte Klasse**
-  – kein Klassenvergleich: Aufrufe, bewertete Lernkarten, beendete Challenges, gespielte Spielrunden und
-  ein Säulendiagramm „Aufrufe pro Tag“ (alle Bereiche zusammen), mit Filtern für Zeitraum und Kartensatz,
-  Tooltip beim Zeigen auf einen Tag und Tabellenansicht. Die Zahlen kommen aus „Nutzung (anonym)“ und
-  „Ereignisse (anonym)“ (nur Anzahlen, keine Namen, keine Gerätekennungen).
+  – kein Klassenvergleich: Zahl der Aufrufe und ein Säulendiagramm „Aufrufe pro Tag“ (alle Bereiche
+  zusammen), mit Filtern für Zeitraum und Kartensatz, Tooltip beim Zeigen auf einen Tag und Tabellenansicht.
+  Die Zahlen kommen aus „Nutzung (anonym)“ (nur Anzahlen, keine Namen, keine Gerätekennungen).
 - Ein Rechner, auf dem eine dieser Seiten geöffnet wurde, zählt bei der Nutzungszählung nicht mit
   (wie `?nichtzaehlen=1`).
 - Dafür braucht die Tabelle die aktuelle Fassung von `werkzeuge/highscore-apps-script.gs` (Aktion `nutzung`).

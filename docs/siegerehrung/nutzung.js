@@ -1,6 +1,6 @@
 /* Nutzungsübersicht für die Lehrkraft – immer nur für EINE Klasse (…/nutzung.html?k=3bfp2-1),
  * damit sich die Klassen nicht untereinander vergleichen. Liest die anonymen Tageszahlen aus der
- * Google-Tabelle (Blätter „Nutzung (anonym)“ und „Ereignisse (anonym)“).
+ * Google-Tabelle (Blatt „Nutzung (anonym)“).
  * Das Diagramm ist schlichtes SVG – keine fremden Bibliotheken, nichts wird nachgeladen. */
 (function () {
   'use strict';
@@ -103,7 +103,7 @@
       .then(function (d) {
         clearTimeout(zeit);
         if (!d || !d.ok || !Array.isArray(d.nutzung)) throw new Error((d && d.fehler) || 'keine Daten');
-        daten = { nutzung: nurDieseKlasse(d.nutzung), ereignisse: nurDieseKlasse(d.ereignisse) };
+        daten = { nutzung: nurDieseKlasse(d.nutzung) };
         var jetzt = new Date();
         $('stand').textContent = 'Stand: ' + jetzt.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }) +
           ', ' + jetzt.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';
@@ -123,7 +123,7 @@
   function auswerten() {
     var ende = tagZahl(heute());
     var erster = ende;
-    daten.nutzung.concat(daten.ereignisse).forEach(function (z) {
+    daten.nutzung.forEach(function (z) {
       var t = tagZahl(z[0]);
       if (t < erster) erster = t;
       if (t > ende) ende = t;
@@ -136,18 +136,11 @@
     function passt(z) { return index.hasOwnProperty(z[0]) && (f.satz === 'alle' || z[1] === f.satz); }
 
     var aufrufe = tage.map(function () { return 0; });
-    var summe = { aufrufe: 0, karten: 0, begonnen: 0, beendet: 0, angeboten: 0, abgelehnt: 0, gespielt: 0 };
+    var summe = { aufrufe: 0 };
     daten.nutzung.forEach(function (z) {
       if (!passt(z)) return;
       aufrufe[index[z[0]]] += z[4];
       summe.aufrufe += z[4];
-    });
-    var art = {
-      'Karten bewertet': 'karten', 'Challenge begonnen': 'begonnen', 'Challenge beendet': 'beendet',
-      'Spielrunde angeboten': 'angeboten', 'Spielrunde abgelehnt': 'abgelehnt', 'Spielrunde gespielt': 'gespielt'
-    };
-    daten.ereignisse.forEach(function (z) {
-      if (passt(z) && art.hasOwnProperty(z[3])) summe[art[z[3]]] += z[4];
     });
     return {
       tage: tage, aufrufe: aufrufe, summe: summe,
@@ -155,18 +148,10 @@
     };
   }
 
-  /* ---------- Kennzahlen ---------- */
-  function kachel(titel, wert, zusatz) {
-    return '<div class="kachel"><div class="titel">' + esc(titel) + '</div><div class="wert">' + esc(wert) + '</div>' +
-      (zusatz ? '<div class="zusatz">' + esc(zusatz) + '</div>' : '') + '</div>';
-  }
+  /* ---------- Kennzahl ---------- */
   function kennzahlen(a) {
-    var s = a.summe;
-    $('kennzahlen').innerHTML =
-      kachel('Aufrufe', zahl(s.aufrufe), 'an ' + zahl(a.tageMitNutzung) + ' von ' + zahl(a.tage.length) + ' Tagen genutzt') +
-      kachel('Lernkarten bewertet', zahl(s.karten), '') +
-      kachel('Klausur-Challenges beendet', zahl(s.beendet), 'von ' + zahl(s.begonnen) + ' begonnenen') +
-      kachel('Spielrunden gespielt', zahl(s.gespielt), zahl(s.angeboten) + ' angeboten · ' + zahl(s.abgelehnt) + ' abgelehnt');
+    $('kennzahlen').innerHTML = '<div class="kachel"><div class="titel">Aufrufe</div><div class="wert">' + zahl(a.summe.aufrufe) +
+      '</div><div class="zusatz">an ' + zahl(a.tageMitNutzung) + ' von ' + zahl(a.tage.length) + ' Tagen genutzt</div></div>';
   }
 
   /* ---------- Tooltip ---------- */

@@ -91,7 +91,8 @@ h1 { margin: 0; font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; letter-sp
 .meldung { padding: 18px; background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; color: var(--text-2); font-size: 17px; }
 
 /* Kennzahlen */
-.kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kacheln { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.kachel { flex: 0 1 300px; }
 .kachel { background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; padding: 14px 16px; }
 .kachel .titel { font-size: 14px; font-weight: 650; color: var(--text-2); }
 .kachel .wert { margin-top: 4px; font-size: 34px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
