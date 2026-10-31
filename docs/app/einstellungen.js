@@ -18,7 +18,9 @@ var EINSTELLUNGEN = {
 
   // Anonyme Nutzungszählung in derselben Google-Tabelle (Blatt „Nutzung (anonym)“): je Tag,
   // Kartensatz, Klasse und Bereich (Lernkarten, Klausur-Challenge, Spiel) die Zahl der Aufrufe
-  // und der verschiedenen Handys – ohne Namen, ohne Gerätekennung. Ausschalten: false
+  // und der verschiedenen Handys – ohne Namen, ohne Gerätekennung. Dazu im Blatt
+  // „Ereignisse (anonym)“: bewertete Karten, begonnene/beendete Challenges, angebotene/
+  // abgelehnte/gespielte Spielrunden. Für die SuS nicht sichtbar. Ausschalten (beides): false
   nutzungZaehlen: true,
 
   // Je so viele angeschaute Lernkarten gibt es eine Spielrunde. Eine Karte zählt, wenn sie umgedreht

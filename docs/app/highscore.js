@@ -194,8 +194,11 @@
 
   // Eintrag senden; als Text (nicht application/json), damit der Browser keine
   // Vorab-Anfrage schickt, die Google Apps Script nicht beantwortet.
-  function senden(eintrag) {
-    return holen(adresse(), { method: 'POST', body: JSON.stringify(eintrag), cache: 'no-store' });
+  // beimVerlassen: die Anfrage überlebt das Schließen der Seite (keepalive)
+  function senden(eintrag, beimVerlassen) {
+    var o = { method: 'POST', body: JSON.stringify(eintrag), cache: 'no-store' };
+    if (beimVerlassen) o.keepalive = true;
+    return holen(adresse(), o);
   }
 
   /* Warteschlange: Einträge, die (noch) nicht gesendet werden konnten */
@@ -298,6 +301,90 @@
     });
   }
 
+  /* ---------- Ereignisse zählen (anonym, eigenes Blatt „Ereignisse (anonym)“):
+     wie oft etwas passiert – bewertete Karten, begonnene/beendete Challenges,
+     angebotene/abgelehnte/gespielte Spielrunden. Gesendet werden nur Kartensatz, Klasse,
+     Ereignis, Anzahl und ob das Handy heute zum ersten Mal für dieses Ereignis zählt –
+     kein Name, keine Gerätekennung, nichts darüber, welche Karten gewusst wurden.
+     Auf dem Handy ist davon nichts zu sehen. Bewertete Karten werden gesammelt und je
+     EREIGNIS_BUENDEL Karten bzw. beim Verlassen der Seite gesendet. ---------- */
+  var EREIGNISSE = 'lernkarten:ereignisse';
+  var EREIGNIS_BUENDEL = 10;
+  var GESAMMELT = { karten: true }; // diese Ereignisse werden gebündelt gesendet
+  var PAKET_VERFALL_MS = 5 * 3600 * 1000; // beim Verlassen gesendet und so alt: gilt als angekommen
+
+  function zaehlenErlaubt() {
+    return E.nutzungZaehlen !== false && eingerichtet() && lesen(NICHT_ZAEHLEN) !== true;
+  }
+  function ereignisseLesen() {
+    var a = lesen(EREIGNISSE);
+    return a && typeof a === 'object' && !Array.isArray(a) ? a : {};
+  }
+  function ganzeZahl(n) { n = Math.floor(Number(n) || 0); return n > 0 ? n : 0; }
+
+  /* Jede Meldung ist ein „Paket“ mit Zufallskennung. Es bleibt auf dem Handy, bis das Skript
+     den Empfang bestätigt; wird es doppelt gesendet (z. B. beim Schließen der Seite und beim
+     nächsten Öffnen noch einmal), zählt das Skript es trotzdem nur einmal. */
+  function ereignisseSenden(nur, beimVerlassen) {
+    if (!zaehlenErlaubt() || navigator.onLine === false) return;
+    var alle = ereignisseLesen();
+    var tag = heute();
+    var jetzt = Date.now();
+    var geaendert = false;
+    var zuSenden = [];
+    Object.keys(alle).forEach(function (k) {
+      if (nur && k !== nur) return;
+      var v = alle[k] || {};
+      var p = v.paket;
+      if (p && p.verlassen && jetzt - p.verlassen > PAKET_VERFALL_MS) { p = null; geaendert = true; }
+      if (!p && ganzeZahl(v.offen) > 0) {
+        p = { id: zufallsId(10), anzahl: ganzeZahl(v.offen), neu: v.gemeldet !== tag };
+        v.offen = 0;
+        v.gemeldet = tag;
+        geaendert = true;
+      }
+      if (p && beimVerlassen && !p.verlassen) { p.verlassen = jetzt; geaendert = true; }
+      v.paket = p || null;
+      alle[k] = v;
+      if (p) zuSenden.push({ k: k, p: p });
+    });
+    if (geaendert) schreiben(EREIGNISSE, alle);
+    zuSenden.forEach(function (z) {
+      var teile = z.k.split('|');
+      senden({ aktion: 'ereignis', satz: teile[0], klasse: KLASSE ? KLASSE.kennung : '', ereignis: teile[1],
+        anzahl: z.p.anzahl, neu: z.p.neu, paket: z.p.id }, beimVerlassen)
+        .then(function (antwort) {
+          // angekommen (oder schon früher angekommen): Paket entfernen; abgelehnt (ungültig): ebenfalls
+          if (!antwort || (!antwort.ok && antwort.fehler === 'beschäftigt')) return;
+          var a = ereignisseLesen();
+          if (a[z.k] && a[z.k].paket && a[z.k].paket.id === z.p.id) {
+            a[z.k].paket = null;
+            schreiben(EREIGNISSE, a);
+          }
+        })
+        .catch(function () { /* bleibt liegen und wird beim nächsten Mal noch einmal gesendet */ });
+    });
+  }
+
+  // ereignis: 'karten', 'challenge-start', 'challenge-ende', 'runde-angeboten', 'runde-abgelehnt', 'runde-gespielt'
+  function ereignisZaehlen(satz, ereignis) {
+    if (!liste(satz) || !zaehlenErlaubt()) return;
+    var alle = ereignisseLesen();
+    var k = satz + '|' + ereignis;
+    var v = alle[k] || {};
+    v.offen = ganzeZahl(v.offen) + 1;
+    alle[k] = v;
+    schreiben(EREIGNISSE, alle);
+    if (!GESAMMELT[ereignis] || v.offen >= EREIGNIS_BUENDEL) ereignisseSenden(k);
+  }
+
+  // Reste beim Verlassen der Seite senden und – falls etwas liegen geblieben ist – kurz nach dem Öffnen
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') ereignisseSenden(null, true);
+  });
+  window.addEventListener('pagehide', function () { ereignisseSenden(null, true); });
+  setTimeout(function () { ereignisseSenden(); }, 3000);
+
   window.LK = {
     E: E,
     T: T,
@@ -322,6 +409,7 @@
     warteschlange: warteschlange,
     zuruecksetzen: zuruecksetzen,
     geraeteId: geraeteId,
-    nutzungZaehlen: nutzungZaehlen
+    nutzungZaehlen: nutzungZaehlen,
+    ereignisZaehlen: ereignisZaehlen
   };
 })();

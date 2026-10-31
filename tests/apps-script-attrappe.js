@@ -25,6 +25,7 @@ function wieGoogle(wert, Uhrzeit) {
 
 function attrappeErstellen({ schluesselEinsetzen = true } = {}) {
   const blaetter = new Map();
+  const zwischenspeicher = new Map(); // CacheService (für doppelt gesendete Pakete)
   const uhr = { versatz: 0 }; // ms – zum Nachstellen späterer Tage
   class Uhrzeit extends Date {
     constructor(...a) { if (a.length) super(...a); else super(Date.now() + uhr.versatz); }
@@ -76,6 +77,7 @@ function attrappeErstellen({ schluesselEinsetzen = true } = {}) {
       createTextOutput: (text) => ({ text, setMimeType() { return this; } })
     },
     LockService: { getScriptLock: () => ({ waitLock: () => {}, tryLock: () => true, releaseLock: () => {} }) },
+    CacheService: { getScriptCache: () => ({ get: (k) => (zwischenspeicher.has(k) ? zwischenspeicher.get(k) : null), put: (k, w) => { zwischenspeicher.set(k, w); } }) },
     Utilities: { sleep: () => {}, formatDate: datumFormatieren },
     Date: Uhrzeit, JSON, Math, Number, String, Object, isFinite
   };

@@ -104,6 +104,45 @@ function kartenIds(ordner) {
     H.pruefe(z({}).ok && blatt().zeilen.length === 66 && blatt().groesse.zeilen > 66, 'Blatt voll (1000 Zeilen erreicht): Skript fügt Zeilen hinzu und zählt weiter');
   }
 
+  console.log('\n== Ereignisse zählen (Google-Apps-Script, anonym)');
+  {
+    const a = attrappeErstellen();
+    const z = (werte) => a.post(JSON.stringify(Object.assign({ aktion: 'ereignis', satz: 'kb1-diabetes', klasse: '3bfp2-1', ereignis: 'karten', anzahl: 10, neu: true }, werte)));
+    const blatt = () => a.blaetter.get('Ereignisse (anonym)');
+    const zeile = (text, klasse = '3bfp2-1') => (blatt().zeilen.find((r) => r[1] === 'kb1-diabetes' && r[2] === klasse && r[3] === text) || []);
+    H.pruefe(z({}).ok && blatt() && blatt().zeilen[0].join('|') === 'Datum|Kartensatz|Klasse|Ereignis|Anzahl|Geräte',
+      'erstes Ereignis legt das Blatt „Ereignisse (anonym)“ mit Kopfzeile an');
+    H.pruefe(zeile('Karten bewertet')[4] === 10 && zeile('Karten bewertet')[5] === 1 && zeile('Karten bewertet')[0] instanceof Date,
+      '10 bewertete Karten: Anzahl 10, Geräte 1, Datum als echtes Datum', zeile('Karten bewertet'));
+    z({ anzahl: 7, neu: false });
+    H.pruefe(zeile('Karten bewertet')[4] === 17 && zeile('Karten bewertet')[5] === 1, 'weitere 7 Karten vom selben Handy: Anzahl 17, Geräte bleibt 1');
+    z({ anzahl: 3, neu: true });
+    H.pruefe(zeile('Karten bewertet')[4] === 20 && zeile('Karten bewertet')[5] === 2, 'zweites Handy: Anzahl 20, Geräte 2');
+    z({ anzahl: 5000, neu: false });
+    H.pruefe(zeile('Karten bewertet')[4] === 220, 'unplausibel große Anzahl wird auf 200 je Meldung begrenzt');
+    z({ anzahl: 'abc', neu: false });
+    H.pruefe(zeile('Karten bewertet')[4] === 221, 'fehlende oder ungültige Anzahl zählt als 1');
+    const r1 = z({ anzahl: 5, neu: false, paket: 'paket00001' });
+    const r2 = z({ anzahl: 5, neu: false, paket: 'paket00001' });
+    H.pruefe(r1.ok && !r1.doppelt && r2.ok && r2.doppelt && zeile('Karten bewertet')[4] === 226,
+      'dasselbe Paket zweimal gesendet (z. B. beim Schließen und beim nächsten Öffnen): zählt nur einmal');
+    const namen = { 'challenge-start': 'Challenge begonnen', 'challenge-ende': 'Challenge beendet', 'runde-angeboten': 'Spielrunde angeboten',
+      'runde-abgelehnt': 'Spielrunde abgelehnt', 'runde-gespielt': 'Spielrunde gespielt' };
+    Object.keys(namen).forEach((k) => z({ ereignis: k, anzahl: 1 }));
+    H.pruefe(Object.values(namen).every((t) => zeile(t)[4] === 1), 'Challenge begonnen/beendet, Spielrunde angeboten/abgelehnt/gespielt: je eine eigene Zeile');
+    H.pruefe(['lernkarten', 'quatsch', ''].every((x) => z({ ereignis: x }).ok === false) && z({ satz: '../geheim' }).ok === false && z({ klasse: 'Ä' }).ok === false,
+      'unbekannte Ereignisse und unzulässige Kartensätze/Klassen abgelehnt');
+    z({ klasse: '', ereignis: 'runde-gespielt', anzahl: 1 });
+    H.pruefe(zeile('Spielrunde gespielt', 'ohne Klasse')[4] === 1, 'ohne Klasse: Zeile „ohne Klasse“');
+    H.pruefe(!a.blaetter.has('Nutzung (anonym)'), 'Ereignisse landen nicht im Blatt „Nutzung (anonym)“');
+    a.post(JSON.stringify({ aktion: 'zaehlen', satz: 'kb1-diabetes', klasse: '3bfp2-1', bereich: 'lernkarten', neu: true }));
+    H.pruefe(a.blaetter.get('Nutzung (anonym)').zeilen.length === 2 && blatt().zeilen.every((r) => r[3] !== 'Lernkarten'),
+      'Aufrufe zählen weiter wie bisher im Blatt „Nutzung (anonym)“');
+    a.uhr.versatz = 24 * 3600 * 1000;
+    z({ anzahl: 4, neu: true });
+    H.pruefe(blatt().zeilen.filter((r) => r[3] === 'Karten bewertet' && r[2] === '3bfp2-1').length === 2, 'am nächsten Tag beginnt eine neue Zeile');
+  }
+
   /* ---------- 2. Im Browser ---------- */
   const attrappe = attrappeErstellen();
   const { server, basis, attrappeAdresse } = await H.serverStarten({ attrappe });
@@ -476,6 +515,102 @@ function kartenIds(ordner) {
     await o.waitForTimeout(500);
     H.pruefe(zeile('Lernkarten')[4] === 3, 'ohne eingerichtete Adresse wird nichts gesendet');
     await c5.close();
+  }
+
+  console.log('\n== Ereignisse zählen in der App (anonym, für die SuS unsichtbar)');
+  {
+    attrappe.blaetter.delete('Ereignisse (anonym)');
+    const ereignis = (text) => {
+      const b = attrappe.blaetter.get('Ereignisse (anonym)');
+      const z = b ? b.zeilen.find((r) => r[1] === 'kb1-diabetes' && r[2] === '3bfp2-1' && r[3] === text) : undefined;
+      return z ? { anzahl: z[4], geraete: z[5] } : { anzahl: 0, geraete: 0 };
+    };
+    // für die SuS sieht alles genauso aus wie ohne Zählung
+    const cOhne = await kontext(false);
+    const oo = await cOhne.newPage();
+    await oo.goto(basis + 'kb1-diabetes/?klasse=3bfp2-1');
+    const textOhne = await oo.locator('body').innerText();
+    await cOhne.close();
+
+    const c6 = await kontext();
+    const q = await c6.newPage();
+    H.beobachten(q, protokoll, 'ereignisse');
+    q.on('dialog', (d) => d.accept());
+    const gesendet = [];
+    q.on('request', (r) => { if (r.method() === 'POST') { try { const d = JSON.parse(r.postData()); if (d.aktion === 'ereignis') gesendet.push(d); } catch (e) { /* anderes */ } } });
+    await q.goto(basis + 'kb1-diabetes/?klasse=3bfp2-1');
+    H.pruefe((await q.locator('body').innerText()) === textOhne, 'Startseite sieht mit Zählung genau gleich aus wie ohne');
+    await q.click('#knopf-start');
+    for (let i = 0; i < 9; i++) await q.click('#knopf-gewusst');
+    await q.waitForTimeout(500);
+    H.pruefe(gesendet.length === 0, '9 Karten bewertet: noch nichts gesendet (wird gesammelt)');
+    await q.click('#knopf-nochnicht');
+    H.pruefe(await H.bis(() => ereignis('Karten bewertet').anzahl === 10) && gesendet.length === 1,
+      '10. Karte bewertet: ein Paket, „Karten bewertet“ 10', ereignis('Karten bewertet'));
+    H.pruefe(JSON.stringify(Object.keys(gesendet[0]).sort()) === JSON.stringify(['aktion', 'anzahl', 'ereignis', 'klasse', 'neu', 'paket', 'satz'])
+      && gesendet[0].paket !== (await q.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:geraet')))),
+      'gesendet werden nur Kartensatz, Klasse, Ereignis, Anzahl, „neu“ und eine Paketkennung – kein Name, keine Gerätekennung, keine Karten', gesendet[0]);
+    for (let i = 0; i < 3; i++) await q.click('#knopf-gewusst');
+    await q.goto(basis + 'challenge/?satz=kb1-diabetes');
+    H.pruefe(await H.bis(() => ereignis('Karten bewertet').anzahl === 13) && ereignis('Karten bewertet').geraete === 1,
+      'Seite verlassen: die restlichen 3 Karten werden nachgesendet (13), Geräte 1', ereignis('Karten bewertet'));
+    H.pruefe(gesendet.length >= 2 && gesendet[1].paket !== gesendet[0].paket, 'jedes Paket hat eine neue Zufallskennung (nicht dem Handy zuzuordnen)');
+    await q.click('#knopf-challenge-start');
+    H.pruefe(await H.bis(() => ereignis('Challenge begonnen').anzahl === 1), 'Klausur-Challenge gestartet: „Challenge begonnen“ 1');
+    await q.click('#knopf-abbrechen');
+    H.pruefe(ereignis('Challenge beendet').anzahl === 0, 'abgebrochen: „Challenge beendet“ bleibt 0');
+
+    // Spielrunde: angeboten, abgelehnt, gespielt
+    await q.goto(basis + 'kb1-diabetes/');
+    await q.evaluate(() => {
+      localStorage.setItem('lernkarten:kb1-diabetes:spiel-verdient', JSON.stringify(1));
+      localStorage.setItem('lernkarten:kb1-diabetes:spiel-gespielt', JSON.stringify(0));
+      localStorage.setItem('lernkarten:kb1-diabetes:spiel-angeboten', JSON.stringify(0));
+    });
+    await q.reload();
+    await H.bis(() => q.locator('#belohnung').isVisible());
+    H.pruefe(await H.bis(() => ereignis('Spielrunde angeboten').anzahl === 1), 'Gratulation erscheint: „Spielrunde angeboten“ 1');
+    await q.click('#belohnung-spaeter');
+    H.pruefe(await H.bis(() => ereignis('Spielrunde abgelehnt').anzahl === 1), '„Nein, danke – weiterlernen“: „Spielrunde abgelehnt“ 1');
+    await q.reload();
+    await q.waitForTimeout(500);
+    H.pruefe(ereignis('Spielrunde angeboten').anzahl === 1, 'erneut geöffnet: dieselbe Runde zählt nicht noch einmal als angeboten');
+    await q.goto(basis + 'spiel/?satz=kb1-diabetes');
+    await q.click('#knopf-los');
+    H.pruefe(await H.bis(() => ereignis('Spielrunde gespielt').anzahl === 1), 'Runde gestartet: „Spielrunde gespielt“ 1');
+    H.pruefe(['Karten bewertet', 'Challenge begonnen', 'Spielrunde angeboten', 'Spielrunde abgelehnt', 'Spielrunde gespielt'].every((t) => ereignis(t).geraete === 1),
+      'jedes Ereignis: Geräte 1 (dasselbe Handy)');
+
+    // Lehrkraft-Handy zählt nicht
+    const vorherAnzahl = gesendet.length;
+    await q.goto(basis + 'kb1-diabetes/?nichtzaehlen=1');
+    await q.click('#knopf-start');
+    for (let i = 0; i < 12; i++) await q.click('#knopf-gewusst');
+    await q.goto(basis + 'challenge/?satz=kb1-diabetes');
+    await q.waitForTimeout(800);
+    H.pruefe(gesendet.length === vorherAnzahl && ereignis('Karten bewertet').anzahl === 13, 'Lehrkraft-Handy mit ?nichtzaehlen=1: keine Ereignisse');
+    await q.goto(basis + 'kb1-diabetes/?nichtzaehlen=0');
+    await c6.close();
+
+    // ohne Netz: nichts geht verloren, beim nächsten Öffnen nachgereicht
+    const c7 = await kontext();
+    const w = await c7.newPage();
+    H.beobachten(w, protokoll, 'ereignisse-offline');
+    await w.goto(basis + 'kb1-diabetes/?klasse=3bfp2-1');
+    await w.click('#knopf-start');
+    attrappe.aus = true;
+    for (let i = 0; i < 10; i++) await w.click('#knopf-gewusst');
+    await w.waitForTimeout(800);
+    H.pruefe(ereignis('Karten bewertet').anzahl === 13 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].paket.anzahl)) === 10,
+      'Verbindung weg: das Paket mit 10 Karten bleibt auf dem Handy gespeichert');
+    attrappe.aus = false;
+    await w.reload();
+    H.pruefe(await H.bis(() => ereignis('Karten bewertet').anzahl === 23, { zeit: 8000 }) && ereignis('Karten bewertet').geraete === 2,
+      '… und wird beim Verlassen bzw. nach dem nächsten Öffnen nachgereicht (23, zweites Handy: Geräte 2)', attrappe.blaetter.get('Ereignisse (anonym)').zeilen.filter((r) => r[3] === 'Karten bewertet'));
+    await w.waitForTimeout(4000); // Nachsenden nach dem Öffnen: dasselbe Paket darf nicht doppelt zählen
+    H.pruefe(ereignis('Karten bewertet').anzahl === 23 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].paket)) === null,
+      'dasselbe Paket zweimal gesendet: zählt nur einmal, danach ist es vom Handy gelöscht');
+    await c7.close();
   }
 
   console.log('\n== Datenschutz');

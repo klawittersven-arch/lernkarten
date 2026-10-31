@@ -740,6 +740,7 @@
     // Jede Runde verbraucht eine Freischaltung – gleich beim Start, damit Neuladen nichts bringt
     if (LK.Runden.frei(SATZ) <= 0) { zeigeStart(); return; }
     LK.Runden.verbrauchen(SATZ);
+    LK.ereignisZaehlen(SATZ, 'runde-gespielt'); // anonyme Zählung, für die SuS unsichtbar
     figurenBauen();
     laufZuruecksetzen();
     bildschirm = 'lauf';

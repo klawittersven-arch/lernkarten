@@ -417,6 +417,12 @@ async function alleBeantworten(p, richtig, jedeAufgabe) {
     H.pruefe(blatt && blatt.zeilen.length === 2 && blatt.zeilen[1][1] === 'Ben K.' && blatt.zeilen[1][2] === 3275,
       'Google-Tabelle: eigenes Blatt „kb1-diabetes-challenge-3bfp2-1“ mit „Ben K.“, 3275');
     H.pruefe(!attrappe.blaetter.has('kb1-diabetes-3bfp2-1'), 'die Spiel-Liste der Klasse bleibt unberührt');
+    {
+      const ev = attrappe.blaetter.get('Ereignisse (anonym)');
+      const n = (t) => { const z = ev && ev.zeilen.find((r) => r[1] === 'kb1-diabetes' && r[2] === '3bfp2-1' && r[3] === t); return z ? z[4] : 0; };
+      H.pruefe(await H.bis(() => n('Challenge beendet') >= 1) && n('Challenge begonnen') >= n('Challenge beendet'),
+        'anonyme Zählung: „Challenge begonnen“ und „Challenge beendet“ im Blatt „Ereignisse (anonym)“', { begonnen: n('Challenge begonnen'), beendet: n('Challenge beendet') });
+    }
     await p.screenshot({ path: path.join(ERGEBNISSE, 'challenge-ergebnis.png'), fullPage: true });
 
     console.log('\n== Zweite Challenge: absichtlich falsch – Fehlerübersicht');

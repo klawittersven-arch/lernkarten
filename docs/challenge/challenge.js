@@ -291,6 +291,7 @@
     uhrTakt = setInterval(uhrZeigen, 1000);
     uhrZeigen();
     aufgabeZeigen();
+    LK.ereignisZaehlen(SATZ, 'challenge-start'); // anonyme Zählung, für die SuS unsichtbar
   }
 
   function vergangen() { return Math.max(0, (Date.now() - startZeit) / 1000); }
@@ -564,6 +565,7 @@
     stoppeUhr();
     ergebnis = auswerten(aufgaben, sekunden);
     zeigeEnde();
+    LK.ereignisZaehlen(SATZ, 'challenge-ende'); // anonyme Zählung, für die SuS unsichtbar
   }
 
   $('knopf-weiter').addEventListener('click', weiter);

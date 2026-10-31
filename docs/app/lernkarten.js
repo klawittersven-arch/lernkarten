@@ -391,6 +391,8 @@
     if (!SPIEL || belohnungOffen) return;
     var frei = LK.Runden.frei(SATZ);
     if (frei <= 0) return;
+    // anonyme Zählung, für die SuS unsichtbar: nur, wenn eine neue Runde angekündigt wird
+    if (LK.Runden.verdient(SATZ) > angeboten()) LK.ereignisZaehlen(SATZ, 'runde-angeboten');
     angebotenSetzen(LK.Runden.verdient(SATZ));
     $('belohnung-titel').textContent = ST.belohnungTitel;
     $('belohnung-text').textContent = ersetzen(ST.belohnungText, { satz: D.titel, n: KARTEN_PRO_SPIEL });
@@ -406,6 +408,12 @@
     belohnungOffen = true;
     document.body.classList.add('belohnung-offen');
     $('belohnung-start').focus({ preventScroll: true });
+  }
+
+  // „Nein, danke – weiterlernen“ (oder Escape): Runde bleibt frei, wird aber jetzt nicht gespielt
+  function belohnungAblehnen() {
+    if (belohnungOffen && LK) LK.ereignisZaehlen(SATZ, 'runde-abgelehnt'); // anonym, unsichtbar
+    belohnungSchliessen();
   }
 
   function belohnungSchliessen() {
@@ -813,6 +821,7 @@
     r.ergebnis[id] = wert;
     r.pos++;
     speichern();
+    if (LK) LK.ereignisZaehlen(SATZ, 'karten'); // anonyme Zählung, für die SuS unsichtbar
 
     var weiter = function () {
       sperre = false;
@@ -992,7 +1001,7 @@
   $('knopf-wiederholen').addEventListener('click', wiederholen);
   $('knopf-alle').addEventListener('click', function () { rundeStarten('alle'); });
 
-  $('belohnung-spaeter').addEventListener('click', belohnungSchliessen);
+  $('belohnung-spaeter').addEventListener('click', belohnungAblehnen);
 
   $('hilfe-knopf').addEventListener('click', hilfeOeffnen);
   $('hilfe-schliessen').addEventListener('click', hilfeSchliessen);
@@ -1003,7 +1012,7 @@
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     if (hilfeOffen()) return; // Esc schließt das Fenster selbst
     if (belohnungOffen) {
-      if (e.key === 'Escape') { e.preventDefault(); belohnungSchliessen(); }
+      if (e.key === 'Escape') { e.preventDefault(); belohnungAblehnen(); }
       return;
     }
     if (aktuelleAnsicht === 'lernen') {

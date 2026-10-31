@@ -14,7 +14,10 @@
  *
  * Außerdem zählt das Skript anonym, wie oft die App geöffnet wird (Blatt „Nutzung (anonym)“):
  *   Datum | Kartensatz | Klasse | Bereich | Aufrufe | Geräte
- * Die Handys senden dafür nur Kartensatz, Klasse und Bereich – keine Namen, keine Kennung.
+ * und was in der App passiert (Blatt „Ereignisse (anonym)“):
+ *   Datum | Kartensatz | Klasse | Ereignis | Anzahl | Geräte
+ * Die Handys senden dafür nur Kartensatz, Klasse, Bereich bzw. Ereignis und Anzahl –
+ * keine Namen, keine Kennung.
  * ===================================================================== */
 
 // Geheimer Schlüssel für das Zurücksetzen – nur Buchstaben und Ziffern, mindestens 12 Zeichen.
@@ -41,6 +44,20 @@ var NUTZUNG_BLATT = 'Nutzung (anonym)';
 var NUTZUNG_KOPF = ['Datum', 'Kartensatz', 'Klasse', 'Bereich', 'Aufrufe', 'Geräte'];
 var BEREICHE = { lernkarten: 'Lernkarten', challenge: 'Klausur-Challenge', spiel: 'Diabetes Run!' };
 var MAX_NUTZUNG_ZEILEN_PRO_TAG = 60;
+// Ereignisse: eigenes Blatt, damit „Nutzung (anonym)“ (und eigene Auswertungen daraus) unverändert bleibt
+var EREIGNIS_BLATT = 'Ereignisse (anonym)';
+var EREIGNIS_KOPF = ['Datum', 'Kartensatz', 'Klasse', 'Ereignis', 'Anzahl', 'Geräte'];
+var EREIGNISSE = {
+  karten: 'Karten bewertet',
+  'challenge-start': 'Challenge begonnen',
+  'challenge-ende': 'Challenge beendet',
+  'runde-angeboten': 'Spielrunde angeboten',
+  'runde-abgelehnt': 'Spielrunde abgelehnt',
+  'runde-gespielt': 'Spielrunde gespielt'
+};
+var MAX_ANZAHL_JE_MELDUNG = 200;
+var PAKET_MERKEN_SEKUNDEN = 21600; // so lange erkennt das Skript doppelt gesendete Pakete (6 Stunden)
+var MAX_EREIGNIS_ZEILEN_PRO_TAG = 100;
 var LISTE_MUSTER = /^[a-z0-9-]{2,40}$/;
 var NAME_MUSTER = /^[A-Za-zÄÖÜäöüßÀ-ÖØ-öø-ÿ][A-Za-zÄÖÜäöüßÀ-ÖØ-öø-ÿ' -]{1,19} [A-ZÄÖÜ]\.$/;
 var KENNUNG_MUSTER = /^[a-z0-9]{6,20}$/;
@@ -63,6 +80,7 @@ function doPost(e) {
   try {
     if (d && d.aktion === 'eintragen') return antwort(eintragen(d));
     if (d && d.aktion === 'zaehlen') return antwort(zaehlen(d));
+    if (d && d.aktion === 'ereignis') return antwort(ereignisZaehlen(d));
     return antwort({ ok: false, fehler: 'unbekannte Aktion' });
   } catch (x) {
     return antwort({ ok: false, fehler: 'Fehler: ' + x.message });
@@ -181,46 +199,78 @@ function zaehlen(d) {
   var klasse = String(d.klasse || '');
   var bereich = BEREICHE.hasOwnProperty(String(d.bereich)) ? BEREICHE[d.bereich] : '';
   if (!LISTE_MUSTER.test(satz) || (klasse && !LISTE_MUSTER.test(klasse)) || !bereich) return { ok: false, fehler: 'ungültig' };
-  var neu = d.neu === true ? 1 : 0;
+  return hochzaehlen({
+    blatt: NUTZUNG_BLATT, kopf: NUTZUNG_KOPF, maxZeilen: MAX_NUTZUNG_ZEILEN_PRO_TAG,
+    notizen: ['Wie oft geöffnet – dasselbe Handy zählt höchstens alle 30 Minuten einmal.',
+      'Wie viele verschiedene Handys an diesem Tag (anonym, ohne Namen).'],
+    satz: satz, klasse: klasse, text: bereich, anzahl: 1, neu: d.neu === true
+  });
+}
 
+/* ---------- Ereignisse (anonym): eine Zeile je Tag, Kartensatz, Klasse und Ereignis ---------- */
+function ereignisZaehlen(d) {
+  var satz = String(d.satz || '');
+  var klasse = String(d.klasse || '');
+  var ereignis = EREIGNISSE.hasOwnProperty(String(d.ereignis)) ? EREIGNISSE[d.ereignis] : '';
+  var anzahl = Math.floor(Number(d.anzahl));
+  if (!LISTE_MUSTER.test(satz) || (klasse && !LISTE_MUSTER.test(klasse)) || !ereignis) return { ok: false, fehler: 'ungültig' };
+  if (!(anzahl >= 1)) anzahl = 1;
+  if (anzahl > MAX_ANZAHL_JE_MELDUNG) anzahl = MAX_ANZAHL_JE_MELDUNG;
+  var paket = KENNUNG_MUSTER.test(String(d.paket || '')) ? 'paket-' + d.paket : '';
+  return hochzaehlen({ paket: paket,
+    blatt: EREIGNIS_BLATT, kopf: EREIGNIS_KOPF, maxZeilen: MAX_EREIGNIS_ZEILEN_PRO_TAG,
+    notizen: ['Wie oft das an diesem Tag passiert ist (z. B. Zahl der bewerteten Karten).',
+      'Wie viele verschiedene Handys an diesem Tag (anonym, ohne Namen).'],
+    satz: satz, klasse: klasse, text: ereignis, anzahl: anzahl, neu: d.neu === true
+  });
+}
+
+// Zählt in Blatt o.blatt die Zeile (heute, Kartensatz, Klasse, Text) um o.anzahl hoch – oder legt sie an
+function hochzaehlen(o) {
+  var neu = o.neu ? 1 : 0;
   var sperre = LockService.getScriptLock();
   if (!sperre.tryLock(15000)) return { ok: false, fehler: 'beschäftigt' }; // dann zählt dieser Aufruf eben nicht
   try {
+    // dasselbe Paket zweimal gesendet (z. B. beim Schließen der Seite und beim nächsten Öffnen): nur einmal zählen
+    var cache = o.paket ? CacheService.getScriptCache() : null;
+    if (cache && cache.get(o.paket)) return { ok: true, doppelt: true };
     var tabelle = SpreadsheetApp.getActiveSpreadsheet();
-    var b = tabelle.getSheetByName(NUTZUNG_BLATT);
+    var b = tabelle.getSheetByName(o.blatt);
     if (!b) {
-      b = tabelle.insertSheet(NUTZUNG_BLATT);
-      b.appendRow(NUTZUNG_KOPF);
+      b = tabelle.insertSheet(o.blatt);
+      b.appendRow(o.kopf);
       b.setFrozenRows(1);
-      b.getRange(1, 5).setNote('Wie oft geöffnet – dasselbe Handy zählt höchstens alle 30 Minuten einmal.');
-      b.getRange(1, 6).setNote('Wie viele verschiedene Handys an diesem Tag (anonym, ohne Namen).');
+      b.getRange(1, 5).setNote(o.notizen[0]);
+      b.getRange(1, 6).setNote(o.notizen[1]);
     }
     var jetzt = new Date();
     var zone = tabelle.getSpreadsheetTimeZone();
     var tag = Utilities.formatDate(jetzt, zone, 'yyyy-MM-dd');
-    var klasseText = klasse || 'ohne Klasse';
+    var klasseText = o.klasse || 'ohne Klasse';
 
     // Die Zeilen von heute stehen ganz unten: von unten nach oben suchen, bis ein anderer Tag kommt
     var letzte = b.getLastRow();
     var heute = 0;
     if (letzte >= 2) {
-      var von = Math.max(2, letzte - MAX_NUTZUNG_ZEILEN_PRO_TAG + 1);
+      var von = Math.max(2, letzte - o.maxZeilen + 1);
       var werte = b.getRange(von, 1, letzte - von + 1, 6).getValues();
       for (var i = werte.length - 1; i >= 0; i--) {
         if (tagVon(werte[i][0], zone) !== tag) break;
         heute++;
-        if (String(werte[i][1]) === satz && String(werte[i][2]) === klasseText && String(werte[i][3]) === bereich) {
-          b.getRange(von + i, 5, 1, 2).setValues([[(Number(werte[i][4]) || 0) + 1, (Number(werte[i][5]) || 0) + neu]]);
+        if (String(werte[i][1]) === o.satz && String(werte[i][2]) === klasseText && String(werte[i][3]) === o.text) {
+          b.getRange(von + i, 5, 1, 2).setValues([[(Number(werte[i][4]) || 0) + o.anzahl, (Number(werte[i][5]) || 0) + neu]]);
+          if (cache) cache.put(o.paket, '1', PAKET_MERKEN_SEKUNDEN);
           return { ok: true };
         }
       }
     }
-    if (heute >= MAX_NUTZUNG_ZEILEN_PRO_TAG) return { ok: false, fehler: 'zu viele Zeilen' };
+    if (heute >= o.maxZeilen) return { ok: false, fehler: 'zu viele Zeilen' };
     // erst das Format, dann die Werte – so steht in Spalte A immer ein echtes Datum („Mo., 19.10.2026“)
     if (letzte + 1 > b.getMaxRows()) b.insertRowsAfter(b.getMaxRows(), 500); // Blatt voll: Platz schaffen
     var neueZeile = b.getRange(letzte + 1, 1, 1, 6);
     neueZeile.setNumberFormats([['ddd, dd.MM.yyyy', '@', '@', '@', '0', '0']]);
-    neueZeile.setValues([[jetzt, satz, klasseText, bereich, 1, neu]]);
+    neueZeile.setValues([[jetzt, o.satz, klasseText, o.text, o.anzahl, neu]]);
+    if (cache) cache.put(o.paket, '1', PAKET_MERKEN_SEKUNDEN);
     return { ok: true };
   } finally {
     sperre.releaseLock();

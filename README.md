@@ -156,6 +156,27 @@ Google-Tabelle legt das Skript beim ersten Aufruf das Blatt **„Nutzung (anonym
 - Dafür braucht die Tabelle die aktuelle Fassung von `werkzeuge/highscore-apps-script.gs`
   (einfügen, eigenen Schlüssel wieder eintragen, dann wie unter „Skript geändert?“ neu bereitstellen).
 
+### Ereignisse (anonym)
+
+Was in der App passiert, zählt das Skript in einem eigenen Blatt **„Ereignisse (anonym)“** –
+getrennt von „Nutzung (anonym)“, damit eigene Auswertungen dort unverändert bleiben:
+
+| Datum | Kartensatz | Klasse | Ereignis | Anzahl | Geräte |
+|---|---|---|---|---|---|
+| Mo., 02.11.2026 | kb1-diabetes | 3bfp2-1 | Karten bewertet | 412 | 7 |
+
+- **Ereignisse:** Karten bewertet (jedes „Gewusst“/„Noch nicht“), Challenge begonnen, Challenge beendet
+  (alle 20 Aufgaben gelöst), Spielrunde angeboten (Gratulation erschienen), Spielrunde abgelehnt
+  („Nein, danke – weiterlernen“), Spielrunde gespielt (Lauf gestartet).
+- **Anzahl:** wie oft das an diesem Tag passiert ist. **Geräte:** wie viele verschiedene Handys.
+- **Für die SuS unsichtbar:** keine Anzeige, keine Wartezeit. Bewertete Karten werden gesammelt und
+  je 10 Karten bzw. beim Verlassen der Seite als ein Paket gesendet; ohne Netz bleibt das Paket auf dem
+  Handy und wird später nachgereicht. Jedes Paket hat eine neue Zufallskennung, damit das Skript
+  doppelt gesendete Pakete nur einmal zählt – dem Handy lässt sie sich nicht zuordnen.
+- **Gesendet** werden nur Kartensatz, Klasse, Ereignis, Anzahl und ob das Handy heute zum ersten Mal
+  für dieses Ereignis zählt – keine Namen, keine Gerätekennung, nicht welche Karten gewusst wurden.
+- `?nichtzaehlen=1` und `nutzungZaehlen: false` gelten auch hier.
+
 ## Klausur-Challenge
 
 Auf der Startseite beider Kartensätze steht ein Knopf **„🏁 Klausur-Challenge starten“**
