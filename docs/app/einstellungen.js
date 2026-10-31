@@ -137,6 +137,7 @@ var EINSTELLUNGEN = {
     eingetragen: 'Eingetragen: Platz {x} in der Liste {satz}!',
     eingetragenOhnePlatz: 'Eingetragen!',
     ausstehend: 'Gerade keine Verbindung – Ihre Punkte werden automatisch eingetragen, sobald Sie wieder online sind und die Lernkarten oder die Highscore-Liste öffnen.',
+    ausstehendBeschaeftigt: 'Gerade tragen sich viele gleichzeitig ein – Ihre Punkte werden in Kürze automatisch eingetragen.',
     nichtEingerichtet: 'Die Highscore-Liste wird gerade noch eingerichtet – Ihre Punkte werden automatisch nachgetragen.',
     abgelehnt: 'Der Eintrag wurde nicht angenommen.',
     nichtEingetragen: 'Nicht eingetragen.',

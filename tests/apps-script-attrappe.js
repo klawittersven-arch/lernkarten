@@ -26,6 +26,7 @@ function wieGoogle(wert, Uhrzeit) {
 function attrappeErstellen({ schluesselEinsetzen = true } = {}) {
   const blaetter = new Map();
   const zwischenspeicher = new Map(); // CacheService (für doppelt gesendete Pakete)
+  const sperre = { frei: true };      // false = Skript ausgelastet (LockService bekommt die Sperre nicht)
   const uhr = { versatz: 0 }; // ms – zum Nachstellen späterer Tage
   class Uhrzeit extends Date {
     constructor(...a) { if (a.length) super(...a); else super(Date.now() + uhr.versatz); }
@@ -76,7 +77,9 @@ function attrappeErstellen({ schluesselEinsetzen = true } = {}) {
       MimeType: { JSON: 'application/json' },
       createTextOutput: (text) => ({ text, setMimeType() { return this; } })
     },
-    LockService: { getScriptLock: () => ({ waitLock: () => {}, tryLock: () => true, releaseLock: () => {} }) },
+    LockService: { getScriptLock: () => ({
+      waitLock: () => { if (!sperre.frei) throw new Error('Lock timeout: another process was holding the lock for too long.'); },
+      tryLock: () => sperre.frei, releaseLock: () => {} }) },
     CacheService: { getScriptCache: () => ({ get: (k) => (zwischenspeicher.has(k) ? zwischenspeicher.get(k) : null), put: (k, w) => { zwischenspeicher.set(k, w); } }) },
     Utilities: { sleep: () => {}, formatDate: datumFormatieren },
     Date: Uhrzeit, JSON, Math, Number, String, Object, isFinite
@@ -88,6 +91,7 @@ function attrappeErstellen({ schluesselEinsetzen = true } = {}) {
   return {
     blaetter,
     uhr,
+    sperre,
     aus: false, // true = „keine Verbindung“ simulieren
     get: (parameter) => JSON.parse(kontext.doGet({ parameter }).text),
     post: (body) => JSON.parse(kontext.doPost({ postData: { contents: body } }).text)

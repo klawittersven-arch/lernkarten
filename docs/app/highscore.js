@@ -211,6 +211,38 @@
     return senden({ aktion: 'eintragen', liste: listenKennung(satz, art), name: 'Test T.', punkte: 1, geraet: geraeteId(), lauf: zufallsId(10), zeit: Date.now() });
   }
 
+  // Vorübergehendes Problem im Skript (ausgelastet, Zeitüberschreitung): später noch einmal senden
+  function voruebergehend(antwort) {
+    var f = antwort ? String(antwort.fehler || '') : '';
+    return !!antwort && !antwort.ok && (f === 'beschäftigt' || f.indexOf('Fehler:') === 0);
+  }
+
+  // Wartende Einträge kurz darauf automatisch nachtragen (mit wachsendem, leicht zufälligem Abstand,
+  // damit nicht alle Handys gleichzeitig wiederkommen); außerdem beim nächsten Öffnen der App
+  var nachtragVersuche = 0;
+  var nachtragTimer = null;
+  function nachtragenPlanen() {
+    if (nachtragTimer || nachtragVersuche >= 6) return;
+    var basis = window.HIGHSCORE_TEST_NACHTRAG_MS || 15000;
+    var warte = Math.min(8 * basis, basis * Math.pow(2, nachtragVersuche)) * (0.75 + Math.random() * 0.5);
+    nachtragVersuche++;
+    nachtragTimer = setTimeout(function () {
+      nachtragTimer = null;
+      ausstehendeSenden().then(function () { if (warteschlange().length) nachtragenPlanen(); });
+    }, warte);
+  }
+  window.addEventListener('online', function () { if (warteschlange().length) ausstehendeSenden(); });
+
+  // Seiten können sich benachrichtigen lassen, wenn ein wartender Eintrag angekommen ist
+  function beiNachtrag(lauf, fn) {
+    function h(e) {
+      if (!e.detail || e.detail.lauf !== lauf) return;
+      window.removeEventListener('lernkarten:nachgetragen', h);
+      fn(e.detail.antwort);
+    }
+    window.addEventListener('lernkarten:nachgetragen', h);
+  }
+
   function eintragen(satz, name, punkte, art) {
     var eintrag = {
       aktion: 'eintragen', liste: listenKennung(satz, art), name: name, punkte: Math.max(0, Math.floor(punkte)),
@@ -221,10 +253,20 @@
       return Promise.resolve({ ausstehend: true, nichtEingerichtet: true });
     }
     return senden(eintrag).then(function (antwort) {
-      return antwort && antwort.ok ? antwort : { abgelehnt: true, fehler: antwort && antwort.fehler };
-    }, function () {
+      if (antwort && antwort.ok) return antwort;
+      if (voruebergehend(antwort)) {
+        // Skript gerade ausgelastet: Eintrag bleibt auf dem Handy und wird gleich nachgetragen
+        merken(eintrag);
+        nachtragenPlanen();
+        return { ausstehend: true, beschaeftigt: true, lauf: eintrag.lauf };
+      }
+      return { abgelehnt: true, fehler: antwort && antwort.fehler };
+    }, function (fehler) {
       merken(eintrag);
-      return { ausstehend: true };
+      nachtragenPlanen();
+      // TypeError = gar keine Verbindung; sonst (Zeitüberschreitung, Fehlerseite) war das Skript überlastet
+      var offline = navigator.onLine === false || (fehler && fehler.name === 'TypeError');
+      return { ausstehend: true, beschaeftigt: !offline, lauf: eintrag.lauf };
     });
   }
 
@@ -244,10 +286,13 @@
       var liste_ = warteschlange();
       if (!liste_.length) return Promise.resolve();
       var e = liste_[0];
-      return senden(e).then(function () {
+      return senden(e).then(function (antwort) {
+        // Skript noch ausgelastet: in der Warteschlange lassen und später weiter versuchen
+        if (voruebergehend(antwort)) throw new Error('beschäftigt');
         // angenommen oder abgelehnt (z. B. doppelt): aus der Warteschlange nehmen
         schreiben(WS, warteschlange().filter(function (x) { return x.lauf !== e.lauf; }));
         gesendet++;
+        try { window.dispatchEvent(new CustomEvent('lernkarten:nachgetragen', { detail: { lauf: e.lauf, antwort: antwort } })); } catch (x) { /* alter Browser */ }
         return naechster();
       });
     }
@@ -367,7 +412,7 @@
         .then(function (antwort) {
           delete unterwegs[z.p.id];
           // angekommen (oder schon früher angekommen) oder als ungültig abgelehnt: Paket entfernen
-          if (!antwort || (!antwort.ok && antwort.fehler === 'beschäftigt')) return;
+          if (!antwort || voruebergehend(antwort)) return;
           var a = ereignisseLesen();
           if (a[z.k] && Array.isArray(a[z.k].pakete)) {
             a[z.k].pakete = a[z.k].pakete.filter(function (p) { return p && p.id !== z.p.id; });
@@ -495,6 +540,7 @@
     eintragen: eintragen,
     testEintragen: testEintragen,
     ausstehendeSenden: ausstehendeSenden,
+    beiNachtrag: beiNachtrag,
     warteschlange: warteschlange,
     zuruecksetzen: zuruecksetzen,
     geraeteId: geraeteId,

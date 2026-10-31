@@ -104,6 +104,21 @@ function kartenIds(ordner) {
     H.pruefe(z({}).ok && blatt().zeilen.length === 66 && blatt().groesse.zeilen > 66, 'Blatt voll (1000 Zeilen erreicht): Skript fügt Zeilen hinzu und zählt weiter');
   }
 
+  console.log('\n== Skript ausgelastet (Sperre nicht frei)');
+  {
+    const a = attrappeErstellen();
+    a.sperre.frei = false;
+    const r1 = a.post(JSON.stringify({ aktion: 'eintragen', liste: 'kb1-diabetes', name: 'Mia S.', punkte: 50, geraet: 'geraet000001', lauf: 'lauf0000001' }));
+    const r2 = a.post(JSON.stringify({ aktion: 'zaehlen', satz: 'kb1-diabetes', klasse: '3bfp2-1', bereich: 'lernkarten', neu: true }));
+    const r3 = a.post(JSON.stringify({ aktion: 'ereignis', satz: 'kb1-diabetes', klasse: '3bfp2-1', ereignis: 'karten', anzahl: 10, neu: true, paket: 'paket00009' }));
+    H.pruefe(r1.ok === false && r1.fehler === 'beschäftigt' && r2.fehler === 'beschäftigt' && r3.fehler === 'beschäftigt' && a.blaetter.size === 0,
+      'Sperre nicht frei: Eintrag und Zählungen melden „beschäftigt“ (keine Ausnahme), nichts geschrieben', [r1, r2, r3]);
+    a.sperre.frei = true;
+    const r4 = a.post(JSON.stringify({ aktion: 'eintragen', liste: 'kb1-diabetes', name: 'Mia S.', punkte: 50, geraet: 'geraet000001', lauf: 'lauf0000001' }));
+    const r5 = a.post(JSON.stringify({ aktion: 'ereignis', satz: 'kb1-diabetes', klasse: '3bfp2-1', ereignis: 'karten', anzahl: 10, neu: true, paket: 'paket00009' }));
+    H.pruefe(r4.ok && r4.platz === 1 && r5.ok && !r5.doppelt, 'wieder frei: derselbe Eintrag und dasselbe Paket werden angenommen (Paket nicht fälschlich als doppelt erkannt)');
+  }
+
   console.log('\n== Ereignisse zählen (Google-Apps-Script, anonym)');
   {
     const a = attrappeErstellen();
@@ -325,7 +340,7 @@ function kartenIds(ordner) {
   await p.evaluate(() => localStorage.setItem('lernkarten:kb1-diabetes:spiel-verdient', '3'));
   await p.goto(basis + 'spiel/?satz=kb1-diabetes');
   H.pruefe((await p.locator('#frei').innerText()) === 'Sie haben 2 Spielrunden frei (KB I).', 'zwei Runden frei');
-  attrappe.aus = true;
+  await ctx.setOffline(true);
   await spielBisEnde(p);
   H.pruefe(await p.locator('#knopf-nochmal').innerText() === 'Noch eine Runde (1 frei)', '„Noch eine Runde (1 frei)“');
   H.pruefe((await p.inputValue('#vorname')) === 'mia' && (await p.inputValue('#initial')) === 'S', 'Name ist vom letzten Mal vorausgefüllt');
@@ -333,7 +348,7 @@ function kartenIds(ordner) {
   await H.bis(() => p.locator('#eintrag-meldung.warten').count());
   H.pruefe((await p.locator('#eintrag-meldung').innerText()).startsWith('Gerade keine Verbindung'), 'ohne Verbindung: „wird automatisch eingetragen“');
   H.pruefe((await lesen(p, 'lernkarten:highscore-ausstehend')).length === 1, 'Eintrag wartet auf dem Handy');
-  attrappe.aus = false;
+  await ctx.setOffline(false);
   await p.goto(basis + 'kb1-diabetes/');
   await H.bis(async () => (await lesen(p, 'lernkarten:highscore-ausstehend') || []).length === 0);
   H.pruefe(attrappe.blaetter.get('kb1-diabetes').zeilen.length === 3, 'beim nächsten Öffnen der Lernkarten nachgetragen');
@@ -619,6 +634,36 @@ function kartenIds(ordner) {
     H.pruefe(ereignis('Karten bewertet').anzahl === 23 && (await w.evaluate(() => JSON.parse(localStorage.getItem('lernkarten:ereignisse'))['kb1-diabetes|karten'].pakete.length)) === 0,
       'dasselbe Paket zweimal gesendet: zählt nur einmal, danach ist es vom Handy gelöscht');
     await c7.close();
+  }
+
+  console.log('\n== Highscore-Eintrag, während das Skript ausgelastet ist');
+  {
+    const c12 = await kontext();
+    await c12.addInitScript(() => { window.HIGHSCORE_TEST_NACHTRAG_MS = 800; });
+    const s = await c12.newPage();
+    H.beobachten(s, protokoll, 'ausgelastet');
+    await s.goto(basis + 'kb2-beratung/?klasse=3bfp2-1');
+    await s.evaluate(() => localStorage.setItem('lernkarten:kb2-beratung:spiel-verdient', '1'));
+    await s.goto(basis + 'spiel/?satz=kb2-beratung');
+    H.pruefe(await spielBisEnde(s), 'Runde gespielt');
+    attrappe.sperre.frei = false;
+    await s.fill('#vorname', 'Lea');
+    await s.fill('#initial', 'b');
+    await s.click('#knopf-eintragen');
+    await H.bis(() => s.locator('#eintrag-meldung.warten').count());
+    H.pruefe((await s.locator('#eintrag-meldung').innerText()) === 'Gerade tragen sich viele gleichzeitig ein – Ihre Punkte werden in Kürze automatisch eingetragen.',
+      'Skript ausgelastet: keine Fehlermeldung, sondern „… werden in Kürze automatisch eingetragen“', await s.locator('#eintrag-meldung').innerText());
+    H.pruefe((await lesen(s, 'lernkarten:highscore-ausstehend')).length === 1, 'Eintrag wartet auf dem Handy');
+    await s.waitForTimeout(1500);
+    H.pruefe((await lesen(s, 'lernkarten:highscore-ausstehend')).length === 1, 'noch ausgelastet: neuer Versuch, Eintrag bleibt auf dem Handy');
+    attrappe.sperre.frei = true;
+    H.pruefe(await H.bis(() => s.locator('#eintrag-meldung.gut').count(), { zeit: 15000 })
+      && (await s.locator('#eintrag-meldung').innerText()) === 'Eingetragen: Platz 1 in der Liste KB II · 3BFP2/1!',
+      'wieder frei: automatisch nachgetragen, Hinweis wird zu „Eingetragen: Platz 1 …“', await s.locator('#eintrag-meldung').innerText());
+    const blatt = attrappe.blaetter.get('kb2-beratung-3bfp2-1');
+    H.pruefe(blatt && blatt.zeilen.length === 2 && blatt.zeilen[1][1] === 'Lea B.' && (await lesen(s, 'lernkarten:highscore-ausstehend')).length === 0,
+      'genau ein Eintrag „Lea B.“ in der Liste, Warteschlange leer');
+    await c12.close();
   }
 
   console.log('\n== Klasse erfragen, wenn das Handy keine kennt');

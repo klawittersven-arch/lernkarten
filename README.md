@@ -133,6 +133,11 @@ Den geheimen Schlüssel **nie** in das Repository schreiben – es ist öffentli
   Mindestzeit je Kartenseite (`mindestSekundenJeSeite`),
   Spiel aus-/einschalten (`spielAn`), Namensfilter (`sperrwoerter`), alle Texte rund ums Spiel und
   die „Wusstest du?“-Sätze.
+- **Viele gleichzeitig:** Das Skript schreibt immer nur einen Eintrag auf einmal (Sperre). Highscore-Einträge
+  warten bis zu 25 Sekunden, die anonymen Zählungen nur 3 Sekunden – so haben Einträge Vorrang. Ist das
+  Skript trotzdem ausgelastet, bleibt der Eintrag auf dem Handy („Gerade tragen sich viele gleichzeitig
+  ein …“) und wird automatisch nach etwa 15 Sekunden, dann in wachsenden Abständen, spätestens beim
+  nächsten Öffnen nachgetragen; der Hinweis wird dann zu „Eingetragen: Platz …“.
 - **Grenzen:** Alles läuft auf dem Handy. Technisch versierte SuS könnten Freischaltung oder Punkte
   manipulieren; das Skript lehnt unplausible Werte ab (z. B. mehr als 20 000 Punkte, mehr als
   15 Einträge pro Stunde und Gerät), unpassende Einträge löschen Sie in der Tabelle.

@@ -695,9 +695,15 @@
       LK.eintragen(SATZ, name, punkte, ART).then(function (r) {
         var text, klasse = 'gut';
         if (r && r.ok) text = r.platz ? LK.ersetzen(T.eingetragen, { x: r.platz, satz: LK.listenName(SATZ, ART) }) : T.eingetragenOhnePlatz;
-        else if (r && r.ausstehend) { text = r.nichtEingerichtet ? T.nichtEingerichtet : T.ausstehend; klasse = 'warten'; }
+        else if (r && r.ausstehend) { text = r.nichtEingerichtet ? T.nichtEingerichtet : (r.beschaeftigt ? T.ausstehendBeschaeftigt : T.ausstehend); klasse = 'warten'; }
         else { text = T.abgelehnt + (r && r.fehler ? ' (' + r.fehler + ')' : ''); klasse = 'warten'; }
-        box.replaceChild(meldung(text, klasse), warte);
+        var hinweis = meldung(text, klasse);
+        box.replaceChild(hinweis, warte);
+        // wartender Eintrag kommt später an: Hinweis durch „Eingetragen: Platz …“ ersetzen
+        if (r && r.ausstehend && r.lauf) LK.beiNachtrag(r.lauf, function (a) {
+          if (!a || !a.ok || !hinweis.parentNode) return;
+          box.replaceChild(meldung(a.platz ? LK.ersetzen(T.eingetragen, { x: a.platz, satz: LK.listenName(SATZ, ART) }) : T.eingetragenOhnePlatz, 'gut'), hinweis);
+        });
       });
     });
     m.appendChild(box);

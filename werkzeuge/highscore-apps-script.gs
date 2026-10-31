@@ -146,8 +146,10 @@ function eintragen(d) {
   if (!(punkte >= 0 && punkte <= MAX_PUNKTE && Math.floor(punkte) === punkte)) return { ok: false, fehler: 'Punkte ungültig' };
   if (!KENNUNG_MUSTER.test(String(d.geraet || '')) || !KENNUNG_MUSTER.test(String(d.lauf || ''))) return { ok: false, fehler: 'Kennung ungültig' };
 
+  // Highscore-Einträge haben Vorrang: bis zu 25 Sekunden warten (die Zählungen warten nur kurz).
+  // Klappt es nicht, meldet das Skript „beschäftigt“ – das Handy trägt den Eintrag dann später nach.
   var sperre = LockService.getScriptLock();
-  sperre.waitLock(10000);
+  if (!sperre.tryLock(25000)) return { ok: false, fehler: 'beschäftigt' };
   try {
     var b = blatt(d.liste, true);
     if (!b) return { ok: false, fehler: 'unbekannte Liste' };
@@ -229,7 +231,9 @@ function ereignisZaehlen(d) {
 function hochzaehlen(o) {
   var neu = o.neu ? 1 : 0;
   var sperre = LockService.getScriptLock();
-  if (!sperre.tryLock(15000)) return { ok: false, fehler: 'beschäftigt' }; // dann zählt dieser Aufruf eben nicht
+  // nur kurz warten, damit Highscore-Einträge Vorrang haben; Ereignis-Pakete sendet das Handy später erneut,
+  // ein einzelner Aufruf geht dann eben nicht in die Zählung ein
+  if (!sperre.tryLock(3000)) return { ok: false, fehler: 'beschäftigt' };
   try {
     // dasselbe Paket zweimal gesendet (z. B. beim Schließen der Seite und beim nächsten Öffnen): nur einmal zählen
     var cache = o.paket ? CacheService.getScriptCache() : null;
