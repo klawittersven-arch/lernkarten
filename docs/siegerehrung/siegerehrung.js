@@ -211,8 +211,8 @@
       var s = document.createElement('span');
       s.style.left = (Math.random() * 100) + '%';
       s.style.background = farben[i % farben.length];
-      s.style.animationDelay = (Math.random() * 1.6) + 's';
-      s.style.animationDuration = (2.8 + Math.random() * 2.2) + 's';
+      s.style.animationDelay = (Math.random() * 0.8) + 's';
+      s.style.animationDuration = (1.4 + Math.random() * 1.1) + 's';
       s.style.transform = 'rotate(' + Math.round(Math.random() * 360) + 'deg)';
       k.appendChild(s);
     }
@@ -227,10 +227,10 @@
     $('konfetti').textContent = '';
     void buehne.offsetWidth; // Animation neu starten
     if (weniger()) { buehne.classList.add('zeige-weitere', 'zeige-3', 'zeige-2', 'zeige-1'); return; }
-    [['zeige-weitere', 200], ['zeige-3', 900], ['zeige-2', 2100], ['zeige-1', 3500]].forEach(function (s) {
+    [['zeige-weitere', 100], ['zeige-3', 450], ['zeige-2', 1050], ['zeige-1', 1750]].forEach(function (s) {
       zeitgeber.push(setTimeout(function () {
         buehne.classList.add(s[0]);
-        if (s[0] === 'zeige-1' && letzteDaten && letzteDaten.length) zeitgeber.push(setTimeout(konfetti, 650));
+        if (s[0] === 'zeige-1' && letzteDaten && letzteDaten.length) zeitgeber.push(setTimeout(konfetti, 325));
       }, s[1]));
     });
   }

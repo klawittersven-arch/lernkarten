@@ -110,6 +110,7 @@ async function main() {
     await p.click('#wahl-liste button:has-text("Klausur-Challenge KB I")');
     H.pruefe(await p.locator('#wahl-liste button[aria-checked="true"] .titel').textContent() === 'Klausur-Challenge KB I', 'gewählte Liste markiert');
     await p.screenshot({ path: path.join(ERGEBNISSE, 'siegerehrung-auswahl.png') });
+    const startZeit = Date.now();
     await p.click('#los');
     await p.waitForSelector('#buehne:not([hidden])');
     H.pruefe(/\?k=3bfp2-2&l=kb1-diabetes-challenge$/.test(p.url()), 'Adresse enthält die Auswahl (direkt wieder aufrufbar)', p.url());
@@ -118,6 +119,8 @@ async function main() {
     await p.waitForSelector('#buehne.zeige-3');
     H.pruefe(!(await p.locator('#buehne').evaluate((e) => e.classList.contains('zeige-1'))), 'Platz 1 wird zuletzt enthüllt');
     await p.waitForSelector('#buehne.zeige-1', { timeout: 8000 });
+    const dauer = Date.now() - startZeit;
+    H.pruefe(dauer < 2600, 'zügiger Ablauf: Platz 1 nach unter 2,6 Sekunden', dauer);
     const reihenfolge = await p.locator('#podest .platz').evaluateAll((l) => l.map((e) => e.getAttribute('data-platz')));
     H.pruefe(reihenfolge.join() === '2,1,3', 'Treppchen in der Reihenfolge 2 – 1 – 3', reihenfolge);
     H.pruefe(await p.locator('.platz-1 .name').textContent() === 'Mia S.', 'Platz 1: Mia S.');
@@ -136,7 +139,7 @@ async function main() {
     const weitere = await p.locator('#weitere .weiterer').allTextContents();
     H.pruefe(weitere.length === 4 && weitere[0].startsWith('4.Tom R.'), 'Plätze 4–7 darunter', weitere);
     H.pruefe(/^Stand: /.test(await p.locator('#stand').textContent()), 'Stand mit Datum und Uhrzeit');
-    await H.warte(1800);
+    await H.warte(800);
     H.pruefe(await p.locator('#konfetti span').count() > 50, 'Konfetti für Platz 1');
     const passt = await p.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight + 1 && document.documentElement.scrollWidth <= window.innerWidth + 1);
     H.pruefe(passt, 'alles passt ohne Scrollen auf 1920×1080');

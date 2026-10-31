@@ -196,7 +196,7 @@ getrennt von „Nutzung (anonym)“, damit eigene Auswertungen dort unverändert
   Minispiel Diabetes Run!), dann „🏆 Siegerehrung starten“. Die zuletzt gewählte Liste ist vorausgewählt;
   „Klasse wechseln“ führt zurück zu Bildschirm 1.
 - **Siegerehrung:** Siegertreppchen 2 – 1 – 3, Pokal neben dem Namen auf Platz 1, darunter die Plätze 4–12.
-  Die Plätze werden nacheinander enthüllt (Platz 1 zuletzt, mit Konfetti). Tasten: **F** Vollbild,
+  Die Plätze werden zügig nacheinander enthüllt (Platz 1 zuletzt, nach knapp 2 Sekunden, mit Konfetti). Tasten: **F** Vollbild,
   **R** oder Leertaste nochmal, **A** aktualisieren, **Rücktaste** zur Listenauswahl. Die Knöpfe unten
   rechts verschwinden nach 3 Sekunden ohne Mausbewegung.
 - **Direkt-Link** für eine Liste (z. B. als Lesezeichen): `…/siegerehrung/?k=3bfp2-1&l=kb1-diabetes-challenge`
